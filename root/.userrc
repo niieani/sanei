@@ -1,3 +1,7 @@
+# jumping with alt+left/alt+right between words
+bindkey "^[[1;3C" forward-word
+bindkey "^[[1;3D" backward-word
+
 #bindkey `tput kcuu1` up-history >/dev/null 2>&1
 ##bindkey `tput kcud1` end-of-history >/dev/null 2>&1
 #bindkey `tput kcud1` down-history >/dev/null 2>&1
@@ -23,14 +27,6 @@ export RI="--format ansi"
 zstyle ':vcs_info:*' enable cvs svn bzr git
 zstyle ':vcs_info:bzr:*' use-simple true
 
-# Incremental search
-#bindkey -M vicmd "/" history-incremental-search-backward
-#bindkey -M vicmd "?" history-incremental-search-forward
-
-# Search based on what you typed in already
-#bindkey -M vicmd "//" history-beginning-search-backward
-#bindkey -M vicmd "??" history-beginning-search-forward
-
 # <Esc>-h runs help on current BUFFER
 bindkey "\eh" run-help
 
@@ -42,16 +38,7 @@ edit-command-output() {
 }
 zle -N edit-command-output
 
-# Make files executable via associated apps
-autoload -U zsh-mime-setup
-zsh-mime-setup
-
 watch=(notme)
-
-# autojump
-#if which autojump > /dev/null ; then
-#        source ~/.dotfiles/autojump/autojump.zsh
-#fi
 
 ## Load bash completion system
 ## via http://zshwiki.org/home/convert/bash
@@ -89,4 +76,3 @@ alias lxcstop="lxc-stop -n"
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\ee' edit-command-line
-
