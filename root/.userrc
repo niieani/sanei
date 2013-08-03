@@ -1,0 +1,88 @@
+bindkey `tput kcuu1` up-history >/dev/null 2>&1
+#bindkey `tput kcud1` end-of-history >/dev/null 2>&1
+bindkey `tput kcud1` down-history >/dev/null 2>&1
+bindkey `tput kpp` history-beginning-search-backward >/dev/null 2>&1
+bindkey `tput knp` history-beginning-search-forward >/dev/null 2>&1
+
+export LC_ALL='en_US.UTF-8'
+#export LANG='en_US.UTF-8'
+
+## http://github.com/blueyed/oh-my-zsh/blob/master/zshrc
+
+setopt MARK_DIRS # Append a trailing `/' to all directory names resulting from filename generation (gl
+
+setopt NUMERIC_GLOB_SORT
+setopt EXTENDED_GLOB
+
+# hows about arrays be awesome?  (that is, frew${cool}frew has frew surrounding all the variables, not
+setopt RC_EXPAND_PARAM
+
+export RI="--format ansi"
+
+# directory based VCS before repo based ones (e.g. CVS in $HOME, the latter using Git)
+zstyle ':vcs_info:*' enable cvs svn bzr git
+zstyle ':vcs_info:bzr:*' use-simple true
+
+# Incremental search
+bindkey -M vicmd "/" history-incremental-search-backward
+bindkey -M vicmd "?" history-incremental-search-forward
+
+# Search based on what you typed in already
+bindkey -M vicmd "//" history-beginning-search-backward
+bindkey -M vicmd "??" history-beginning-search-forward
+
+# <Esc>-h runs help on current BUFFER
+bindkey "\eh" run-help
+
+# Replace current buffer with executed result (vicmd mode)
+bindkey -M vicmd '!' edit-command-output
+edit-command-output() {
+        BUFFER=$(eval $BUFFER)
+        CURSOR=0
+}
+zle -N edit-command-output
+
+# Make files executable via associated apps
+autoload -U zsh-mime-setup
+zsh-mime-setup
+
+watch=(notme)
+
+# autojump
+#if which autojump > /dev/null ; then
+#        source ~/.dotfiles/autojump/autojump.zsh
+#fi
+
+## Load bash completion system
+## via http://zshwiki.org/home/convert/bash
+#### not working at the moment
+#  if [ -f /etc/bash_completion.d/lxc.sh ]; then
+#    autoload -U bashcompinit && bashcompinit
+#    have() {
+#      unset have
+#      (( ${+commands[$1]} )) && have=yes
+#    }
+#    source /etc/bash_completion.d/lxc.sh
+#  fi
+
+
+# run-help for builtins
+# Explicitly set HELPDIR, see http://bugs.debian.org/530366
+HELPDIR=/usr/share/zsh/help
+unalias run-help &>/dev/null
+autoload run-help
+
+alias grep="nocorrect grep"
+alias sr="nocorrect sr"
+alias mc="mc -x"
+alias mcview="mcview -x"
+alias mcedit="mcedit -x"
+alias lxclist="lxc-ls --fancy"
+alias lxcenter="lxc-console -n"
+alias lxcstart="lxc-start -d -n"
+alias lxcstop="lxc-stop -n"
+
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\ee' edit-command-line
+

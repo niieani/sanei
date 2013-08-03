@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Observium Zimbra statistics script
+# (c) 2013, Tom Laermans
+#
+# Tested on Zimbra 8.0.1 Enterprise
+
+if [ -d /opt/zimbra/zmstat ];
+then
+  for FILENAME in threads fd mtaqueue mailboxd proc
+  do
+    echo "<<<app-zimbra-$FILENAME>>>"
+    head -n1 /opt/zimbra/zmstat/$FILENAME.csv
+    tail -n1 /opt/zimbra/zmstat/$FILENAME.csv
+  done
+  for FILENAME in soap sync pop3 imap ldap
+  do
+    echo "<<<app-zimbra-$FILENAME>>>"
+    head -n1 /opt/zimbra/zmstat/$FILENAME.csv
+    DATE=$(tail -n1 /opt/zimbra/zmstat/$FILENAME.csv|cut -d, -f1)
+    grep "^$DATE" /opt/zimbra/zmstat/$FILENAME.csv
+  done
+fi

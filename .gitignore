@@ -1,0 +1,5 @@
+etc/
+tmp/
+user/
+run/mysqld/
+root/scripts/

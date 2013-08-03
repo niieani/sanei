@@ -1,0 +1,9 @@
+#!/bin/bash
+OUTPUT=$(/shared/user/observium/usr/bin/distro)
+LASTLETTER=$(tail -1 /proc/1/cgroup | awk '{print substr($0,length,1)}')
+if [ $LASTLETTER != "/" ]
+then
+    echo "${OUTPUT} LXC container"
+else
+    echo "${OUTPUT}"
+fi
