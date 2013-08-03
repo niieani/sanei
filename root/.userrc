@@ -1,6 +1,6 @@
-bindkey `tput kcuu1` up-history >/dev/null 2>&1
+#bindkey `tput kcuu1` up-history >/dev/null 2>&1
 ##bindkey `tput kcud1` end-of-history >/dev/null 2>&1
-bindkey `tput kcud1` down-history >/dev/null 2>&1
+#bindkey `tput kcud1` down-history >/dev/null 2>&1
 #bindkey `tput kpp` history-beginning-search-backward >/dev/null 2>&1
 #bindkey `tput knp` history-beginning-search-forward >/dev/null 2>&1
 
