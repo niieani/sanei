@@ -74,6 +74,7 @@ alias lxcenter="lxc-console -n"
 alias lxcstart="lxc-start -d -n"
 alias lxcstop="lxc-stop -n"
 alias wget="wget --no-check-certificate"
+alias ls="ls --color -lah --group-directories-first"
 
 autoload -U edit-command-line
 zle -N edit-command-line

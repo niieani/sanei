@@ -10,11 +10,6 @@ source $CURDIR/functions.sh
 apt-get update
 apt-get -y install software-properties-common byobu zsh git htop mc
 
-# LXC
-add-apt-repository ppa:ubuntu-lxc/daily
-apt-get install lxc
-if [[ ! -e /lxc ]]; then ln -s /var/lib/lxc /lxc; fi
-
 # dotfiles & others
 mkdir -p $DIR
 git clone https://github.com/niieani/lxc-shared.git ${DIR}

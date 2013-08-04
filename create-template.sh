@@ -2,6 +2,10 @@
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}` && pwd )"
 source $CURDIR/functions.sh
 
+# LXC
+add-apt-repository ppa:ubuntu-lxc/daily
+apt-get install lxc
+
 if [[ ! -e /lxc ]]; then ln -s /var/lib/lxc /lxc; fi
 lxc-create -t ubuntu -n template
 echo "/shared shared none defaults,bind 0 0" >> /lxc/template/fstab
