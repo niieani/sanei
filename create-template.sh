@@ -19,7 +19,7 @@ chmod 777 ${TEMPLATE_ROOT}${DIR}
 # /etc
 declare -a link_dir_files=(init default rsyslog.d)
 
-for i in ${arr[@]}
+for i in ${link_dir_files[@]}
 do
     link_all_files_recursive ${DIR}/etc/$i ${TEMPLATE_ROOT}/etc/$i ${TEMPLATE_ROOT}/root/.backups/etc/$i
 done
@@ -35,19 +35,8 @@ ln -v -s ${DIR}/etc/apt $TEMPLATE_ROOT/etc/apt
 ln -v -s ${DIR}/etc/mysql ${TEMPLATE_ROOT}/etc/mysql
 
 # remove default user
-chroot ${TEMPLATE_ROOT} deluser ubuntu --remove-home
+chroot ${TEMPLATE_ROOT} deluser ubuntu
+# --remove-home
+rm -rf ${TEMPLATE_ROOT}/home/ubuntu
 
-
-#link_all_files_recursive ${DIR}/etc/init ${TEMPLATE_ROOT}/etc/init ${TEMPLATE_ROOT}/root/.backups/etc/init
-#link_all_files_recursive ${DIR}/etc/default ${TEMPLATE_ROOT}/etc/default ${TEMPLATE_ROOT}/root/.backups/etc/default
-#link_all_files_recursive ${DIR}/etc/rsyslog.d ${TEMPLATE_ROOT}/etc/rsyslog.d ${TEMPLATE_ROOT}/root/.backups/etc/rsyslog.d
-
-# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-#ln -s ${DIR}/root/.zshrc ~/.zshrc
 #chsh -s /bin/zsh
-
-#(cd /etc; find ${DIR}/etc-hostonly -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
-#(cd /etc; find ${DIR}/etc-hostonly -type f -printf "%P\n" | while read file; do ln -s "${DIR}/etc-hostonly/$file" "$file"; done)
-
-#ln -s ${DIR}/etc-hostonly/apparmor.d/lxc/* /etc/apparmor.d/lxc/
-#ln -s ${DIR}/etc-hostonly/sysctl.d/* /etc/sysctl.d/
