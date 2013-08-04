@@ -1,6 +1,6 @@
 #!/bin/bash
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}` && pwd )"
-source CURDIR/functions.sh
+source $CURDIR/functions.sh
 
 if [[ ! -e /lxc ]]; then ln -s /var/lib/lxc /lxc; fi
 lxc-create -t ubuntu -n template
