@@ -9,7 +9,7 @@ echo "/shared shared none defaults,bind 0 0" >> /lxc/template/fstab
 TEMPLATE_ROOT=/lxc/template/rootfs
 
 # /shared in containers
-mkdir ${TEMPLATE_ROOT}${DIR}
+mkdir -v ${TEMPLATE_ROOT}${DIR}
 chmod 777 ${TEMPLATE_ROOT}${DIR}
 
 # /etc
@@ -24,11 +24,11 @@ done
 link_all_files ${DIR}/root ${TEMPLATE_ROOT}/root
 
 mv $TEMPLATE_ROOT/etc/apt ${DIR}/etc/apt-raring
-ln -s ${DIR}/etc/apt-raring ${DIR}/etc/apt
-ln -s ${DIR}/etc/apt $TEMPLATE_ROOT/etc/apt
+ln -v -s ${DIR}/etc/apt-raring ${DIR}/etc/apt
+ln -v -s ${DIR}/etc/apt $TEMPLATE_ROOT/etc/apt
 
 #mkdir -p ${DIR}/etc/mysql
-ln -s ${DIR}/etc/mysql ${TEMPLATE_ROOT}/etc/mysql
+ln -v -s ${DIR}/etc/mysql ${TEMPLATE_ROOT}/etc/mysql
 
 # remove default user
 chroot ${TEMPLATE_ROOT} deluser ubuntu --remove-home
