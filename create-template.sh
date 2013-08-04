@@ -39,4 +39,6 @@ chroot ${TEMPLATE_ROOT} deluser ubuntu
 # --remove-home
 rm -rf ${TEMPLATE_ROOT}/home/ubuntu
 
+echo "bash ${DIR}/create-template-firstlogin.sh" >> ${TEMPLATE_ROOT}/root/.bash_profile
+
 #chsh -s /bin/zsh
