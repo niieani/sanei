@@ -4,3 +4,15 @@
 [submodule "root/zsh-syntax-highlighting"]
 	path = root/zsh-syntax-highlighting
 	url = git://github.com/zsh-users/zsh-syntax-highlighting.git
+[submodule "root/mc-solarized-skin"]
+	path = root/mc-solarized-skin
+	url = https://github.com/iwfmp/mc-solarized-skin.git
+[submodule "root/dircolors-solarized"]
+	path = root/dircolors-solarized
+	url = https://github.com/seebi/dircolors-solarized.git
+[submodule "root/powerline"]
+	path = root/powerline
+	url = https://github.com/Lokaltog/powerline
+[submodule "root/tmux-powerline"]
+	path = root/tmux-powerline
+	url = git://github.com/erikw/tmux-powerline.git

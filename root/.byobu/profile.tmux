@@ -57,11 +57,28 @@ set -g default-command /bin/zsh
 
 set -g status-bg $BYOBU_DARK
 set -g status-fg $BYOBU_LIGHT
-set -g status-interval 1
+set -g status-interval 2
 set -g status-left-length 256
 set -g status-right-length 256
-set -g status-left '#(byobu-status tmux_left)'
-set -g status-right '#(byobu-status tmux_right)'
+#set -g status-left '#(byobu-status tmux_left)'
+#set -g status-right '#(byobu-status tmux_right)'
+set -g status-left '#(/shared/root/tmux-powerline/powerline.sh left)'
+set -g status-right '#(/shared/root/tmux-powerline/powerline.sh right)'
 set -g message-bg $BYOBU_ACCENT
 set -g message-fg white
+
+# add powerline
+#source /shared/root/powerline/powerline/bindings/tmux/powerline.conf
+
+#set-option -g status on
+#set-option -g status-interval 2
+#set-option -g status-utf8 on
+#set-option -g status-justify "centre"
+#set-option -g status-left-length 60
+#set-option -g status-right-length 90
+#set-option -g status-left "#(/shared/root/tmux-powerline/powerline.sh left)"
+#set-option -g status-right "#(/shared/root/path/to/tmux-powerline/powerline.sh right)"
+#set-window-option -g window-status-current-format "#[fg=colour235, bg=colour27]то#[fg=colour255, bg=colour27] #I то #W #[fg=colour27, bg=colour235]то"
+
+
 

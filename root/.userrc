@@ -65,14 +65,18 @@ autoload run-help
 
 alias grep="nocorrect grep"
 alias sr="nocorrect sr"
-alias mc="mc -x"
-alias mcview="mcview -x"
-alias mcedit="mcedit -x"
+alias mc="mc -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
+#alias mc="mc -x"
+alias mcview="mcview -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
+alias mcedit="mcedit -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
 alias lxclist="lxc-ls --fancy"
 alias lxcenter="lxc-console -n"
 alias lxcstart="lxc-start -d -n"
 alias lxcstop="lxc-stop -n"
+alias wget="wget --no-check-certificate"
 
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\ee' edit-command-line
+
+eval `dircolors /shared/root/dircolors-solarized/dircolors.256dark`
