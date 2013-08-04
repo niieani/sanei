@@ -1,4 +1,4 @@
-tmp/
+tmp/*
 user
 run/mysqld/
 root/scripts
