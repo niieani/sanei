@@ -1,5 +1,5 @@
 #!/bin/bash
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}` && pwd )"
+CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
 # LXC
