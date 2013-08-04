@@ -2,10 +2,6 @@
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
-# LXC
-add-apt-repository ppa:ubuntu-lxc/daily
-apt-get install lxc
-
 if [[ ! -e /lxc ]]; then ln -s /var/lib/lxc /lxc; fi
 lxc-create -t ubuntu -n template
 echo "/shared shared none defaults,bind 0 0" >> /lxc/template/fstab
@@ -27,8 +23,8 @@ done
 # dotfiles
 link_all_files ${DIR}/root ${TEMPLATE_ROOT}/root
 
-mv $TEMPLATE_ROOT/etc/apt ${DIR}/etc/apt-raring
-ln -v -s ${DIR}/etc/apt-raring ${DIR}/etc/apt
+if [[ ! -e ${DIR}/etc/apt-raring ]]; then mv -v $TEMPLATE_ROOT/etc/apt ${DIR}/etc/apt-raring; else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
+if [[ ! -e ${DIR}/etc/apt ]]; then ln -v -s ${DIR}/etc/apt-raring ${DIR}/etc/apt; fi
 ln -v -s ${DIR}/etc/apt $TEMPLATE_ROOT/etc/apt
 
 #mkdir -p ${DIR}/etc/mysql
