@@ -16,3 +16,6 @@
 [submodule "root/tmux-powerline"]
 	path = root/tmux-powerline
 	url = git://github.com/erikw/tmux-powerline.git
+[submodule "root/nginx-chrooter"]
+	path = root/nginx-chrooter
+	url = https://github.com/niieani/nginx-chrooter.git

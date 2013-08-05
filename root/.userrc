@@ -81,3 +81,4 @@ zle -N edit-command-line
 bindkey '\ee' edit-command-line
 
 eval `dircolors /shared/root/dircolors-solarized/dircolors.256dark`
+MC_SKIN=/shared/root/mc-solarized-skin/solarized.ini

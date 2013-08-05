@@ -10,7 +10,8 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
      echo >&2 "successfully acquired lock: $lockdir"
      # continue script
      sed -ie '$d' ~/.bash_profile
-     apt-get -y install zsh htop mc software-properties-common
+     apt-get -y install zsh htop mc software-properties-common ufw
+     ufw enable
      chsh -s /bin/zsh
      exit
  else

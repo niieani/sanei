@@ -13,7 +13,7 @@ mkdir -v ${TEMPLATE_ROOT}${DIR}
 chmod 777 ${TEMPLATE_ROOT}${DIR}
 
 # /etc
-declare -a link_dir_files=(init default rsyslog.d)
+declare -a link_dir_files=(init default rsyslog.d nginx)
 
 for i in ${link_dir_files[@]}
 do

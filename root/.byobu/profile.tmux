@@ -60,10 +60,10 @@ set -g status-fg $BYOBU_LIGHT
 set -g status-interval 2
 set -g status-left-length 256
 set -g status-right-length 256
-#set -g status-left '#(byobu-status tmux_left)'
-#set -g status-right '#(byobu-status tmux_right)'
-set -g status-left '#(/shared/root/tmux-powerline/powerline.sh left)'
-set -g status-right '#(/shared/root/tmux-powerline/powerline.sh right)'
+set -g status-left '#(byobu-status tmux_left)'
+set -g status-right '#(byobu-status tmux_right)'
+#set -g status-left '#(/shared/root/tmux-powerline/powerline.sh left)'
+#set -g status-right '#(/shared/root/tmux-powerline/powerline.sh right)'
 set -g message-bg $BYOBU_ACCENT
 set -g message-fg white
 
