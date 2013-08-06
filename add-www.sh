@@ -6,6 +6,8 @@ source functions.sh
 read -p "Are you sure? " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
+    exit 1
+fi
 
 mkdir -p /var/log/php
 
@@ -19,6 +21,3 @@ apt-get install -y libwww-perl
 link /shared/root/observium-client/local-www /opt/observium-client/local
 
 touch /opt/.install.www
-
-    exit 1
-fi

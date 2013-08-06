@@ -2,6 +2,8 @@
 read -p "Are you sure? " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
+    exit 1
+fi
 
 source functions.sh
 
@@ -14,6 +16,3 @@ ufw allow from 127.0.0.1 app "Observium Agent"
 ufw allow from $OBSERVIUM_SERVER app "Observium Agent"
 
 touch /opt/.install.observium-client
-
-    exit 1
-fi

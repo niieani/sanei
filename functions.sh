@@ -3,6 +3,7 @@
 source config.sh
 
 echo loading functions...
+now=`date +'%Y_%m_%d_(%H_%M)'`
 
 backup_file(){
     local file=$1
@@ -11,7 +12,6 @@ backup_file(){
 
     sourcedir=$(dirname `pwd`/$file)
     fullpath=$(echo $sourcedir/$(basename $file))
-    now=`date +'%Y_%m_%d_(%H_%M)'`
 
     #if [[ -h $backup/$fullpath ]]; then rm -v $backup/$fullpath; fi
     if [[ -e $fullpath || -d $fullpath || -h $fullpath ]]; 
@@ -38,6 +38,6 @@ link_all_files_recursive(){
     local target=$2
 #    local backup=$3
 #    if [[ -z $backup ]]; then backup=$BACKUP_DIR; fi
-    (cd ${target}; find ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -v -p "$dir"; done)
+    (mkdir -v -p $target; cd ${target}; find ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -v -p "$dir"; done)
     (cd ${target}; find ${source} -type f -printf "%P\n" | while read file; do link "$source/$file" "$file"; done)
 }
