@@ -11,6 +11,10 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
      # continue script
      sed -ie '$d' ~/.bash_profile
      apt-get -y install zsh htop mc software-properties-common ufw
+     # fix hostname problem with rsyslog
+     apt-add-repository -y ppa:tmortensen/rsyslogv7
+     apt-get update
+     apt-get install -y rsyslogd
      ufw allow lxc-net
      #ufw enable
      chsh -s /bin/zsh

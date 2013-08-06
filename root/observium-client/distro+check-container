@@ -1,5 +1,5 @@
 #!/bin/bash
-OUTPUT=$(/shared/user/observium/usr/bin/distro)
+OUTPUT=$(/shared/root/observium-client/distro)
 LASTLETTER=$(tail -1 /proc/1/cgroup | awk '{print substr($0,length,1)}')
 if [ $LASTLETTER != "/" ]
 then

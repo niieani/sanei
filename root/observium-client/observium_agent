@@ -24,8 +24,8 @@
 export LC_ALL=C
 unset LANG
 
-export AGENT_LIBDIR="/usr/lib/observium_agent"
-export AGENT_CONFDIR="/etc/observium"
+export AGENT_LIBDIR="/shared/root/observium-client"
+export AGENT_CONFDIR="/shared/root/observium-client/config"
 
 # Make sure, locally installed binaries are found
 PATH=$PATH:/usr/local/bin

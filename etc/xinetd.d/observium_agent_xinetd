@@ -1,0 +1,21 @@
+service observium_agent
+{
+        type           = UNLISTED
+        port           = 36602
+        socket_type    = stream
+        protocol       = tcp
+        wait           = no
+        user           = root
+        server         = /shared/root/observium-client/observium_agent
+
+        # configure the IP address(es) of your Nagios server here:
+        only_from      = 46.4.172.134
+
+        # Don't be too verbose. Don't log every check. This might be
+        # commented out for debugging. If this option is commented out
+        # the default options will be used for this service.
+        log_on_success =
+
+        disable        = no
+}
+
