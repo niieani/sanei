@@ -1,0 +1,4 @@
+[lxc-net]
+title=lxc-net
+description=LXC networking
+ports=67:68/udp|53

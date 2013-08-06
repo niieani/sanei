@@ -11,7 +11,8 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
      # continue script
      sed -ie '$d' ~/.bash_profile
      apt-get -y install zsh htop mc software-properties-common ufw
-     ufw enable
+     ufw allow lxc-net
+     #ufw enable
      chsh -s /bin/zsh
      exit
  else
