@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ -d munin-scripts ]
+then
+  # Update this to point to the correct location of the MUNIN_LIBDIR
+  export MUNIN_LIBDIR=/usr/share/munin
+  cd munin-scripts
+  for script in `ls`
+  do
+    if [ -x "$script" ]
+    then
+      name=$(echo $script | sed 's/-/_/g')
+      echo "<<<munin-$name>>>"
+      ./$script
+      ./$script config
+    fi
+  done
+  cd ..
+fi
+

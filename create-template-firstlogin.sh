@@ -9,6 +9,8 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
  then    # directory did not exist, but was created successfully
      echo >&2 "successfully acquired lock: $lockdir"
      # continue script
+
+     # delete this script from bash_profile
      sed -ie '$d' ~/.bash_profile
      apt-get -y install zsh htop mc software-properties-common ufw
      # fix hostname problem with rsyslog
@@ -16,8 +18,9 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
      apt-get update
      apt-get install -y rsyslogd
      ufw allow lxc-net
-     #ufw enable
+     ufw enable
      chsh -s /bin/zsh
+     rm /tmp/first-run.lock
      exit
  else
      #echo >&2 "cannot acquire lock, giving up on $lockdir"

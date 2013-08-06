@@ -3,3 +3,4 @@ user
 run/mysqld/*
 !run/mysqld/.gitignore
 root/scripts
+config.sh

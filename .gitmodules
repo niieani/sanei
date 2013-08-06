@@ -19,3 +19,9 @@
 [submodule "root/nginx-chrooter"]
 	path = root/nginx-chrooter
 	url = https://github.com/niieani/nginx-chrooter.git
+[submodule "root/observium-client/munin-plugins/munin-php-fpm"]
+	path = root/observium-client/munin-plugins/munin-php-fpm
+	url = https://github.com/niieani/munin-php-fpm.git
+[submodule "root/observium-client/munin-plugins/munin-php-fpm-status"]
+	path = root/observium-client/munin-plugins/munin-php-fpm-status
+	url = https://github.com/niieani/munin-php-fpm-status.git

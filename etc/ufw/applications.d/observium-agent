@@ -1,0 +1,4 @@
+[Observium Agent]
+title=Observium Agent
+description=Observium Agent
+ports=36602/tcp
