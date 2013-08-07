@@ -2,8 +2,10 @@
 read -p "Are you sure? " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
+    exit 1
+fi
 
-#CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
+CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
 if [[ ! -e /lxc ]]; then ln -v -s /var/lib/lxc /lxc; fi
@@ -25,6 +27,3 @@ chroot ${TEMPLATE_ROOT} deluser ubuntu
 rm -rf ${TEMPLATE_ROOT}/home/ubuntu
 
 echo "bash ${DIR}/create-template-firstlogin.sh" >> ${TEMPLATE_ROOT}/root/.bash_profile
-
-    exit 1
-fi
