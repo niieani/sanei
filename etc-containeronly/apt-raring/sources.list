@@ -1,5 +1,0 @@
-deb http://archive.ubuntu.com/ubuntu raring main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu raring-updates main restricted universe multiverse
-deb http://mirror.netcologne.de/mariadb/repo/10.0/ubuntu raring main
-# deb-src http://mirror.netcologne.de/mariadb/repo/10.0/ubuntu raring main
-deb http://security.ubuntu.com/ubuntu raring-security main restricted universe multiverse
