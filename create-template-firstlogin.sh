@@ -13,6 +13,7 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
      # delete this script from bash_profile
      sed -ie '$d' ~/.bash_profile
      apt-get -y install zsh htop mc software-properties-common ufw
+     apt-get --purge remove openssh-server
      # fix hostname problem with rsyslog
      apt-add-repository -y ppa:tmortensen/rsyslogv7
      apt-get update

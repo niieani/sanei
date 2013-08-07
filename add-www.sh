@@ -17,7 +17,7 @@ apt-get install -y nginx-light php5-fpm php5-mysqlnd php5-gd php5-curl php-pear 
 ufw allow "nginx full"
 
 # observium support
-apt-get install -y libwww-perl
+apt-get install -y libwww-perl python
 link /shared/root/observium-client/local-www /opt/observium-client/local
 
 touch /opt/.install.www
