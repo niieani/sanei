@@ -1,2 +1,3 @@
 apt*
 mysql/*
+rsyslog.d/97-send-to-observium.conf

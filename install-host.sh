@@ -5,6 +5,8 @@
 read -p "Are you sure? " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
+    exit 1
+fi
 
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}` && pwd )"
 source $CURDIR/functions.sh
@@ -26,6 +28,3 @@ git clone https://github.com/niieani/lxc-shared.git ${DIR}
 source $CURDIR/create-host-links.sh
 
 chsh -s /bin/zsh
-
-    exit 1
-fi
