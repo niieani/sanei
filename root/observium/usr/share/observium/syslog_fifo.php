@@ -28,6 +28,7 @@ $i = "1";
 $s = fopen('/var/log/rsyslog-fifo','r');
 while ($line = fgets($s))
 {
+  //echo $line;
   //logfile($line);
   // host || facility || priority || level || tag || timestamp || msg || program
   list($entry['host'],$entry['facility'],$entry['priority'], $entry['level'], $entry['tag'], $entry['timestamp'], $entry['msg'], $entry['program']) = explode("||", trim($line));

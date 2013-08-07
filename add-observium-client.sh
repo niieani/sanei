@@ -10,7 +10,10 @@ source functions.sh
 mkdir -p /opt/observium-client/plugins
 link /shared/root/observium-client/local-default /opt/observium-client/local
 
-apt-get install -y snmpd xinetd
+# fix hostname problem with rsyslog
+apt-add-repository -y ppa:tmortensen/rsyslogv7
+apt-get update
+apt-get install -y rsyslogd snmpd xinetd
 
 ufw allow from 127.0.0.1 app "Observium Agent"
 ufw allow from $OBSERVIUM_SERVER app "Observium Agent"
