@@ -5,3 +5,4 @@ run/mysqld/*
 root/scripts
 config.sh
 rafal
+*.ucf-dist
