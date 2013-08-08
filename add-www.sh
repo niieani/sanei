@@ -18,7 +18,7 @@ mkdir -p /var/log/php
 
 add-apt-repository -y ppa:nginx/development
 apt-get update
-apt-get install -y nginx-light php5-fpm php5-mysqlnd php5-gd php5-curl php-pear php-apc lsof
+apt-get install -y nginx-light php5-fpm php5-gd php5-curl php-pear php-apc lsof
 ufw allow "nginx full"
 
 # observium support
