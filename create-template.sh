@@ -19,7 +19,7 @@ BACKUP_DIR=${TEMPLATE_ROOT}/root/.backups
 mkdir -v ${TEMPLATE_ROOT}${DIR}
 chmod 777 ${TEMPLATE_ROOT}${DIR}
 
-$CURDIR/create-template-links.sh
+source $CURDIR/create-template-links.sh
 
 # remove default user
 chroot ${TEMPLATE_ROOT} deluser ubuntu
