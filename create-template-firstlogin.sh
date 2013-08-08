@@ -11,7 +11,8 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
      # continue script
 
      # delete this script from bash_profile
-     sed -ie '$d' ~/.bash_profile
+     #sed -ie '$d' ~/.bash_profile
+     rm ~/.bash_profile
      apt-get -y install zsh htop mc software-properties-common ufw wget
      apt-get --purge -y remove openssh-server
      ufw allow lxc-net
