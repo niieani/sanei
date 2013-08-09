@@ -5,6 +5,10 @@ source config.sh
 echo loading functions...
 now=`date +'%Y_%m_%d_(%H_%M)'`
 space="|    |    |    |    |    |"
+LIGHTGREEN="\033[1;32m"
+LIGHTRED="\033[1;31m"
+WHITE="\033[0;37m"
+RESET="\033[0;00m"
 
 backup_file(){
     local file=$1
@@ -31,7 +35,7 @@ link(){
 
     if [[ ! $source == *.gitignore ]]; 
     then
-	echo "${space:0:$padding}Linking: $source => $target"
+	echo -e "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
         backup_file $target "" $newpadding
 	ln -nfs "$source" "$target" | sed "s/^/${space:0:$newpadding}/"
     fi
@@ -39,13 +43,13 @@ link(){
 link_all_files(){
     local source=$1
     local target=$2
-    echo "Linking files in directory: $source => $target"
+    echo -e "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
     (cd $target; find -L $source -maxdepth 1 -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
 }
 link_all_files_recursive(){
     local source=$1
     local target=$2
-    echo "Linking files recursively in: $source => $target"
+    echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
     (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
     (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
 }
