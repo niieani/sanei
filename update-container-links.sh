@@ -1,4 +1,5 @@
 #!/bin/bash
+
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 
 if [ ! -f $CURDIR/config.sh ]; then
@@ -14,16 +15,14 @@ if ! asksure; then
 fi
 
 # for each container that wants to have auto-updated links
-/usr/bin/lxc-ls -1 | \
-while read container; do
-    TEMPLATE_ROOT=/lxc/$container/rootfs;
+containers=($(/usr/bin/lxc-ls -1))
 
-    if [[ -e $TEMPLATE_ROOT/opt/.install.template-links ]];
+for container in ${containers[@]}
+do
+    TEMPLATE_ROOT=/lxc/$container/rootfs;
+    if [[ -e $TEMPLATE_ROOT/opt/.install.template-links ]]
     then
         #echo $TEMPLATE_ROOT/opt/.install.template-links;
-        source $CURDIR/create-template-links.sh
-	# $TEMPLATE_ROOT
-	#; # | sed "s/^/${space:0:5}/";
+        source $CURDIR/create-template-links.sh # | sed "s/^/${space:0:5}/
     fi;
 done
-

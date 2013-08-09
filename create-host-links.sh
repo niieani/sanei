@@ -6,9 +6,8 @@ if [ ! -f $CURDIR/config.sh ]; then
         exit 1
 fi
 
-read -p "Are you sure? " -n 1
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
+echo "Create host links?"
+if ! asksure; then
     exit 1
 fi
 

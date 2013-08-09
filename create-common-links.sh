@@ -6,13 +6,12 @@ if [ ! -f $CURDIR/config.sh ]; then
         exit 1
 fi
 
-read -p "Are you sure? " -n 1
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
+source $CURDIR/functions.sh
+
+echo "Create common links for: $TEMPLATE_ROOT ?"
+if ! asksure; then
     exit 1
 fi
-
-source $CURDIR/functions.sh
 
 # /etc
 declare -a link_dir_files=(init default rsyslog.d nginx php5 ufw xinetd.d)
