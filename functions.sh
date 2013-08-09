@@ -2,9 +2,22 @@
 
 source config.sh
 
-echo loading functions...
+#echo loading functions...
 now=`date +'%Y_%m_%d_(%H_%M)'`
 space="|    |    |    |    |    |"
+
+asksure() {
+echo -n "Are you sure (Y/N)? "
+while read -r -n 1 answer; do
+  if [[ $answer = [YyNn] ]]; then
+    [[ $answer = [Yy] ]] && retval=0
+    [[ $answer = [Nn] ]] && retval=1
+    break
+  fi
+done
+echo # just a final linefeed, optics...
+return $retval
+}
 
 backup_file(){
     local file=$1

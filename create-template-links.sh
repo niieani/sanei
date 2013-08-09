@@ -6,13 +6,18 @@ if [ ! -f $CURDIR/config.sh ]; then
         exit 1
 fi
 
-read -p "Are you sure? " -n 1
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    exit 1
+if [ ! -z $1 ]; then
+        #echo "Using template"
+        #exit 1
+	TEMPLATE_ROOT=$1
 fi
 
 source $CURDIR/functions.sh
+
+echo "Create template links for: $TEMPLATE_ROOT ?"
+if ! asksure; then
+    exit 1
+fi
 
 # apt first time
 if [[ ! -e ${DIR}/etc-containeronly/apt-raring ]]; then mv -v $TEMPLATE_ROOT/etc/apt ${DIR}/etc-containeronly/apt-raring; fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
