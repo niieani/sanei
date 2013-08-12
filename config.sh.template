@@ -4,3 +4,4 @@ OBSERVIUM_SERVER="127.0.0.1"
 RSYSLOG_PORT=514
 DIR=/shared
 BACKUP_DIR=/root/.backup
+DISTRO=raring

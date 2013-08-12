@@ -1,13 +1,19 @@
 #!/bin/bash
 
-source config.sh
+if [ ! -f $CURDIR/config.sh ]; then
+    echo "No config file"
+    exit 1
+fi
+
+source $CURDIR/config.sh
 
 #echo loading functions...
 now=`date +'%Y_%m_%d_(%H_%M)'`
 space="|    |    |    |    |    |"
 
 asksure() {
-echo -n "Are you sure (Y/N)? "
+local text=$1
+echo -n "$text (Y/N)? "
 while read -r -n 1 answer; do
   if [[ $answer = [YyNn] ]]; then
     [[ $answer = [Yy] ]] && retval=0
@@ -17,6 +23,31 @@ while read -r -n 1 answer; do
 done
 echo # just a final linefeed, optics...
 return $retval
+}
+
+askbreak() {
+    if [[ -z $silent ]]; then
+        local text=$1
+        if ! asksure "$text"; then
+            exit 1
+        fi
+    fi
+}
+
+is_installed() {
+    local what=$1
+    if [[ -e $TEMPLATE_ROOT/opt/.install.$what ]]; then
+	return 0
+    fi
+    return 1
+}
+
+set_installed() {
+    local what=$1
+    local norun=$2
+    touch $TEMPLATE_ROOT/opt/.install.$what
+    if [[ -z $norun ]]; then source $CURDIR/create-template-links.sh; fi
+    echo "Set as installed: $what"
 }
 
 backup_file(){

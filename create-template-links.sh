@@ -1,10 +1,4 @@
 #!/bin/bash
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-
-if [ ! -f $CURDIR/config.sh ]; then
-        echo "No config file"
-        exit 1
-fi
 
 if [ ! -z $1 ]; then
         #echo "Using template"
@@ -12,12 +6,9 @@ if [ ! -z $1 ]; then
 	TEMPLATE_ROOT=$1
 fi
 
+CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
-
-echo "Create template links for: $TEMPLATE_ROOT ?"
-if ! asksure; then
-    exit 1
-fi
+askbreak "Create template links for: $TEMPLATE_ROOT ?"
 
 # apt first time
 if [[ ! -e ${DIR}/etc-containeronly/apt-raring ]]; then mv -v $TEMPLATE_ROOT/etc/apt ${DIR}/etc-containeronly/apt-raring; fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
@@ -42,3 +33,16 @@ do
 	link ${DIR}/etc-containeronly/$i ${TEMPLATE_ROOT}/etc/$i
     fi;
 done
+
+# custom links
+if is_installed observium-client
+then
+    if is_installed www
+    then
+	link $DIR/root/observium-client/local-www $TEMPLATE_ROOT/opt/observium-client/local
+    else
+	link $DIR/root/observium-client/local-default $TEMPLATE_ROOT/opt/observium-client/local
+    fi
+fi
+
+set_installed template-links norun

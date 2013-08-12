@@ -1,9 +1,5 @@
 #!/bin/bash
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-#source $CURDIR/functions.sh
-
-# locking example -- CORRECT
- # Bourne
+# locking
  lockdir=/tmp/first-run.lock
  if mkdir "$lockdir"
  then    # directory did not exist, but was created successfully
