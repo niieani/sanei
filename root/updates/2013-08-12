@@ -2,6 +2,7 @@
 
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"`/../.. && pwd )"
 THIS=`basename $0`
+silent=yes
 source $CURDIR/functions.sh
 
 if ! is_installed $THIS; then

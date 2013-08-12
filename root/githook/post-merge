@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+
+silent=y /shared/update-container-links.sh
