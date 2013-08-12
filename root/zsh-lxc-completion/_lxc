@@ -1,10 +1,8 @@
-#compdef lxc-start lxc-stop lxc-console lxc-restart lxc-create lxc-destroy 
-lxc-monitor lxc-cgroup lxc-checkpoint lxc-execute lxc-freeze lxc-unfreeze 
-lxc-info lxc-netstat lxc-ps lxc-wait
+#compdef lxc-start lxc-stop lxc-console lxc-restart lxc-create lxc-destroy lxc-monitor lxc-cgroup lxc-checkpoint lxc-execute lxc-freeze lxc-unfreeze lxc-info lxc-netstat lxc-ps lxc-wait
 
 _lxc_containers() {
         local -a containers
-        containers=( $(/bin/ls /var/lib/lxc) )
+        containers=( $(/usr/bin/lxc-ls -1) )
         compadd "$@" -a containers
 }
 
