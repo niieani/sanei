@@ -1,6 +1,6 @@
 #!/bin/bash
 # to start the installation do this:
-# wget -O - https://raw.github.com/niieani/lxc-shared/master/install-host.sh | bash
+# wget -O - https://raw.github.com/niieani/lxc-shared/master/install-lxc-host.sh | bash
 
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 
@@ -29,6 +29,8 @@ git clone https://github.com/niieani/lxc-shared.git ${DIR}
 #source $CURDIR/functions.sh
 
 # dotfiles & others
-source $DIR/create-host-links.sh
+#source $DIR/create-host-links.sh
+set_installed lxc-host #should create the links
 
 chsh -s /bin/zsh
+

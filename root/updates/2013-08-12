@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"`/../.. && pwd )"
+THIS=`basename $0`
+source $CURDIR/functions.sh
+
+if ! is_installed $THIS; then
+    echo "$now: it works!" >> /shared/tmp/it_works
+    set_installed $THIS
+fi

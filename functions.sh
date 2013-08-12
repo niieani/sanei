@@ -8,7 +8,7 @@ fi
 source $CURDIR/config.sh
 
 #echo loading functions...
-now=`date +'%Y_%m_%d_(%H_%M)'`
+if [[ -z $now ]]; then now=`date +'%Y_%m_%d_(%H_%M)'`; fi
 space="|    |    |    |    |    |"
 LIGHTGREEN="\033[1;32m"
 LIGHTRED="\033[1;31m"
@@ -47,7 +47,10 @@ set_installed() {
     local what=$1
     local norun=$2
     touch $TEMPLATE_ROOT/opt/.install.$what
-    if [[ -z $norun ]]; then source $CURDIR/create-template-links.sh; fi
+    if [[ -z $norun ]]; then
+	if is_installed template-links; then source $CURDIR/create-template-links.sh; fi
+	if is_installed host-links; then source $CURDIR/create-host-links.sh; fi
+    fi
     echo "Set as installed: $what"
 }
 backup_file(){

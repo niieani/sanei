@@ -11,3 +11,5 @@ source $CURDIR/create-common-links.sh
 
 #link_all_files ${DIR}/root ~/
 link ${DIR}/root/.byobu ~/.byobu
+
+set_installed host-links norun
