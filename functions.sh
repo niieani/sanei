@@ -84,7 +84,7 @@ store_local_config(){
     local var=$1
     local def=$2
     mkdir -p /opt/.config
-    echo "$var=\"$def\" > /opt/.config/$var"
+    echo "$var=\"$def\"" > /opt/.config/$var
     chmod 700 /opt/.config/$var
     ConfigArr["${var}"]=${def}
 }

@@ -10,14 +10,14 @@ mkdir -p /opt/observium-client/plugins
 # fix hostname problem with rsyslog
 apt-add-repository -y ppa:tmortensen/rsyslogv7
 apt-get update
-apt-get install -y rsyslogd snmpd xinetd
+apt-get install -y rsyslog snmpd xinetd
 
 ufw allow from 127.0.0.1 app "Observium Agent"
 ufw allow from $OBSERVIUM_SERVER app "Observium Agent"
-ufw allow from 127.0.0.1 snmp
-ufw allow from $OBSERVIUM_SERVER snmp
-ufw allow from 127.0.0.1 snmp-trap
-ufw allow from $OBSERVIUM_SERVER snmp-trap
+ufw allow from 127.0.0.1 to any port snmp
+ufw allow from $OBSERVIUM_SERVER to any port snmp
+ufw allow from 127.0.0.1 to any port snmp-trap
+ufw allow from $OBSERVIUM_SERVER to any port snmp-trap
 
 echo "*.* @@$OBSERVIUM_SERVER:$RSYSLOG_PORT" > $DIR/etc/rsyslog.d/97-send-to-observium.conf
 
@@ -25,11 +25,11 @@ echo "*.* @@$OBSERVIUM_SERVER:$RSYSLOG_PORT" > $DIR/etc/rsyslog.d/97-send-to-obs
 
 HOSTNAME=$(hostname --fqdn)
 SNMP_COMMUNITY=$(cat /proc/sys/kernel/random/uuid)
-store_local_config "SNMP_COMMUNITY" $COMMUNITY
+store_local_config "SNMP_COMMUNITY" $SNMP_COMMUNITY
 
 set_installed observium-client
 
-service snmp restart
+service snmpd restart
 service rsyslog restart
 
 echo "Enter your Observium SSH password:"

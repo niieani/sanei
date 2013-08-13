@@ -3,10 +3,6 @@
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
-# common links
-create_common_links(){
-    askbreak "Create common links for: $TEMPLATE_ROOT ?"
-    
     # /etc
     declare -a link_dir_files=(init default ufw update-manager)
     
@@ -26,6 +22,10 @@ create_common_links(){
     if is_installed observium-server; then
         link_dir_files+=('xinetd.d')
     fi
+
+# common links
+create_common_links(){
+    askbreak "Create common links for: $TEMPLATE_ROOT ?"
     
     # dotfiles
     link_all_files ${DIR}/root ${TEMPLATE_ROOT}/root
