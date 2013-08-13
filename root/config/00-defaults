@@ -8,3 +8,5 @@ DISTRO=raring
 TIMEZONE=Europe/Warsaw
 SSH_PORT=1234
 SSH_PERMITROOTLOGIN=no
+SNMP_CONTACT="root"
+SNMP_LOCATION="London,United Kingdom"

@@ -100,6 +100,7 @@ then
     else
         link $DIR/root/observium-client/local-default $TEMPLATE_ROOT/opt/observium-client/local
     fi
+    fill_template_recursive $DIR/root/observium-client/etc-template $TEMPLATE_ROOT/etc
 fi
 
 if is_installed observium-server

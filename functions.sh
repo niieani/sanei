@@ -11,6 +11,15 @@ if [[ -z $CONFIG ]]; then
         source "$file"
       fi
     done
+
+    # load local overrides
+    for file in /opt/.config/* ; do
+      if [ -f "$file" ] ; then
+        echo "Loading local config: $file"
+        source "$file"
+      fi
+    done
+
     unset file
     CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
     unset VARS
@@ -30,7 +39,7 @@ LIGHTRED="\033[1;31m"
 WHITE="\033[0;37m"
 RESET="\033[0;00m"
 
-asksure() {
+asksure(){
     local text=$1
     echo -n "$text (Y/N)? "
     while read -r -n 1 answer; do
@@ -43,7 +52,7 @@ asksure() {
     echo # just a final linefeed, optics...
     return $retval
 }
-askbreak() {
+askbreak(){
     if [[ -z $silent ]]; then
         local text=$1
         if ! asksure "$text"; then
@@ -53,14 +62,14 @@ askbreak() {
         echo "$text: YES"
     fi
 }
-is_installed() {
+is_installed(){
     local what=$1
     if [[ -e $TEMPLATE_ROOT/opt/.install.$what ]]; then
 	    return 0
     fi
     return 1
 }
-set_installed() {
+set_installed(){
     local what=$1
     local norun=$2
     touch $TEMPLATE_ROOT/opt/.install.$what
@@ -70,6 +79,14 @@ set_installed() {
 	#if is_installed template-links; then source $CURDIR/create-template-links.sh; fi
 	#if is_installed host-links; then source $CURDIR/create-host-links.sh; fi
     echo "Set as installed: $what"
+}
+store_local_config(){
+    local var=$1
+    local def=$2
+    mkdir -p /opt/.config
+    echo "$var=\"$def\" > /opt/.config/$var"
+    chmod 700 /opt/.config/$var
+    ConfigArr["${var}"]=${def}
 }
 backup_file(){
     local file=$1
