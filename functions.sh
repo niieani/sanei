@@ -1,11 +1,34 @@
 #!/bin/bash
 
-if [ ! -f $CURDIR/config.sh ]; then
-    echo "No config file"
-    exit 1
+CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
+
+# load configuration and save to a variable
+if [[ -z $CONFIG ]]; then
+    VARS="`set -o posix ; set`"
+    for file in $CURDIR/root/config/* ; do
+      if [ -f "$file" ] ; then
+        echo "Loading config: $file"
+        source "$file"
+      fi
+    done
+    unset file
+    CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
+    unset VARS
+
+    # make it an assoc array
+    declare -A ConfigArr
+    while IFS= read -r ConfigLine; do
+	IFS='=' read -ra ThisConfig <<< "$ConfigLine"
+	ConfigArr["${ThisConfig[0]}"]=${ThisConfig[1]}
+    done <<< "$CONFIG"
 fi
 
-source $CURDIR/config.sh
+#if [ ! -f $CURDIR/config.sh ]; then
+#    echo "No config file"
+#    exit 1
+#fi
+
+#source $CURDIR/config.sh
 
 #echo loading functions...
 if [[ -z $now ]]; then now=`date +'%Y_%m_%d_(%H_%M)'`; fi
@@ -34,6 +57,8 @@ askbreak() {
         if ! asksure "$text"; then
             exit 1
         fi
+    else
+        echo "$text: YES"
     fi
 }
 is_installed() {
@@ -95,4 +120,31 @@ link_all_files_recursive(){
     echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
     (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
     (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+}
+fill_template(){
+    local source=$1
+    local target=$2
+
+    if [[ ! $source == *.gitignore ]]; then
+	echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        backup_file $target "" $newpadding
+        cp -a $source $target
+
+	if [[ ! -h $source ]]; then
+            for key in ${!ConfigArr[@]}; do
+	        	#echo "s/@@${key}@@/${ConfigArr[$key]}/g"
+			# escape
+			newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
+		        sed -i "s/@@${key}@@/${newOutput}/g" $target
+		        #echo "ConfigArr[$key] = ${ConfigArr[$key]}"
+            done
+	fi
+    fi
+}
+fill_template_recursive(){
+    local source=$1
+    local target=$2
+    echo -e "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+    (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
+    (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" 5; done)
 }

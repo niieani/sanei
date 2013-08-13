@@ -1,0 +1,21 @@
+server {
+	root /usr/share/observium/html;
+	index index.php index.html index.htm;
+
+	server_name @@OBSERVIUM_HOSTNAME@@;
+
+	location / {
+		try_files $uri $uri/ /index.php;
+	}
+
+	location ~ \.php$ {
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+
+	location ~ /\.ht {
+		deny all;
+	}
+}

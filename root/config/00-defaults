@@ -1,6 +1,6 @@
 #!/bin/bash
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 OBSERVIUM_SERVER="127.0.0.1"
+OBSERVIUM_HOSTNAME="localhost"
 RSYSLOG_PORT=514
 DIR=/shared
 BACKUP_DIR=/root/.backup

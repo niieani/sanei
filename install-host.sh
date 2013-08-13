@@ -22,15 +22,9 @@ apt-get install lxc
 
 mkdir -p $DIR
 
-git clone https://github.com/niieani/lxc-shared.git ${DIR}
+git clone https://github.com/niieani/lxc-shared.git $DIR
 (cd $DIR; git submodule init && git submodule update && git submodule status)
 
-#CURDIR="$( cd `dirname "${BASH_SOURCE[0]}` && pwd )"
-#source $CURDIR/functions.sh
-
-# dotfiles & others
-#source $DIR/create-host-links.sh
 set_installed lxc-host #should create the links
 
 chsh -s /bin/zsh
-

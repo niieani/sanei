@@ -1,13 +1,14 @@
 #!/bin/bash
 
 if [ ! -z $1 ]; then
-        #echo "Using template"
-        #exit 1
 	TEMPLATE_ROOT=$1
 fi
 
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
+
+if is_installed template-links; then
+
 askbreak "Create template links for: $TEMPLATE_ROOT ?"
 
 # apt first time
@@ -34,15 +35,6 @@ do
     fi;
 done
 
-# custom links
-if is_installed observium-client
-then
-    if is_installed www
-    then
-	link $DIR/root/observium-client/local-www $TEMPLATE_ROOT/opt/observium-client/local
-    else
-	link $DIR/root/observium-client/local-default $TEMPLATE_ROOT/opt/observium-client/local
-    fi
-fi
-
 set_installed template-links norun
+
+fi
