@@ -11,8 +11,8 @@ containers=($(/usr/bin/lxc-ls -1))
 for container in ${containers[@]}
 do
     TEMPLATE_ROOT=/lxc/$container/rootfs;
-    if is_installed template-links
-    then
-        source $CURDIR/create-template-links.sh # | sed "s/^/${space:0:5}/
-    fi;
+#    if is_installed template-links
+#    then
+        source $CURDIR/create-links.sh # | sed "s/^/${space:0:5}/
+#    fi;
 done

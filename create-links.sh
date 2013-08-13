@@ -107,3 +107,8 @@ then
     fill_template_recursive $DIR/root/observium/etc-template $TEMPLATE_ROOT/etc
     link_all_files_recursive $DIR/root/observium/etc $TEMPLATE_ROOT/etc
 fi
+
+if is_installed ssh
+then
+    fill_template_recursive $DIR/root/ssh/etc-template $TEMPLATE_ROOT/etc
+fi
