@@ -23,14 +23,6 @@ if [[ -z $CONFIG ]]; then
     done <<< "$CONFIG"
 fi
 
-#if [ ! -f $CURDIR/config.sh ]; then
-#    echo "No config file"
-#    exit 1
-#fi
-
-#source $CURDIR/config.sh
-
-#echo loading functions...
 if [[ -z $now ]]; then now=`date +'%Y_%m_%d_(%H_%M)'`; fi
 space="|    |    |    |    |    |"
 LIGHTGREEN="\033[1;32m"
@@ -64,7 +56,7 @@ askbreak() {
 is_installed() {
     local what=$1
     if [[ -e $TEMPLATE_ROOT/opt/.install.$what ]]; then
-	return 0
+	    return 0
     fi
     return 1
 }
@@ -73,9 +65,10 @@ set_installed() {
     local norun=$2
     touch $TEMPLATE_ROOT/opt/.install.$what
     if [[ -z $norun ]]; then
-	if is_installed template-links; then source $CURDIR/create-template-links.sh; fi
-	if is_installed host-links; then source $CURDIR/create-host-links.sh; fi
+        source $CURDIR/create-links.sh
     fi
+	#if is_installed template-links; then source $CURDIR/create-template-links.sh; fi
+	#if is_installed host-links; then source $CURDIR/create-host-links.sh; fi
     echo "Set as installed: $what"
 }
 backup_file(){
@@ -126,19 +119,19 @@ fill_template(){
     local target=$2
 
     if [[ ! $source == *.gitignore ]]; then
-	echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
         backup_file $target "" $newpadding
         cp -a $source $target
 
 	if [[ ! -h $source ]]; then
             for key in ${!ConfigArr[@]}; do
 	        	#echo "s/@@${key}@@/${ConfigArr[$key]}/g"
-			# escape
-			newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
+			    # escape
+			    newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
 		        sed -i "s/@@${key}@@/${newOutput}/g" $target
 		        #echo "ConfigArr[$key] = ${ConfigArr[$key]}"
             done
-	fi
+        fi
     fi
 }
 fill_template_recursive(){
