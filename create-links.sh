@@ -11,7 +11,7 @@ create_common_links(){
     declare -a link_dir_files=(init default ufw update-manager)
     
     # /etc whole folders
-    declare -a link_dirs=(apt mysql snmp)
+    declare -a link_dirs=(apt mysql)
     
     if is_installed www; then
         link_dir_files+=('nginx')
@@ -20,7 +20,7 @@ create_common_links(){
     
     if is_installed observium-client; then
         link_dir_files+=('rsyslog.d')
-        link_dirs+=('snmp')
+        #link_dirs+=('snmp')
     fi
     
     if is_installed observium-server; then
