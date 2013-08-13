@@ -6,3 +6,4 @@ root/scripts
 config.sh
 rafal
 *.ucf-dist
+.c9revisions

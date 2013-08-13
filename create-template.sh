@@ -29,5 +29,9 @@ rm -rf ${TEMPLATE_ROOT}/home/ubuntu
 
 echo "bash ${DIR}/create-template-firstlogin.sh" >> ${TEMPLATE_ROOT}/root/.bash_profile
 
+# apt first time
+if [[ ! -e ${DIR}/etc-containeronly/apt-$DISTRO ]]; then mv -v $TEMPLATE_ROOT/etc/apt ${DIR}/etc-containeronly/apt-$DISTRO; fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
+if [[ ! -e ${DIR}/etc-containeronly/apt ]]; then link $DIR/etc-containeronly/apt-$DISTRO ${DIR}/etc/apt; fi
+
 set_installed template-links # should run the link creator
 #source $CURDIR/create-template-links.sh
