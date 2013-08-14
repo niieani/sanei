@@ -7,7 +7,8 @@ askbreak "Really?"
 #apt-get -y install openssh-server
 echo "TODO: Actual installation."
 
-useradd -d /opt/observium -g www-data -M -s /bin/sh observium
+# TODO (in home?):
+#useradd -d /opt/observium -g www-data -M -s /bin/sh observium
 echo "Password for the remote access user: "
 passwd observium
 

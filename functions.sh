@@ -4,7 +4,9 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 
 # load configuration and save to a variable
 if [[ -z $CONFIG ]]; then
-    VARS="`set -o posix ; set`"
+
+    ( set -o posix ; set ) >/tmp/variables.before
+    #VARS="`set -o posix ; set`"
     for file in $CURDIR/root/config/* ; do
       if [ -f "$file" ] ; then
         echo "Loading config: $file"
@@ -20,15 +22,36 @@ if [[ -z $CONFIG ]]; then
       fi
     done
 
+    # load shared overrides
+    for file in $DIR/.config/* ; do
+      if [ -f "$file" ] ; then
+        echo "Loading shared config: $file"
+        source "$file"
+      fi
+    done
+
     unset file
-    CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
-    unset VARS
+
+    ( set -o posix ; set ) >/tmp/variables.after
+#    CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
+#    CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)"`"
+#    unset VARS
+
+    CONFIG=$(comm --nocheck-order -13 /tmp/variables.before /tmp/variables.after)
+#    rm /tmp/variables.before /tmp/variables.after
+
+#    echo "$CONFIG"
+#    echo $SNMP_LOCATION
 
     # make it an assoc array
     declare -A ConfigArr
     while IFS= read -r ConfigLine; do
 	IFS='=' read -ra ThisConfig <<< "$ConfigLine"
-	ConfigArr["${ThisConfig[0]}"]=${ThisConfig[1]}
+	#echo ${ThisConfig[1]}
+	ThisConfigTrim=${ThisConfig[1]#"'"}
+	ThisConfigTrim=${ThisConfigTrim%"'"}
+	ThisConfigTrim=$(echo $ThisConfigTrim | sed "s/'\\\'//g") #unescape
+	ConfigArr["${ThisConfig[0]}"]="$ThisConfigTrim"
     done <<< "$CONFIG"
 fi
 
@@ -83,9 +106,17 @@ set_installed(){
 store_local_config(){
     local var=$1
     local def=$2
-    mkdir -p /opt/.config
-    echo "$var=\"$def\"" > /opt/.config/$var
-    chmod 700 /opt/.config/$var
+    mkdir -p $TEMPLATE_ROOT/opt/.config
+    echo "$var=\"$def\"" > $TEMPLATE_ROOT/opt/.config/$var
+    chmod 700 $TEMPLATE_ROOT/opt/.config/$var
+    ConfigArr["${var}"]=${def}
+}
+store_shared_config(){
+    local var=$1
+    local def=$2
+    mkdir -p $DIR/.config
+    echo "$var=\"$def\"" > $DIR/.config/$var
+    chmod 700 $DIR/.config/$var
     ConfigArr["${var}"]=${def}
 }
 backup_file(){
@@ -142,7 +173,7 @@ fill_template(){
 
 	if [[ ! -h $source ]]; then
             for key in ${!ConfigArr[@]}; do
-	        	#echo "s/@@${key}@@/${ConfigArr[$key]}/g"
+	        	echo "s/@@${key}@@/${ConfigArr[$key]}/g"
 			    # escape
 			    newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
 		        sed -i "s/@@${key}@@/${newOutput}/g" $target

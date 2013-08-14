@@ -27,6 +27,14 @@ HOSTNAME=$(hostname --fqdn)
 SNMP_COMMUNITY=$(cat /proc/sys/kernel/random/uuid)
 store_local_config "SNMP_COMMUNITY" $SNMP_COMMUNITY
 
+if [[ -z ${ConfigArr['SNMP_PORT_LAST']} ]]; then
+    SNMP_REMOTE_PORT=${ConfigArr['SNMP_PORT_START']}
+else
+    SNMP_REMOTE_PORT=$(( ${ConfigArr['SNMP_PORT_LAST'] + 1 ))
+fi
+store_shared_config "SNMP_PORT_LAST" $SNMP_REMOTE_PORT
+store_local_config "SNMP_REMOTE_PORT" $SNMP_REMOTE_PORT
+
 set_installed observium-client
 
 service snmpd restart
