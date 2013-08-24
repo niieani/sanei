@@ -11,5 +11,6 @@ echo "TODO: Actual installation."
 #useradd -d /opt/observium -g www-data -M -s /bin/sh observium
 echo "Password for the remote access user: "
 passwd observium
+ufw allow 677 #change for observium-server and fixme not to allow everybody, just the right IPs
 
 set_installed observium-server
