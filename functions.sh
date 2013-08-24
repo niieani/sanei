@@ -76,7 +76,7 @@ asksure(){
     return $retval
 }
 askbreak(){
-    if [[ -z $REINSTALL && $INSTALLING && is_installed $INSTALLING ]]; then
+    if [ -z $REINSTALL ] && [ $INSTALLING ] && [[ is_installed $INSTALLING ]]; then
         echo "You already installed: $INSTALLING. Skipping..."
         exit 1
     else
