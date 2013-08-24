@@ -76,13 +76,13 @@ asksure(){
     return $retval
 }
 askbreak(){
-    if [ -z $REINSTALL ] && [ $INSTALLING ] && [ is_installed $INSTALLING ]; then
+    if [ -z $REINSTALL ] && [ $INSTALLING ] && [[ is_installed $INSTALLING ]]; then
         echo "You already installed: $INSTALLING. Skipping..."
         exit 1
     else
         if [[ -z $silent ]]; then
             local text=$1
-            if [[ -z $REINSTALL ]]; then RE="re"; fi
+            if [[ $REINSTALL ]]; then RE="re"; fi
             echo "Will ${RE}install: $INSTALLING."
             if ! asksure "$text"; then
                 exit 1
@@ -184,7 +184,8 @@ fill_template(){
 
 	if [[ ! -h $source ]]; then
             for key in ${!ConfigArr[@]}; do
-	        	echo "s/@@${key}@@/${ConfigArr[$key]}/g"
+                # debug:
+	        	#echo "s/@@${key}@@/${ConfigArr[$key]}/g"
 			    # escape
 			    newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
 		        sed -i "s/@@${key}@@/${newOutput}/g" $target
