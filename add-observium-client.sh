@@ -6,8 +6,9 @@ INSTALLING="observium-client"
 HOSTNAME=$(hostname --fqdn)
 askbreak "Really? Make sure your hostname ($HOSTNAME) is correct!"
 
+IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
+
 if [[ $1 == "external" ]]; then
-	IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
     echo "Using the external IP ($IP) instead of an AutoSSH tunnel."
     EXTERNAL=true
 fi
@@ -24,11 +25,9 @@ if [[ -z $EXTERNAL ]]; then
 	apt-get install -y autossh
 	ufw allow from 127.0.0.1 app "Observium Agent"
 	ufw allow from 127.0.0.1 to any port snmp
-	ufw allow from 127.0.0.1 to any port snmp-trap
 else
 	ufw allow from $OBSERVIUM_SERVER app "Observium Agent"
 	ufw allow from $OBSERVIUM_SERVER to any port snmp
-	ufw allow from $OBSERVIUM_SERVER to any port snmp-trap
 fi
 
 echo "*.* @@$OBSERVIUM_SERVER:$RSYSLOG_PORT" > $DIR/etc/rsyslog.d/97-send-to-observium.conf
@@ -47,7 +46,7 @@ if [[ -z $EXTERNAL ]]; then
 	store_shared_config "SNMP_PORT_LAST" $SNMP_REMOTE_PORT
 	store_local_config "SNMP_REMOTE_PORT" $SNMP_REMOTE_PORT
 	#remote_ufw_command="ufw allow from 127.0.0.1 app \"Observium Syslog\""
-	remote_hosts_set="sudo echo '127.0.0.1 $HOSTNAME' >> /etc/hosts"
+	remote_hosts_set="sudo $DIR/root/observium/add-host-via-ssh.sh $HOSTNAME $IP"
 	set_installed observium-client-via-ssh norun
 else
 	SNMP_REMOTE_PORT=161
