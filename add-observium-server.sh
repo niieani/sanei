@@ -19,4 +19,5 @@ ufw allow from 127.0.0.1 app "Observium Syslog"
 #ufw allow 677 # change for observium-server and fixme not to allow everybody, just the right IPs
 
 # add su access ONLY to the hosts file to the user without repeating the password
-echo "observium ALL=/etc/hosts NOPASSWD: ALL" >> /etc/sudoers
+# /etc/hosts 
+echo "observium ALL=(root)NOPASSWD:$DIR/root/observium/add-host-via-ssh.sh *" > /etc/sudoers.d/observium

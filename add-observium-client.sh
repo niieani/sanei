@@ -63,4 +63,6 @@ ssh-copy-id "-p$SSH_PORT observium@$OBSERVIUM_SERVER"
 service snmpd restart
 service rsyslog restart
 
-ssh observium@$OBSERVIUM_SERVER -p $SSH_PORT "$remote_hosts_set; $remote_ufw_command; /opt/observium/addhost.php $HOSTNAME $SNMP_COMMUNITY v2c $SNMP_REMOTE_PORT tcp"
+ssh observium@$OBSERVIUM_SERVER -p $SSH_PORT "${remote_hosts_set}; ${remote_ufw_command}; /opt/observium/addhost.php $HOSTNAME $SNMP_COMMUNITY v2c $SNMP_REMOTE_PORT tcp"
+
+service autossh-snmp start
