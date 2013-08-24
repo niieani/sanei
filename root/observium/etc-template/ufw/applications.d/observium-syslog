@@ -1,0 +1,4 @@
+[Observium Syslog]
+title=Observium Syslog
+description=Observium rsyslog link
+ports=@@RSYSLOG_PORT@@/tcp

@@ -3,28 +3,30 @@
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
-    # /etc
-    declare -a link_dir_files=(init default ufw update-manager)
-    
-    # /etc whole folders
-    declare -a link_dirs=(apt mysql)
-    
-    if is_installed www; then
-        link_dir_files+=('nginx')
-        link_dir_files+=('php5')
-    fi
-    
-    if is_installed observium-client; then
-        link_dir_files+=('rsyslog.d')
-        #link_dirs+=('snmp')
-    fi
-    
-    if is_installed observium-server; then
-        link_dir_files+=('xinetd.d')
-    fi
+# /etc
+declare -a link_dir_files=(init default ufw update-manager)
+
+# /etc whole folders
+declare -a link_dirs=(apt mysql)
+
+if is_installed www; then
+    link_dir_files+=('nginx')
+    link_dir_files+=('php5')
+fi
+
+if is_installed observium-client; then
+    link_dir_files+=('rsyslog.d')
+    #link_dirs+=('snmp')
+fi
+
+if is_installed observium-server; then
+    link_dir_files+=('xinetd.d')
+fi
 
 # common links
 create_common_links(){
+    INSTALLING="common-links"
+    REINSTALL=true
     askbreak "Create common links for: $TEMPLATE_ROOT ?"
     
     # dotfiles
@@ -45,10 +47,14 @@ create_common_links(){
         link ${DIR}/etc/$i ${TEMPLATE_ROOT}/etc/$i
         fi;
     done
+
+    set_installed common-links norun
 }
 
 # template-links
 if is_installed template-links; then
+    INSTALLING="template-links"
+    REINSTALL=true
     askbreak "Create template links for: $TEMPLATE_ROOT ?"
     
     #source $CURDIR/create-common-links.sh
@@ -77,6 +83,8 @@ fi
 
 # host-links
 if is_installed host-links; then
+    INSTALLING="host-links"
+    REINSTALL=true
     askbreak "Create host links?"
     
     link_all_files_recursive ${DIR}/etc-hostonly /etc
@@ -101,6 +109,10 @@ then
         link $DIR/root/observium-client/local-default $TEMPLATE_ROOT/opt/observium-client/local
     fi
     fill_template_recursive $DIR/root/observium-client/etc-template $TEMPLATE_ROOT/etc
+
+    if is_installed observium-client-via-ssh; then
+        fill_template_recursive $DIR/root/observium-client-via-ssh/etc-template $TEMPLATE_ROOT/etc
+    fi
 fi
 
 if is_installed observium-server

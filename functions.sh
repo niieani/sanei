@@ -76,13 +76,24 @@ asksure(){
     return $retval
 }
 askbreak(){
-    if [[ -z $silent ]]; then
-        local text=$1
-        if ! asksure "$text"; then
-            exit 1
-        fi
+    if [[ -z $REINSTALL && ! -z $INSTALLING && is_installed $INSTALLING ]]; then
+        echo "You already installed: $INSTALLING. Skipping..."
+        exit 1
     else
-        echo "$text: YES"
+        if [[ -z $silent ]]; then
+            local text=$1
+            if [[ -z $REINSTALL ]]; then RE="re"; fi
+            echo "Will ${RE}install: $INSTALLING."
+            if ! asksure "$text"; then
+                exit 1
+            fi
+        else
+            echo "Automatically answering YES to: $text"
+        fi
+
+        # we shouldn't leak these vars for scripts not declaring them
+        unset REINSTALL
+        unset INSTALLING
     fi
 }
 is_installed(){

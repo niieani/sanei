@@ -11,6 +11,12 @@ echo "TODO: Actual installation."
 #useradd -d /opt/observium -g www-data -M -s /bin/sh observium
 echo "Password for the remote access user: "
 passwd observium
-ufw allow 677 #change for observium-server and fixme not to allow everybody, just the right IPs
 
 set_installed observium-server
+
+# allow syslogging from localhost
+ufw allow from 127.0.0.1 app "Observium Syslog"
+#ufw allow 677 # change for observium-server and fixme not to allow everybody, just the right IPs
+
+# add su access ONLY to the hosts file to the user without repeating the password
+echo "observium ALL=/etc/hosts NOPASSWD: ALL" >> /etc/sudoers
