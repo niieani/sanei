@@ -20,4 +20,4 @@ ufw allow from 127.0.0.1 app "Observium Syslog"
 
 # add su access ONLY to the hosts file to the user without repeating the password
 # /etc/hosts 
-echo "observium ALL=(root)NOPASSWD:$DIR/modules/observium-server/add-host-via-ssh.sh *" > /etc/sudoers.d/observium
+echo "observium ALL=(root)NOPASSWD:$SCRIPT_DIR/modules/observium-server/add-host-via-ssh.sh *" > /etc/sudoers.d/observium

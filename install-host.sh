@@ -9,7 +9,7 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
-if [[ -z $DIR ]]; then
+if [[ -z $SCRIPT_DIR ]]; then
     DIR=/shared
 fi
 
@@ -21,10 +21,10 @@ apt-get -y install software-properties-common byobu zsh git htop mc ufw
 add-apt-repository ppa:ubuntu-lxc/daily
 apt-get install lxc
 
-mkdir -p $DIR
+mkdir -p $SCRIPT_DIR
 
-git clone https://github.com/niieani/lxc-shared.git $DIR
-cd $DIR
+git clone https://github.com/niieani/lxc-shared.git $SCRIPT_DIR
+cd $SCRIPT_DIR
 (git submodule init && git submodule update && git submodule status)
 
 echo "$TIMEZONE" | sudo tee /etc/timezone

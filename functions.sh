@@ -23,7 +23,7 @@ if [[ -z $CONFIG ]]; then
     done
 
     # load shared overrides
-    for file in $DIR/.config/* ; do
+    for file in $SCRIPT_DIR/.config/* ; do
       if [ -f "$file" ] ; then
         echo "Loading shared config: $file"
         source "$file"
@@ -127,9 +127,9 @@ store_local_config(){
 store_shared_config(){
     local var=$1
     local def=$2
-    mkdir -p $DIR/.config
-    echo "$var=\"$def\"" > $DIR/.config/$var
-    chmod 700 $DIR/.config/$var
+    mkdir -p $SCRIPT_DIR/.config
+    echo "$var=\"$def\"" > $SCRIPT_DIR/.config/$var
+    chmod 700 $SCRIPT_DIR/.config/$var
     ConfigArr["${var}"]=${def}
 }
 backup_file(){

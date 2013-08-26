@@ -12,9 +12,9 @@ apt-get -y upgrade
 apt-get -y -t $DISTRO install postgresql-common
 apt-get install postgresql-9.2
 apt-get -y autoremove
-mkdir -p $DIR/run/postgresql
-chmod 42775 $DIR/run/postgresql
-chown postgres.postgres $DIR/run/postgres
+mkdir -p $SCRIPT_DIR/run/postgresql
+chmod 42775 $SCRIPT_DIR/run/postgresql
+chown postgres.postgres $SCRIPT_DIR/run/postgres
 echo "add password with \password root, exit with \quit"
 sudo -u postgres createuser --superuser root
 sudo -u postgres psql

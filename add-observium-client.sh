@@ -21,18 +21,9 @@ apt-add-repository -y ppa:tmortensen/rsyslogv7
 apt-get update
 apt-get install -y rsyslog snmpd xinetd
 
-if [[ -z $EXTERNAL ]]; then
-	apt-get install -y autossh
-	ufw allow from 127.0.0.1 app "Observium Agent"
-	ufw allow from 127.0.0.1 to any port snmp
-else
-	ufw allow from $OBSERVIUM_SERVER app "Observium Agent"
-	ufw allow from $OBSERVIUM_SERVER to any port snmp
-fi
+echo "*.* @@$OBSERVIUM_SERVER:$RSYSLOG_PORT" > $SCRIPT_DIR/etc/rsyslog.d/97-send-to-observium.conf
 
-echo "*.* @@$OBSERVIUM_SERVER:$RSYSLOG_PORT" > $DIR/etc/rsyslog.d/97-send-to-observium.conf
-
-#link_all_files ${DIR}/etc/rsyslog.d /etc/rsyslog.d
+#link_all_files ${SCRIPT_DIR}/etc/rsyslog.d /etc/rsyslog.d
 
 SNMP_COMMUNITY=$(cat /proc/sys/kernel/random/uuid)
 store_local_config "SNMP_COMMUNITY" $SNMP_COMMUNITY
@@ -46,7 +37,7 @@ if [[ -z $EXTERNAL ]]; then
 	store_shared_config "SNMP_PORT_LAST" $SNMP_REMOTE_PORT
 	store_local_config "SNMP_REMOTE_PORT" $SNMP_REMOTE_PORT
 	#remote_ufw_command="ufw allow from 127.0.0.1 app \"Observium Syslog\""
-	remote_hosts_set="sudo $DIR/modules/observium-server/add-host-via-ssh.sh $HOSTNAME $IP"
+	remote_hosts_set="sudo $SCRIPT_DIR/modules/observium-server/add-host-via-ssh.sh $HOSTNAME $IP"
 	set_installed observium-client-via-ssh norun
 else
 	SNMP_REMOTE_PORT=161
@@ -54,6 +45,16 @@ else
 fi
 
 set_installed observium-client
+
+# TODO: BUG - won't work via SSH
+if [[ -z $EXTERNAL ]]; then
+	apt-get install -y autossh
+	ufw allow from 127.0.0.1 app "Observium Agent"
+	ufw allow from 127.0.0.1 to any port snmp
+else
+	ufw allow from $OBSERVIUM_SERVER app "Observium Agent"
+	ufw allow from $OBSERVIUM_SERVER to any port snmp
+fi
 
 source $CURDIR/add-ssh-key.sh
 echo "Enter your Observium SSH password:"

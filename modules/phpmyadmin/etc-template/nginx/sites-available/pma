@@ -1,6 +1,6 @@
 server {
-        listen 9000;
-        server_name sql;
+        listen @@PMA_PORT@@;
+        server_name @@PMA_HOSTNAME@@;
         root /usr/share/phpmyadmin;
 
         include _defaults_php_single;

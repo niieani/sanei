@@ -19,19 +19,19 @@ TEMPLATE_ROOT=/lxc/$TEMPLATE_NAME/rootfs
 BACKUP_DIR=${TEMPLATE_ROOT}/root/.backups
 
 # /shared in containers
-mkdir -v ${TEMPLATE_ROOT}${DIR}
-chmod 777 ${TEMPLATE_ROOT}${DIR}
+mkdir -v ${TEMPLATE_ROOT}${SCRIPT_DIR}
+chmod 777 ${TEMPLATE_ROOT}${SCRIPT_DIR}
 
 # remove default user
 chroot ${TEMPLATE_ROOT} deluser ubuntu
 # --remove-home
 rm -rf ${TEMPLATE_ROOT}/home/ubuntu
 
-echo "bash ${DIR}/create-template-firstlogin.sh" >> ${TEMPLATE_ROOT}/root/.bash_profile
+echo "bash $SCRIPT_DIR/create-template-firstlogin.sh" >> $TEMPLATE_ROOT/root/.bash_profile
 
 # apt first time
-if [[ ! -e ${DIR}/etc-containeronly/apt-$DISTRO ]]; then mv -v $TEMPLATE_ROOT/etc/apt ${DIR}/etc-containeronly/apt-$DISTRO; fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
-if [[ ! -e ${DIR}/etc-containeronly/apt ]]; then link $DIR/etc-containeronly/apt-$DISTRO ${DIR}/etc/apt; fi
+if [[ ! -e $SCRIPT_DIR/etc-containeronly/apt-$DISTRO ]]; then mv -v $TEMPLATE_ROOT/etc/apt ${SCRIPT_DIR}/etc-containeronly/apt-$DISTRO; fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
+if [[ ! -e $SCRIPT_DIR/etc-containeronly/apt ]]; then link $SCRIPT_DIR/etc-containeronly/apt-$DISTRO ${SCRIPT_DIR}/etc/apt; fi
 
 set_installed template-links # should run the link creator
 #source $CURDIR/create-template-links.sh
