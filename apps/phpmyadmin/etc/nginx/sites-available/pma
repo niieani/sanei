@@ -1,0 +1,8 @@
+server {
+        listen 9000;
+        server_name sql;
+        root /usr/share/phpmyadmin;
+
+        include _defaults_php_single;
+        client_max_body_size 1024m;
+}
