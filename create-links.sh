@@ -5,18 +5,22 @@ source $CURDIR/functions.sh
 
 for module in list_installed
 do
+    # /etc #
     # recursive linking #
     link_all_files_recursive $SCRIPT_DIR/modules/$module/etc $TEMPLATE_ROOT/etc
 
     # recursive copying and filling #
     fill_template_recursive $SCRIPT_DIR/modules/$module/etc-template $TEMPLATE_ROOT/etc
 
+    # recursive copying #
+    copy_all_files_recursive $SCRIPT_DIR/modules/$module/etc-copy $TEMPLATE_ROOT/etc
+
     # non-recursive linking of folders #
     link_all_dirs $SCRIPT_DIR/modules/$module/etc-link $TEMPLATE_ROOT/etc
 
-    if [[ -d $SCRIPT_DIR/modules/$module/usr ]]; then
-        copy_all_files_recursive $SCRIPT_DIR/modules/$module/usr $TEMPLATE_ROOT/usr
-    fi
+    # others #
+    # copy /usr if exists #
+    copy_all_files_recursive $SCRIPT_DIR/modules/$module/usr $TEMPLATE_ROOT/usr
 
     # dotfiles
     if [[ -d $SCRIPT_DIR/modules/$module/root ]]; then

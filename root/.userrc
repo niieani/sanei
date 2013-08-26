@@ -2,16 +2,8 @@
 bindkey "^[[1;3C" forward-word
 bindkey "^[[1;3D" backward-word
 
-#bindkey `tput kcuu1` up-history >/dev/null 2>&1
-##bindkey `tput kcud1` end-of-history >/dev/null 2>&1
-#bindkey `tput kcud1` down-history >/dev/null 2>&1
-#bindkey `tput kpp` history-beginning-search-backward >/dev/null 2>&1
-#bindkey `tput knp` history-beginning-search-forward >/dev/null 2>&1
-
 export LC_ALL='en_US.UTF-8'
-#export LANG='en_US.UTF-8'
-
-## http://github.com/blueyed/oh-my-zsh/blob/master/zshrc
+export LANG='en_US.UTF-8'
 
 setopt MARK_DIRS # Append a trailing `/' to all directory names resulting from filename generation (gl
 
@@ -57,28 +49,29 @@ fpath=($fpath /shared/root/zsh-lxc-completion)
 autoload -U compinit
 compinit
 
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\ee' edit-command-line
+
 # run-help for builtins
 # Explicitly set HELPDIR, see http://bugs.debian.org/530366
 HELPDIR=/usr/share/zsh/help
 unalias run-help &>/dev/null
 autoload run-help
 
+MC_SKIN=/shared/root/mc-solarized-skin/solarized.ini
+
 alias grep="nocorrect grep"
 alias sr="nocorrect sr"
 alias mc="mc -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
-#alias mc="mc -x"
 alias mcview="mcview -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
 alias mcedit="mcedit -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
 alias lxclist="lxc-ls --fancy"
 alias lxcenter="lxc-console -n"
 alias lxcstart="lxc-start -d -n"
 alias lxcstop="lxc-stop -n"
+alias lxcclone="lxc-clone"
 alias wget="wget --no-check-certificate"
 alias ls="ls --color -lah --group-directories-first"
 
-autoload -U edit-command-line
-zle -N edit-command-line
-bindkey '\ee' edit-command-line
-
 eval `dircolors /shared/root/dircolors-solarized/dircolors.256dark`
-MC_SKIN=/shared/root/mc-solarized-skin/solarized.ini

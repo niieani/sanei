@@ -4,12 +4,18 @@ CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 
 # load configuration and save to a variable
 if [[ -z $CONFIG ]]; then
-
     ( set -o posix ; set ) >/tmp/variables.before
-    #VARS="`set -o posix ; set`"
-    for file in $CURDIR/root/config/* ; do
+    for file in $CURDIR/config/* ; do
       if [ -f "$file" ] ; then
         echo "Loading config: $file"
+        source "$file"
+      fi
+    done
+
+    # load shared overrides
+    for file in $SCRIPT_DIR/.config-shared/* ; do
+      if [ -f "$file" ] ; then
+        echo "Loading shared config: $file"
         source "$file"
       fi
     done
@@ -22,36 +28,20 @@ if [[ -z $CONFIG ]]; then
       fi
     done
 
-    # load shared overrides
-    for file in $SCRIPT_DIR/.config/* ; do
-      if [ -f "$file" ] ; then
-        echo "Loading shared config: $file"
-        source "$file"
-      fi
-    done
-
     unset file
-
     ( set -o posix ; set ) >/tmp/variables.after
-#    CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)" | grep -v ^VARS=`"
-#    CONFIG="`grep -vFe "$VARS" <<<"$(set -o posix ; set)"`"
-#    unset VARS
 
     CONFIG=$(comm --nocheck-order -13 /tmp/variables.before /tmp/variables.after)
-#    rm /tmp/variables.before /tmp/variables.after
-
-#    echo "$CONFIG"
-#    echo $SNMP_LOCATION
+    rm /tmp/variables.before /tmp/variables.after
 
     # make it an assoc array
     declare -A ConfigArr
     while IFS= read -r ConfigLine; do
-	IFS='=' read -ra ThisConfig <<< "$ConfigLine"
-	#echo ${ThisConfig[1]}
-	ThisConfigTrim=${ThisConfig[1]#"'"}
-	ThisConfigTrim=${ThisConfigTrim%"'"}
-	ThisConfigTrim=$(echo $ThisConfigTrim | sed "s/'\\\'//g") #unescape
-	ConfigArr["${ThisConfig[0]}"]="$ThisConfigTrim"
+    	IFS='=' read -ra ThisConfig <<< "$ConfigLine"
+    	ThisConfigTrim=${ThisConfig[1]#"'"}
+    	ThisConfigTrim=${ThisConfigTrim%"'"}
+    	ThisConfigTrim=$(echo $ThisConfigTrim | sed "s/'\\\'//g") # unescape
+    	ConfigArr["${ThisConfig[0]}"]="$ThisConfigTrim"
     done <<< "$CONFIG"
 fi
 
@@ -127,9 +117,9 @@ store_local_config(){
 store_shared_config(){
     local var=$1
     local def=$2
-    mkdir -p $SCRIPT_DIR/.config
-    echo "$var=\"$def\"" > $SCRIPT_DIR/.config/$var
-    chmod 700 $SCRIPT_DIR/.config/$var
+    mkdir -p $SCRIPT_DIR/.config-shared
+    echo "$var=\"$def\"" > $SCRIPT_DIR/.config-shared/$var
+    chmod 700 $SCRIPT_DIR/.config-shared/$var
     ConfigArr["${var}"]=${def}
 }
 backup_file(){
@@ -196,9 +186,11 @@ link_all_files(){
 link_all_files_recursive(){
     local source=$1
     local target=$2
-    echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
-    (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
-    (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+    if [[ -d $source ]]; then
+        echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
+        (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+    fi
 }
 link_all_dirs(){
     local source=$1
@@ -212,7 +204,9 @@ link_all_dirs(){
 copy_all_files_recursive(){
     local source=$1
     local target=$2
-    cp -v -T -R $source $target | sed "s/^/${space:0:5}/"
+    if [[ -d $source ]]; then
+        cp -v -T -R $source $target | sed "s/^/${space:0:5}/"
+    fi
 }
 fill_template(){
     local source=$1
