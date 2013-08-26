@@ -59,13 +59,13 @@ HELPDIR=/usr/share/zsh/help
 unalias run-help &>/dev/null
 autoload run-help
 
-MC_SKIN=/shared/root/mc-solarized-skin/solarized.ini
+MC_SKIN=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini
 
 alias grep="nocorrect grep"
 alias sr="nocorrect sr"
-alias mc="mc -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
-alias mcview="mcview -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
-alias mcedit="mcedit -x --skin=/shared/root/mc-solarized-skin/solarized.ini"
+alias mc="mc -x --skin=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini"
+alias mcview="mcview -x --skin=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini"
+alias mcedit="mcedit -x --skin=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini"
 alias lxclist="lxc-ls --fancy"
 alias lxcenter="lxc-console -n"
 alias lxcstart="lxc-start -d -n"
@@ -74,4 +74,4 @@ alias lxcclone="lxc-clone"
 alias wget="wget --no-check-certificate"
 alias ls="ls --color -lah --group-directories-first"
 
-eval `dircolors /shared/root/dircolors-solarized/dircolors.256dark`
+eval `dircolors /shared/modules/dotfiles/root/.addons/dircolors-solarized/dircolors.256dark`

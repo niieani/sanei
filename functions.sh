@@ -172,9 +172,9 @@ link(){
 
     if [[ ! $source == *.gitignore ]]; 
     then
-	echo -e "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        echo -e "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
         backup_file $target "" $newpadding
-	ln -nfs "$source" "$target" | sed "s/^/${space:0:$newpadding}/"
+        ln -nfs "$source" "$target" | sed "s/^/${space:0:$newpadding}/"
     fi
 }
 link_all_files(){
@@ -205,7 +205,7 @@ copy_all_files_recursive(){
     local source=$1
     local target=$2
     if [[ -d $source ]]; then
-        cp -v -T -R $source $target | sed "s/^/${space:0:5}/"
+        cp -v -T -R $source $target | sed "s/^/${space:0:$padding}/"
     fi
 }
 fill_template(){

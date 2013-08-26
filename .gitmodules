@@ -1,23 +1,23 @@
-[submodule "root/.oh-my-zsh"]
-	path = root/.oh-my-zsh
+[submodule "modules/dotfiles/root/.oh-my-zsh"]
+	path = modules/dotfiles/root/.oh-my-zsh
 	url = https://github.com/robbyrussell/oh-my-zsh.git
-[submodule "root/zsh-syntax-highlighting"]
-	path = root/zsh-syntax-highlighting
+[submodule "modules/dotfiles/root/.addons/zsh-syntax-highlighting"]
+	path = modules/dotfiles/root/.addons/zsh-syntax-highlighting
 	url = git://github.com/zsh-users/zsh-syntax-highlighting.git
-[submodule "root/mc-solarized-skin"]
-	path = root/mc-solarized-skin
+[submodule "modules/dotfiles/root/.addons/mc-solarized-skin"]
+	path = modules/dotfiles/root/.addons/mc-solarized-skin
 	url = https://github.com/iwfmp/mc-solarized-skin.git
-[submodule "root/dircolors-solarized"]
-	path = root/dircolors-solarized
+[submodule "modules/dotfiles/root/.addons/dircolors-solarized"]
+	path = modules/dotfiles/root/.addons/dircolors-solarized
 	url = https://github.com/seebi/dircolors-solarized.git
-[submodule "root/powerline"]
-	path = root/powerline
+[submodule "modules/dotfiles/root/.addons/powerline"]
+	path = modules/dotfiles/root/.addons/powerline
 	url = https://github.com/Lokaltog/powerline
-[submodule "root/tmux-powerline"]
-	path = root/tmux-powerline
+[submodule "modules/dotfiles/root/.addons/tmux-powerline"]
+	path = modules/dotfiles/root/.addons/tmux-powerline
 	url = git://github.com/erikw/tmux-powerline.git
-[submodule "root/nginx-chrooter"]
-	path = root/nginx-chrooter
+[submodule "modules/dotfiles/root/.addons/nginx-chrooter"]
+	path = modules/dotfiles/root/.addons/nginx-chrooter
 	url = https://github.com/niieani/nginx-chrooter.git
 [submodule "modules/observium-client/munin-plugins/munin-php-fpm"]
 	path = modules/observium-client/munin-plugins/munin-php-fpm

@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh configuration.
-ZSH=/shared/root/.oh-my-zsh
+ZSH=/shared/modules/dotfiles/root/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -47,4 +47,4 @@ source $ZSH/oh-my-zsh.sh
 # Customize to your needs...
 export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 source /shared/root/.userrc
-source /shared/root/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /shared/modules/dotfiles/root/.addons/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
