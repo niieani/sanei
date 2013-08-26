@@ -102,23 +102,23 @@ fi
 if is_installed observium-client
 then
     if is_installed www; then
-        link $DIR/root/observium-client/local-www $TEMPLATE_ROOT/opt/observium-client/local
+        link $DIR/modules/observium-client/local-www $TEMPLATE_ROOT/opt/observium-client/local
     elif is_installed mysql; then
-        link $DIR/root/observium-client/local-mysql $TEMPLATE_ROOT/opt/observium-client/local
+        link $DIR/modules/observium-client/local-mysql $TEMPLATE_ROOT/opt/observium-client/local
     else
-        link $DIR/root/observium-client/local-default $TEMPLATE_ROOT/opt/observium-client/local
+        link $DIR/modules/observium-client/local-default $TEMPLATE_ROOT/opt/observium-client/local
     fi
-    fill_template_recursive $DIR/root/observium-client/etc-template $TEMPLATE_ROOT/etc
+    fill_template_recursive $DIR/modules/observium-client/etc-template $TEMPLATE_ROOT/etc
 
     if is_installed observium-client-via-ssh; then
-        fill_template_recursive $DIR/root/observium-client-via-ssh/etc-template $TEMPLATE_ROOT/etc
+        fill_template_recursive $DIR/modules/observium-client-via-ssh/etc-template $TEMPLATE_ROOT/etc
     fi
 fi
 
 if is_installed observium-server
 then
-    fill_template_recursive $DIR/root/observium/etc-template $TEMPLATE_ROOT/etc
-    link_all_files_recursive $DIR/root/observium/etc $TEMPLATE_ROOT/etc
+    fill_template_recursive $DIR/modules/observium-server/etc-template $TEMPLATE_ROOT/etc
+    link_all_files_recursive $DIR/modules/observium-server/etc $TEMPLATE_ROOT/etc
 fi
 
 if is_installed ssh

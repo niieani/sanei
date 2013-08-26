@@ -14,7 +14,7 @@ if [[ $1 == "external" ]]; then
 fi
 
 mkdir -p /opt/observium-client/plugins
-#link /shared/root/observium-client/local-default /opt/observium-client/local
+#link /shared/modules/observium-client/local-default /opt/observium-client/local
 
 # fix hostname problem with rsyslog
 apt-add-repository -y ppa:tmortensen/rsyslogv7
@@ -46,7 +46,7 @@ if [[ -z $EXTERNAL ]]; then
 	store_shared_config "SNMP_PORT_LAST" $SNMP_REMOTE_PORT
 	store_local_config "SNMP_REMOTE_PORT" $SNMP_REMOTE_PORT
 	#remote_ufw_command="ufw allow from 127.0.0.1 app \"Observium Syslog\""
-	remote_hosts_set="sudo $DIR/root/observium/add-host-via-ssh.sh $HOSTNAME $IP"
+	remote_hosts_set="sudo $DIR/modules/observium-server/add-host-via-ssh.sh $HOSTNAME $IP"
 	set_installed observium-client-via-ssh norun
 else
 	SNMP_REMOTE_PORT=161

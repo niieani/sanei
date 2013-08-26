@@ -13,6 +13,6 @@ ufw allow "nginx full"
 
 # observium support
 apt-get install -y libwww-perl python
-#link /shared/root/observium-client/local-www /opt/observium-client/local
+#link /shared/modules/observium-client/local-www /opt/observium-client/local
 
 set_installed www
