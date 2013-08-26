@@ -149,6 +149,31 @@ backup_file(){
 	    mv $fullpath $backup/$now$fullpath | sed "s/^/${space:0:$padding}/";
     fi
 }
+list_dirs_recursive(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -mindepth 1 -depth -type d -printf "%P\n"
+    fi
+}
+list_dirs(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -maxdepth 1 -depth -type d -printf "%P\n"
+    fi
+}
+list_files(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -maxdepth 1 -type f -printf "%P\n"
+    fi
+}
+list_installed(){
+    local dir=$1
+    list_files $TEMPLATE_ROOT/opt | grep ".install." | sed s/.install.//
+}
 link(){
     local source=$1
     local target=$2
@@ -175,30 +200,19 @@ link_all_files_recursive(){
     (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
     (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
 }
-list_dirs_recursively(){
-    local dir=$1
-    if [[ -d $dir ]];
-    then
-        find -L ${dir} -mindepth 1 -depth -type d -printf "%P\n"
-    fi
+link_all_dirs(){
+    local source=$1
+    local target=$2
+    # non-recursive linking of folders #
+    for to_link in list_dirs $source
+    do
+        link $source/$to_link $target/$to_link
+    done
 }
-list_dirs(){
-    local dir=$1
-    if [[ -d $dir ]];
-    then
-        find -L ${dir} -maxdepth 1 -depth -type d -printf "%P\n"
-    fi
-}
-list_files(){
-    local dir=$1
-    if [[ -d $dir ]];
-    then
-        find -L ${dir} -maxdepth 1 -type f -printf "%P\n"
-    fi
-}
-list_installed(){
-    local dir=$1
-    list_files $TEMPLATE_ROOT/opt | grep ".install." | sed s/.install.//
+copy_all_files_recursive(){
+    local source=$1
+    local target=$2
+    cp -v -T -R $source $target | sed "s/^/${space:0:5}/"
 }
 fill_template(){
     local source=$1
