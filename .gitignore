@@ -6,5 +6,6 @@ root/scripts
 config.sh
 rafal
 *.ucf-dist
+*.dpkg-dist
 .c9revisions
 .config
