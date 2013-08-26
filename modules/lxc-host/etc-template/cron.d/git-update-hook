@@ -5,5 +5,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 #.
 # m h  dom mon dow   command
-30 5 * * * root cd /shared; git pull
-0 6 * * * root cd /shared; run-parts ./root/updates
+30 5 * * * root cd @@SCRIPT_DIR@@; git pull

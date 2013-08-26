@@ -1,0 +1,1 @@
+0 6 * * * root cd @@SCRIPT_DIR@@; run-parts ./modules/scheduled-tasks/tasks

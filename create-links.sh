@@ -3,25 +3,29 @@
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
-# /etc
-declare -a link_dir_files=(init default ufw update-manager)
+for module in list_installed
+do
+    # recursive linking #
+    link_all_files_recursive $SCRIPT_DIR/modules/$module/etc $TEMPLATE_ROOT/etc
 
-# /etc whole folders
-declare -a link_dirs=(apt mysql)
+    # recursive copying and filling #
+    fill_template_recursive $SCRIPT_DIR/modules/$module/etc-template $TEMPLATE_ROOT/etc
 
-if is_installed www; then
-    link_dir_files+=('nginx')
-    link_dir_files+=('php5')
-fi
+    # non-recursive linking of folders #
+    for to_link in list_dirs $SCRIPT_DIR/modules/$module/etc-link
+    do
+        link $SCRIPT_DIR/modules/$module/etc/$to_link $TEMPLATE_ROOT/etc/$to_link
+        #link_all_files_recursive $SCRIPT_DIR/modules/$module/etc/$to_link_recursively $TEMPLATE_ROOT/etc/$to_link_recursively
+    done
 
-if is_installed observium-client; then
-    link_dir_files+=('rsyslog.d')
-    #link_dirs+=('snmp')
-fi
+    if [[ -d $SCRIPT_DIR/modules/$module/usr ]]; then
+        cp -T -R $SCRIPT_DIR/modules/$module/usr $TEMPLATE_ROOT/usr
+    fi
 
-if is_installed observium-server; then
-    link_dir_files+=('xinetd.d')
-fi
+    if [[ -d $SCRIPT_DIR/modules/$module/root ]]; then
+        link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT/root
+    fi
+done
 
 # common links
 create_common_links(){

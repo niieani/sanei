@@ -175,6 +175,31 @@ link_all_files_recursive(){
     (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
     (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
 }
+list_dirs_recursively(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -mindepth 1 -depth -type d -printf "%P\n"
+    fi
+}
+list_dirs(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -maxdepth 1 -depth -type d -printf "%P\n"
+    fi
+}
+list_files(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -maxdepth 1 -type f -printf "%P\n"
+    fi
+}
+list_installed(){
+    local dir=$1
+    list_files $TEMPLATE_ROOT/opt | grep ".install." | sed s/.install.//
+}
 fill_template(){
     local source=$1
     local target=$2
