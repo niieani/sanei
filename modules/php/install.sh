@@ -1,6 +1,3 @@
-
-askbreak "Really?"
-
 mkdir -p /var/log/php
 
 add-apt-repository -y ppa:nginx/development

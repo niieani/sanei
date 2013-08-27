@@ -25,3 +25,6 @@
 [submodule "modules/observium-client/munin-plugins/munin-php-fpm-status"]
 	path = modules/observium-client/munin-plugins/munin-php-fpm-status
 	url = https://github.com/niieani/munin-php-fpm-status.git
+[submodule "vendor/bash-modules"]
+	path = vendor/bash-modules
+	url = https://github.com/vlisivka/bash-modules.git

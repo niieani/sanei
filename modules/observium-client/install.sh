@@ -1,8 +1,3 @@
-HOSTNAME=$(hostname --fqdn)
-askbreak "Really? Make sure your hostname ($HOSTNAME) is correct!"
-
-IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-
 if [[ $1 == "external" ]]; then
     echo "Using the external IP ($IP) instead of an AutoSSH tunnel."
     EXTERNAL=true
@@ -47,7 +42,7 @@ else
 	ufw allow from $OBSERVIUM_SERVER to any port snmp
 fi
 
-$CURDIR/sanei install ssh-key
+sanei_install_dependencies ssh-key
 
 echo "Enter your Observium SSH password:"
 ssh-copy-id "-p$SSH_PORT observium@$OBSERVIUM_SERVER"

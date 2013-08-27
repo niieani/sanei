@@ -1,4 +1,4 @@
 #!/bin/sh
 #
 
-silent=y /shared/update-container-links.sh
+silent=y /shared/sanei updateallcontainers

@@ -1,13 +1,24 @@
 #!/bin/bash
 
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
+# load argument loading
+__IMPORT__BASE_PATH="$CURDIR/vendor/bash-modules/main/bash-modules/src/bash-modules"
+source $CURDIR/vendor/bash-modules/main/bash-modules/src/import.sh arguments log
+parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" -- "${@:+$@}"
+# parse_arguments "-n|--name)NAME;S" -- "$@" || {
+#   error "Cannot parse command line."
+#   exit 1
+# }
+# info "Hello, $NAME!"
+
+   # echo "Arguments count: ${#ARGUMENTS[@]}."
+   # echo "Arguments: ${ARGUMENTS[0]:+${ARGUMENTS[@]}}."
 
 # load configuration and save to a variable
 if [[ -z $CONFIG ]]; then
     ( set -o posix ; set ) >/tmp/variables.before
     for file in $CURDIR/config/* ; do
       if [ -f "$file" ] ; then
-        echo "Loading config: $file"
+        if [[ $VERBOSE ]]; then echo "Loading config: $file"; fi
         source "$file"
       fi
     done
@@ -15,7 +26,7 @@ if [[ -z $CONFIG ]]; then
     # load shared overrides
     for file in $SCRIPT_DIR/.config-shared/* ; do
       if [ -f "$file" ] ; then
-        echo "Loading shared config: $file"
+        if [[ $VERBOSE ]]; then echo "Loading shared config: $file"; fi
         source "$file"
       fi
     done
@@ -23,7 +34,7 @@ if [[ -z $CONFIG ]]; then
     # load local overrides
     for file in /opt/.config/* ; do
       if [ -f "$file" ] ; then
-        echo "Loading local config: $file"
+        if [[ $VERBOSE ]]; then echo "Loading local config: $file"; fi
         source "$file"
       fi
     done
@@ -45,12 +56,19 @@ if [[ -z $CONFIG ]]; then
     done <<< "$CONFIG"
 fi
 
+# variables
 if [[ -z $now ]]; then now=`date +'%Y_%m_%d_(%H_%M)'`; fi
+HOSTNAME=$(hostname --fqdn)
+IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
+
+# globals
 space="|    |    |    |    |    |"
 LIGHTGREEN="\033[1;32m"
+LIGHTBLUE="\033[1;34m"
 LIGHTRED="\033[1;31m"
 WHITE="\033[0;37m"
 RESET="\033[0;00m"
+PADDING_SIZE=5
 
 asksure(){
     local text=$1
@@ -85,12 +103,21 @@ is_installed(){
 set_installed(){
     local what=$1
     local norun=$2
+    local noinfo=$3
     touch $TEMPLATE_ROOT/opt/.install.$what
     if [[ -z $norun ]]; then
         #source $CURDIR/create-links.sh
-        sanei_update
+        sanei_update $what
     fi
-    echo "Set as installed: $what"
+    if [[ -z $noinfo ]]; then
+        info "Set as installed: $what"
+    fi
+}
+rm_installed(){
+    local what=$1
+    if [[ -f $TEMPLATE_ROOT/opt/.install.$what ]]; then
+        rm $TEMPLATE_ROOT/opt/.install.$what
+    fi
 }
 store_local_config(){
     local var=$1
@@ -129,21 +156,21 @@ list_dirs_recursive(){
     local dir=$1
     if [[ -d $dir ]];
     then
-        find -L ${dir} -mindepth 1 -depth -type d -printf "%P\n"
+        find -L ${dir} -mindepth 1 -depth -type d -printf "%P\n" | sed '/^$/d' | sort
     fi
 }
 list_dirs(){
     local dir=$1
     if [[ -d $dir ]];
     then
-        find -L ${dir} -maxdepth 1 -depth -type d -printf "%P\n"
+        find -L ${dir} -maxdepth 1 -depth -type d -printf "%P\n" | sed '/^$/d' | sort
     fi
 }
 list_files(){
     local dir=$1
     if [[ -d $dir ]];
     then
-        find -L ${dir} -maxdepth 1 -type f -printf "%P\n"
+        find -L ${dir} -maxdepth 1 -type f -printf "%P\n" | sed '/^$/d' | sort
     fi
 }
 list_installed(){
@@ -166,8 +193,10 @@ link(){
 link_all_files(){
     local source=$1
     local target=$2
-    echo -e "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
-    (cd $target; find -L $source -maxdepth 1 -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+    if [[ -d $source ]]; then
+        echo -e "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        (cd $target; find -L $source -maxdepth 1 -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+    fi
 }
 link_all_files_recursive(){
     local source=$1
@@ -181,15 +210,17 @@ link_all_files_recursive(){
 link_all_dirs(){
     local source=$1
     local target=$2
+    local padding=$3
     # non-recursive linking of folders #
-    for to_link in list_dirs $source
+    for to_link in $(list_dirs $source)
     do
-        link $source/$to_link $target/$to_link
+        link $source/$to_link $target/$to_link | sed "s/^/${space:0:$padding}/"
     done
 }
 copy_all_files_recursive(){
     local source=$1
     local target=$2
+    local padding=$3
     if [[ -d $source ]]; then
         cp -v -T -R $source $target | sed "s/^/${space:0:$padding}/"
     fi
@@ -197,6 +228,8 @@ copy_all_files_recursive(){
 fill_template(){
     local source=$1
     local target=$2
+    local padding=$3
+    local newpadding=$(( $padding + 5 ))
 
     if [[ ! $source == *.gitignore ]]; then
         echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
@@ -218,7 +251,11 @@ fill_template(){
 fill_template_recursive(){
     local source=$1
     local target=$2
-    echo -e "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
-    (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
-    (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" 5; done)
+    local padding=$3
+    local newpadding=$(( $padding + 5 ))
+    if [[ -d $source ]]; then
+        echo -e "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
+        (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
+    fi
 }

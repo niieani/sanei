@@ -1,0 +1,1 @@
+echo "Really? Make sure your hostname ($HOSTNAME) is correct!"
