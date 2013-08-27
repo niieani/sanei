@@ -1,183 +1,8 @@
 #!/bin/bash
-
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 if ! source $CURDIR/functions.sh; then
     exit 1
 fi
-
-sanei_install_dependencies(){
-    for var in "$@"
-    do
-        sanei_install "$var"
-    done
-}
-sanei_install(){
-    local module=$1
-
-    if [[ ! -z $module ]]; then
-        if [[ ! $REINSTALL ]]; then
-            if is_installed "$module"; then
-                info "You already installed: $module. Skipping..."
-                return 1
-            fi
-        else
-            local re="RE"
-        fi
-
-        if [[ -d $SCRIPT_DIR/modules/$module ]]; then
-        #echo -e "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
-            echo -e "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
-
-            if [[ -f $SCRIPT_DIR/modules/$module/question.sh ]]; then
-                askbreak "$($SCRIPT_DIR/modules/$module/question.sh)"
-            else
-                askbreak "Are you sure this is what you want?"
-            fi
-
-            if [[ -f $SCRIPT_DIR/modules/$module/install.sh ]]; then
-                source $SCRIPT_DIR/modules/$module/install.sh "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
-            else
-                set_installed $module
-            fi
-        else
-            error "Module $module does not exist."
-        fi
-    else
-        error "No module provided."
-    fi
-}
-sanei_update(){
-    # TODO: change $TEMPLATE_ROOT for a local variable passed to the function
-    local module=$1
-
-    if [[ ! -z $module && -d $SCRIPT_DIR/modules/$module ]]; then
-        echo -e "${LIGHTRED}UPDATING${RESET}: ${WHITE}${module}${RESET}."
-
-        # /etc #
-        # recursive linking #
-        link_all_files_recursive $SCRIPT_DIR/modules/$module/etc $TEMPLATE_ROOT/etc $PADDING_SIZE
-
-        # recursive copying and filling #
-        fill_template_recursive $SCRIPT_DIR/modules/$module/etc-template $TEMPLATE_ROOT/etc $PADDING_SIZE
-
-        # recursive copying #
-        copy_all_files_recursive $SCRIPT_DIR/modules/$module/etc-copy $TEMPLATE_ROOT/etc $PADDING_SIZE
-
-        # non-recursive linking of folders #
-        link_all_dirs $SCRIPT_DIR/modules/$module/etc-link $TEMPLATE_ROOT/etc $PADDING_SIZE
-
-        # others #
-        # copy /usr if exists #
-        copy_all_files_recursive $SCRIPT_DIR/modules/$module/usr $TEMPLATE_ROOT/usr $PADDING_SIZE
-
-        # dotfiles
-        if [[ -d $SCRIPT_DIR/modules/$module/root ]]; then
-            link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT/root $PADDING_SIZE
-            # link also folders #
-            link_all_dirs $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT/root $PADDING_SIZE
-        fi
-
-        if [[ -f $SCRIPT_DIR/modules/$module/post-update.sh ]]; then
-            source $SCRIPT_DIR/modules/$module/post-update.sh
-        fi
-    else
-        error "No module provided or module doesn't exist."
-    fi
-}
-sanei_updateall(){
-    # TODO: change $TEMPLATE_ROOT for a local variable passed to the function
-    for module in $(list_installed)
-    do
-        sanei_update $module
-    done
-}
-sanei_updateall_containers(){
-    # for each container that wants to have auto-updated links
-    containers=($(/usr/bin/lxc-ls -1))
-
-    for container in ${containers[@]}
-    do
-        TEMPLATE_ROOT=/lxc/$container/rootfs
-        sanei_updateall
-    done
-}
-
-dialog_setup_vars(){
-    : ${DIALOG=dialog}
-    : ${DIALOG_OK=0}
-    : ${DIALOG_CANCEL=1}
-    : ${DIALOG_HELP=2}
-    : ${DIALOG_EXTRA=3}
-    : ${DIALOG_ITEM_HELP=4}
-    : ${DIALOG_ESC=255}
-}
-
-dialog_setup_tempfile(){
-    tempfile=$(tempfile 2>/dev/null) || tempfile=/tmp/test$$
-    trap "rm -f $tempfile" 0 1 2 5 15
-}
-dialog_selector_generate(){
-    dialog_setup_vars
-    dialog_setup_tempfile
-    local title=$1
-    local text=$2
-    local values=$3
-
-    DIALOG_CMD="$DIALOG --backtitle "SANEi" --title '"$(echo $title)"' --checklist '"$(echo "$text \n\nPress SPACE to toggle a value on/off.")"' 20 50 10 $values 2> $tempfile"
-    eval $DIALOG_CMD
-    return $?
-}
-
-sanei_override(){
-    dialog_selector_generate 'MODULE OVERRIDE LIST' "Use this to override the installed \n\
-modules on the local system" "$(sanei_list_modules_with_status true)"
-    # dialog_selector_generate testa testa 'test test on'
-    retval=$?
-    case $retval in
-      $DIALOG_OK)
-        sanei_clean_installed_modules
-        for module in $(cat $tempfile); do
-            set_installed $(eval echo $module) norun noinfo # TODO FIX
-        done
-        ;;
-      $DIALOG_CANCEL)
-        info "Cancelled."
-        ;;
-      $DIALOG_ESC)
-        if test -s $tempfile ; then
-          cat $tempfile
-        else
-          info "ESC pressed."
-        fi
-        ;;
-    esac
-}
-
-sanei_list_modules(){
-    list_dirs $SCRIPT_DIR/modules
-}
-
-sanei_list_modules_with_status(){
-    local dialog_mode=$1
-    for module in $(sanei_list_modules); do
-        if [[ $dialog_mode ]]; then
-            printf "$module $(sanei_get_module_description $module) $(if is_installed $module; then printf on; else printf off; fi) "
-        else
-            echo -e $(if is_installed $module; then echo -e ${LIGHTBLUE}; else echo -e ${LIGHTRED}; fi) "$module" "${RESET}"
-        fi
-    done
-}
-
-sanei_clean_installed_modules(){
-    for module in $(sanei_list_modules); do
-        rm_installed $module
-    done
-}
-
-sanei_get_module_description(){
-    # TODO:
-    printf "\"\""
-}
 
 case ${ARGUMENTS[0]} in
     "install" )
@@ -195,14 +20,17 @@ case ${ARGUMENTS[0]} in
     "override" )
         sanei_override
         ;;
-    "configure" )
-        sanei_configure
-        ;;
-    "overridelxc" )
-        sanei_overridelxc
-        ;;
     "list" )
         sanei_list_modules_with_status
+        ;;
+    # NOT IMPLEMENTED YET:
+    "overridelxc" )
+        exit 0;
+        sanei_overridelxc
+        ;;
+    "configure" )
+        exit 0;
+        sanei_configure
         ;;
     * )
         echo "Welcome to SANEi 0.1"
@@ -210,7 +38,9 @@ case ${ARGUMENTS[0]} in
         echo "Available commands are:"
         echo "  install"
         echo "  update"
-        echo "  updatelxc"
+        echo "  updateall"
+        echo "  updateallcontainers"
+        echo "  override"
+        echo "  list"
         ;;
 esac
-
