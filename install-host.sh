@@ -10,16 +10,12 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 if [[ -z $SCRIPT_DIR ]]; then
-    DIR=/shared
+    SCRIPT_DIR=/shared
 fi
 
 # start
 apt-get update
 apt-get -y install software-properties-common byobu zsh git htop mc ufw
-
-# LXC
-add-apt-repository ppa:ubuntu-lxc/daily
-apt-get install lxc
 
 mkdir -p $SCRIPT_DIR
 
@@ -27,6 +23,8 @@ git clone https://github.com/niieani/lxc-shared.git $SCRIPT_DIR
 cd $SCRIPT_DIR
 (git submodule init && git submodule update && git submodule status)
 
+# TODO: setup should now ask to customize settings
+# TODO: ask for timezone
 echo "$TIMEZONE" | sudo tee /etc/timezone
 sudo dpkg-reconfigure --frontend noninteractive tzdata
 

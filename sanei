@@ -78,16 +78,15 @@ dialog_setup_tempfile(){
     tempfile=`tempfile 2>/dev/null` || tempfile=/tmp/test$$
     trap "rm -f $tempfile" 0 1 2 5 15
 }
+: ${DIALOG=dialog}
+: ${DIALOG_OK=0}
+: ${DIALOG_CANCEL=1}
+: ${DIALOG_HELP=2}
+: ${DIALOG_EXTRA=3}
+: ${DIALOG_ITEM_HELP=4}
+: ${DIALOG_ESC=255}
 
-    : ${DIALOG=dialog}
-    : ${DIALOG_OK=0}
-    : ${DIALOG_CANCEL=1}
-    : ${DIALOG_HELP=2}
-    : ${DIALOG_EXTRA=3}
-    : ${DIALOG_ITEM_HELP=4}
-    : ${DIALOG_ESC=255}
-
-sanei_configure(){
+sanei_override(){
     dialog_setup_vars
     dialog_setup_tempfile
 
@@ -124,6 +123,10 @@ Press SPACE to toggle an option on/off. \n\n\
     esac
 }
 
+sanei_list_modules(){
+    list_dirs $SCRIPT_DIR/modules
+}
+
 case function in
     "install" )
         sanei_install $2 $3
@@ -134,8 +137,17 @@ case function in
     "updatelxc" )
         sanei_update_containers
         ;;
+    "override" )
+        sanei_override
+        ;;
     "configure" )
         sanei_configure
+        ;;
+    "overridelxc" )
+        sanei_overridelxc
+        ;;
+    "list" )
+        sanei_list_modules
         ;;
     * )
         echo "Welcome to SANEi 0.1"
