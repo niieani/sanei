@@ -1,7 +1,4 @@
-#!/bin/bash
 
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-source $CURDIR/functions.sh
 askbreak "Really?"
 
 mkdir -p /var/log/php
@@ -11,8 +8,9 @@ apt-get update
 apt-get install -y nginx-light php5-fpm php5-gd php5-curl php-pear php-apc lsof
 ufw allow "nginx full"
 
-# observium support
+# observium support TODO: if
 apt-get install -y libwww-perl python
 #link /shared/modules/observium-client/local-www /opt/observium-client/local
 
-set_installed www
+set_installed nginx
+set_installed php

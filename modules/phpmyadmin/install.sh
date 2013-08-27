@@ -1,7 +1,4 @@
-#!/bin/bash
 
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-source $CURDIR/functions.sh
 askbreak "Really?"
 
 add-apt-repository -y ppa:nijel/phpmyadmin

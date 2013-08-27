@@ -1,8 +1,3 @@
-#!/bin/bash
-
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-source $CURDIR/functions.sh
-INSTALLING="observium-client"
 HOSTNAME=$(hostname --fqdn)
 askbreak "Really? Make sure your hostname ($HOSTNAME) is correct!"
 
@@ -20,10 +15,6 @@ mkdir -p /opt/observium-client/plugins
 apt-add-repository -y ppa:tmortensen/rsyslogv7
 apt-get update
 apt-get install -y rsyslog snmpd xinetd
-
-echo "*.* @@$OBSERVIUM_SERVER:$RSYSLOG_PORT" > $SCRIPT_DIR/etc/rsyslog.d/97-send-to-observium.conf
-
-#link_all_files ${SCRIPT_DIR}/etc/rsyslog.d /etc/rsyslog.d
 
 SNMP_COMMUNITY=$(cat /proc/sys/kernel/random/uuid)
 store_local_config "SNMP_COMMUNITY" $SNMP_COMMUNITY
@@ -56,7 +47,8 @@ else
 	ufw allow from $OBSERVIUM_SERVER to any port snmp
 fi
 
-source $CURDIR/add-ssh-key.sh
+$CURDIR/sanei install ssh-key
+
 echo "Enter your Observium SSH password:"
 ssh-copy-id "-p$SSH_PORT observium@$OBSERVIUM_SERVER"
 

@@ -1,7 +1,4 @@
-#!/bin/bash
 
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-source $CURDIR/functions.sh
 askbreak "Really?"
 
 apt-get install -y libpq-dev libpq5
@@ -19,4 +16,4 @@ echo "add password with \password root, exit with \quit"
 sudo -u postgres createuser --superuser root
 sudo -u postgres psql
 
-set_installed postgresql norun
+set_installed postgresql-server norun

@@ -1,7 +1,3 @@
-#!/bin/bash
-
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-source $CURDIR/functions.sh
 askbreak "Really?"
 
 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
@@ -15,4 +11,4 @@ ln -s /shared/run/mysqld /run/mysqld
 chown mysql.root /shared/run/mysqld
 service mysql start
 
-set_installed mysql norun
+set_installed mysql-server norun

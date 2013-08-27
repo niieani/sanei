@@ -66,26 +66,13 @@ asksure(){
     return $retval
 }
 askbreak(){
-    if [ -z $REINSTALL ] && [ $INSTALLING ]; then
-        if is_installed "$INSTALLING"; then
-            echo "You already installed: $INSTALLING. Skipping..."
+    if [[ -z $silent ]]; then
+        local text=$1
+        if ! asksure "$text"; then
             exit 1
         fi
     else
-        if [[ -z $silent ]]; then
-            local text=$1
-            if [[ $REINSTALL ]]; then RE="re"; fi
-            echo "Will ${RE}install: $INSTALLING."
-            if ! asksure "$text"; then
-                exit 1
-            fi
-        else
-            echo "Automatically answering YES to: $text"
-        fi
-
-        # we shouldn't leak these vars for scripts not declaring them
-        unset REINSTALL
-        unset INSTALLING
+        echo "$text (Y)."
     fi
 }
 is_installed(){
@@ -100,10 +87,9 @@ set_installed(){
     local norun=$2
     touch $TEMPLATE_ROOT/opt/.install.$what
     if [[ -z $norun ]]; then
-        source $CURDIR/create-links.sh
+        #source $CURDIR/create-links.sh
+        sanei_update
     fi
-	#if is_installed template-links; then source $CURDIR/create-template-links.sh; fi
-	#if is_installed host-links; then source $CURDIR/create-host-links.sh; fi
     echo "Set as installed: $what"
 }
 store_local_config(){
