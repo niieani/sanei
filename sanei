@@ -3,7 +3,7 @@
 CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
 source $CURDIR/functions.sh
 
-function=$1
+selected=$1
 
 sanei_install(){
     local module=$1
@@ -125,7 +125,7 @@ sanei_list_modules(){
     list_dirs $SCRIPT_DIR/modules
 }
 
-case function in
+case selected in
     "install" )
         sanei_install $2 $3
         ;;
