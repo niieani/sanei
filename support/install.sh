@@ -1,8 +1,11 @@
 #!/bin/bash
 # to start the installation do this:
-# wget -O - https://raw.github.com/niieani/lxc-shared/master/install-lxc-host.sh | bash
+# wget -O - https://raw.github.com/niieani/lxc-shared/master/support/install.sh | bash
 
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
+if [[ ! $(whoami) == "root" ]]; then
+    echo "You need to be root in order to install sanei."
+    exit 1
+fi
 
 read -p "Are you sure? " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -23,11 +26,8 @@ git clone https://github.com/niieani/lxc-shared.git $SCRIPT_DIR
 cd $SCRIPT_DIR
 (git submodule init && git submodule update && git submodule status)
 
-# TODO: setup should now ask to customize settings
-# TODO: ask for timezone
-echo "$TIMEZONE" | sudo tee /etc/timezone
-sudo dpkg-reconfigure --frontend noninteractive tzdata
+ln -s $SCRIPT_DIR/sanei /usr/bin/sanei
 
-set_installed lxc-host #should create the links
+sanei install timezone
 
 chsh -s /bin/zsh

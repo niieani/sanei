@@ -1,4 +1,4 @@
 #!/bin/sh
 #
 
-silent=y /shared/sanei updateallcontainers
+silent=y /shared/sanei lxc updateall

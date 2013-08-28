@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # load argument loading
-__IMPORT__BASE_PATH="$CURDIR/vendor/bash-modules/main/bash-modules/src/bash-modules"
-source $CURDIR/vendor/bash-modules/main/bash-modules/src/import.sh arguments log
+__IMPORT__BASE_PATH="$SCRIPT_DIR/vendor/bash-modules/main/bash-modules/src/bash-modules"
+source $SCRIPT_DIR/vendor/bash-modules/main/bash-modules/src/import.sh arguments log
 parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" -- "${@:+$@}"
 # parse_arguments "-n|--name)NAME;S" -- "$@" || {
 #   error "Cannot parse command line."
@@ -16,25 +16,25 @@ parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" -- "${@:+$
 # load configuration and save to a variable
 if [[ -z $CONFIG ]]; then
     ( set -o posix ; set ) >/tmp/variables.before
-    for file in $CURDIR/config/* ; do
+    for file in $SCRIPT_DIR/config/* ; do
       if [ -f "$file" ] ; then
-        if [[ $VERBOSE ]]; then echo "Loading config: $file"; fi
+        if [[ $VERBOSE ]]; then info "Loading config: $file"; fi
         source "$file"
       fi
     done
 
-    # load shared overrides
-    for file in $SCRIPT_DIR/.config-shared/* ; do
-      if [ -f "$file" ] ; then
-        if [[ $VERBOSE ]]; then echo "Loading shared config: $file"; fi
-        source "$file"
-      fi
-    done
+    ## load shared overrides
+    # for file in $SCRIPT_DIR/.config-shared/* ; do
+    #   if [ -f "$file" ] ; then
+    #     if [[ $VERBOSE ]]; then echo "Loading shared config: $file"; fi
+    #     source "$file"
+    #   fi
+    # done
 
     # load local overrides
     for file in /opt/.config/* ; do
       if [ -f "$file" ] ; then
-        if [[ $VERBOSE ]]; then echo "Loading local config: $file"; fi
+        if [[ $VERBOSE ]]; then info "Loading local config: $file"; fi
         source "$file"
       fi
     done
@@ -93,6 +93,12 @@ askbreak(){
         echo "$text (Y)."
     fi
 }
+print_config(){
+    for index in ${!ConfigArr[*]}
+    do
+        echo -e "${LIGHTBLUE}$index${RESET}: ${WHITE}${ConfigArr["$index"]}${RESET}"
+    done
+}
 is_installed(){
     local what=$1
     if [[ -e $TEMPLATE_ROOT/opt/.install.$what ]]; then
@@ -106,7 +112,7 @@ set_installed(){
     local noinfo=$3
     touch $TEMPLATE_ROOT/opt/.install.$what
     if [[ -z $norun ]]; then
-        #source $CURDIR/create-links.sh
+        #source $SCRIPT_DIR/create-links.sh
         sanei_update $what
     fi
     if [[ -z $noinfo ]]; then
@@ -130,9 +136,9 @@ store_local_config(){
 store_shared_config(){
     local var=$1
     local def=$2
-    mkdir -p $SCRIPT_DIR/.config-shared
-    echo "$var=\"$def\"" > $SCRIPT_DIR/.config-shared/$var
-    chmod 700 $SCRIPT_DIR/.config-shared/$var
+    mkdir -p $SCRIPT_DIR/config
+    echo "$var=\"$def\"" > $SCRIPT_DIR/config/50-$var
+    chmod 700 $SCRIPT_DIR/config/50-$var
     ConfigArr["${var}"]=${def}
 }
 backup_file(){
@@ -259,6 +265,28 @@ fill_template_recursive(){
         (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
     fi
 }
+enter_container(){
+    local container=$1
+
+    REAL_TEMPLATE_ROOT=$TEMPLATE_ROOT
+    REAL_BACKUP_DIR=$BACKUP_DIR
+    TEMPLATE_ROOT=/lxc/$container/rootfs
+    BACKUP_DIR=$TEMPLATE_ROOT/root/.backups
+    CONTAINER_NAME=$container
+    info "Entered container $CONTAINER_NAME, with root: $TEMPLATE_ROOT."
+}
+exit_container(){
+    TEMPLATE_ROOT=$REAL_TEMPLATE_ROOT
+    BACKUP_DIR=$REAL_BACKUP_DIR
+    info "Exited container: $CONTAINER_NAME."
+    CONTAINER_NAME=""
+}
+is_special_module_runtime(){
+    if [ -z $__SPECIAL ]; then
+        error "You can't install this module this way. "
+        return 1
+    fi
+}
 # dialog:
 
 dialog_setup_vars(){
@@ -291,13 +319,13 @@ sanei_install(){
     local module=$1
 
     if [[ ! -z $module ]]; then
-        if [[ ! $REINSTALL ]]; then
-            if is_installed "$module"; then
+        if is_installed "$module"; then
+            if [[ ! $REINSTALL ]]; then
                 info "You already installed: $module. Skipping..."
                 return 1
+            else
+                local re="RE"
             fi
-        else
-            local re="RE"
         fi
 
         if [[ -d $SCRIPT_DIR/modules/$module ]]; then
@@ -305,7 +333,7 @@ sanei_install(){
             echo -e "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
 
             if [[ -f $SCRIPT_DIR/modules/$module/question.sh ]]; then
-                askbreak "$($SCRIPT_DIR/modules/$module/question.sh)"
+                askbreak "$( $SCRIPT_DIR/modules/$module/question.sh ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}} )"
             else
                 askbreak "Are you sure this is what you want?"
             fi
@@ -323,9 +351,11 @@ sanei_install(){
     fi
 }
 sanei_install_dependencies(){
-    for var in "$@"
+    for module in "$@"
     do
-        sanei_install "$var"
+        if ! is_installed "$module"; then
+            sanei_install "$module"
+        fi
     done
 }
 sanei_update(){
@@ -379,8 +409,10 @@ sanei_updateall_containers(){
 
     for container in ${containers[@]}
     do
-        TEMPLATE_ROOT=/lxc/$container/rootfs
-        sanei_updateall
+        enter_container $container
+            #TEMPLATE_ROOT=/lxc/$container/rootfs
+            sanei_updateall
+        exit_container
     done
 }
 sanei_override(){

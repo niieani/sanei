@@ -1,6 +1,11 @@
 #!/bin/bash
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"` && pwd )"
-if ! source $CURDIR/functions.sh; then
+SCRIPT_DIR="$( cd "$( dirname "$( readlink -f "${BASH_SOURCE[0]}")" )" && pwd )"
+if ! source $SCRIPT_DIR/functions.sh; then
+    echo "ERROR: Missing functions file."
+    exit 1
+fi
+if [[ ! $(whoami) == "root" ]]; then
+    error "You need to be root in order to run sanei."
     exit 1
 fi
 
@@ -14,14 +19,41 @@ case ${ARGUMENTS[0]} in
     "updateall" )
         sanei_updateall
         ;;
-    "updateallcontainers" | "uac" )
-        sanei_updateall_containers
-        ;;
     "override" )
         sanei_override
         ;;
+    "setinstalled" )
+        set_installed ${ARGUMENTS[1]}
+        ;;
+    "showconfig" )
+        print_config
+        ;;
     "list" )
         sanei_list_modules_with_status
+        ;;
+    "module" )
+        if [[ ${ARGUMENTS[1]} && -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/${ARGUMENTS[2]}.sh ]]; then
+            source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/${ARGUMENTS[2]}.sh "${ARGUMENTS[@]:3:${#ARGUMENTS[@]}}"
+        else
+            error "No operation ${ARGUMENTS[2]} for module ${ARGUMENTS[1]}."
+        fi
+        ;;
+    "lxc" )
+        case ${ARGUMENTS[1]} in
+            "create" )
+                REINSTALL=true
+                __SPECIAL=true
+                sanei_install lxc-template "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
+                ;;
+            "updateall" )
+                sanei_updateall_containers
+                ;;
+            * )
+                echo "Available commands are:"
+                echo "  lxc updateall"
+                echo "  lxc create TEMPLATE_NAME"
+                ;;
+        esac
         ;;
     # NOT IMPLEMENTED YET:
     "overridelxc" )
@@ -33,14 +65,16 @@ case ${ARGUMENTS[0]} in
         sanei_configure
         ;;
     * )
-        echo "Welcome to SANEi 0.1"
+        echo "Welcome to SANEi 0.9"
         echo
         echo "Available commands are:"
         echo "  install"
-        echo "  update"
+        echo "  update [MODULE]"
         echo "  updateall"
-        echo "  updateallcontainers"
         echo "  override"
         echo "  list"
+        echo "  module [MODULE] [OPERATION]"
+        echo "  lxc updateall"
+        echo "  lxc create [TEMPLATE_NAME]"
         ;;
 esac

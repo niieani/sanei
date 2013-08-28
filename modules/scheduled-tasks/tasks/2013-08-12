@@ -1,9 +1,9 @@
 #!/bin/bash
 
-CURDIR="$( cd `dirname "${BASH_SOURCE[0]}"`/../.. && pwd )"
+SCRIPT_DIR="$( cd `dirname "${BASH_SOURCE[0]}"`/../.. && pwd )"
 THIS=`basename $0`
 silent=yes
-source $CURDIR/functions.sh
+source $SCRIPT_DIR/functions.sh
 
 if ! is_installed $THIS; then
     echo "$now: it works!" >> /shared/tmp/it_works
