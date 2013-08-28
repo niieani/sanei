@@ -57,10 +57,12 @@ case ${ARGUMENTS[0]} in
         ;;
     # NOT IMPLEMENTED YET:
     "overridelxc" )
+        todo "override lxc"
         exit 0;
         sanei_overridelxc
         ;;
     "configure" )
+        todo "changing configuration"
         exit 0;
         sanei_configure
         ;;

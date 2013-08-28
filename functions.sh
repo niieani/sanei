@@ -63,11 +63,14 @@ IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ pr
 
 # globals
 space="|    |    |    |    |    |"
-LIGHTGREEN="\033[1;32m"
-LIGHTBLUE="\033[1;34m"
-LIGHTRED="\033[1;31m"
-WHITE="\033[0;37m"
-RESET="\033[0;00m"
+LIGHTGREEN=$'\033[1;32m'
+LIGHTBLUE=$'\033[1;34m'
+LIGHTRED=$'\033[1;31m'
+GREEN=$'\033[0;32m'
+BLUE=$'\033[0;34m'
+RED=$'\033[0;31m'
+WHITE=$'\033[0;37m'
+RESET=$'\033[0;00m'
 PADDING_SIZE=5
 
 asksure(){
@@ -153,7 +156,7 @@ backup_file(){
     if [[ -e $fullpath || -d $fullpath || -h $fullpath ]];
 	then
 	    # uncomment for verbose backup
-	    #echo "${space:0:$padding}Backing up: $fullpath => $backup/$now$targetdir";
+	    if [[ $VERBOSE == 3 ]]; then echo "${space:0:$padding}Backing up: $fullpath => $backup/$now$targetdir"; fi
 	    mkdir -p $backup/$now$targetdir | sed "s/^/${space:0:$padding}/";
 	    mv $fullpath $backup/$now$fullpath | sed "s/^/${space:0:$padding}/";
     fi
@@ -191,7 +194,7 @@ link(){
 
     if [[ ! $source == *.gitignore ]]; 
     then
-        echo -e "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        if [[ $VERBOSE == 1 ]]; then echo -e "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         backup_file $target "" $newpadding
         ln -nfs "$source" "$target" | sed "s/^/${space:0:$newpadding}/"
     fi
@@ -200,7 +203,7 @@ link_all_files(){
     local source=$1
     local target=$2
     if [[ -d $source ]]; then
-        echo -e "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        if [[ $VERBOSE == 1 ]]; then echo -e "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         (cd $target; find -L $source -maxdepth 1 -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
     fi
 }
@@ -208,7 +211,7 @@ link_all_files_recursive(){
     local source=$1
     local target=$2
     if [[ -d $source ]]; then
-        echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        if [[ $VERBOSE == 1 ]]; then echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
     fi
@@ -223,12 +226,18 @@ link_all_dirs(){
         link $source/$to_link $target/$to_link | sed "s/^/${space:0:$padding}/"
     done
 }
+add_verbosity_opt(){
+    local at_level=$1
+    if [[ $VERBOSE == $at_level ]]; then
+        echo "-v"
+    fi
+}
 copy_all_files_recursive(){
     local source=$1
     local target=$2
     local padding=$3
     if [[ -d $source ]]; then
-        cp -v -T -R $source $target | sed "s/^/${space:0:$padding}/"
+        cp $(add_verbosity_opt 1) -T -R $source $target | sed "s/^/${space:0:$padding}/"
     fi
 }
 fill_template(){
@@ -238,7 +247,7 @@ fill_template(){
     local newpadding=$(( $padding + 5 ))
 
     if [[ ! $source == *.gitignore ]]; then
-        echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        if [[ $VERBOSE == 2 ]]; then echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         backup_file $target "" $newpadding
         cp -a $source $target
 
@@ -260,7 +269,7 @@ fill_template_recursive(){
     local padding=$3
     local newpadding=$(( $padding + 5 ))
     if [[ -d $source ]]; then
-        echo -e "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"
+        if [[ $VERBOSE == 1 ]]; then echo -e "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
     fi
