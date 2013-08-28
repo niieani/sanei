@@ -45,7 +45,7 @@ watch=(notme)
 #  fi
 
 # lxc completion from: http://www.mail-archive.com/lxc-devel@lists.sourceforge.net/msg00151.html
-fpath=($fpath /shared/root/zsh-lxc-completion)
+fpath=($fpath /shared/modules/dotfiles/root/.addons/zsh-lxc-completion)
 autoload -U compinit
 compinit
 

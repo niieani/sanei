@@ -41,6 +41,8 @@ enter_container $TEMPLATE_NAME
 		link $SCRIPT_DIR/modules/lxc-container/etc-link/apt-$DISTRO $SCRIPT_DIR/modules/lxc-container/etc/apt; 
 	fi
 
+	link $SCRIPT_DIR/sanei $TEMPLATE_ROOT/usr/bin/sanei
+	
 	# inside of the new template
 	# set_installed lxc-common
 	# set_installed lxc-container
