@@ -1,5 +1,5 @@
-#apt-get -y install 12345
-echo "TODO: Actual installation."
+#apt-get $(add_silent_opt) install 12345
+todo "Actual installation."
 
 # TODO (in home?):
 #useradd -d /opt/observium -g www-data -M -s /bin/sh observium

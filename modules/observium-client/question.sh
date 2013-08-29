@@ -1,1 +1,1 @@
-echo "Really? Make sure your hostname ($HOSTNAME) is correct!"
+echo "Really? Make sure your hostname ($LOCAL_HOSTNAME) is correct!"

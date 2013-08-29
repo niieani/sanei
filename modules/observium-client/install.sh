@@ -9,7 +9,7 @@ mkdir -p /opt/observium-client/plugins
 # fix hostname problem with rsyslog
 apt-add-repository -y ppa:tmortensen/rsyslogv7
 apt-get update
-apt-get install -y rsyslog snmpd xinetd
+apt-get $(add_silent_opt) install rsyslog snmpd xinetd
 
 SNMP_COMMUNITY=$(cat /proc/sys/kernel/random/uuid)
 store_local_config "SNMP_COMMUNITY" $SNMP_COMMUNITY
@@ -23,7 +23,7 @@ if [[ -z $EXTERNAL ]]; then
 	store_shared_config "SNMP_PORT_LAST" $SNMP_REMOTE_PORT
 	store_local_config "SNMP_REMOTE_PORT" $SNMP_REMOTE_PORT
 	#remote_ufw_command="ufw allow from 127.0.0.1 app \"Observium Syslog\""
-	remote_hosts_set="sudo $SCRIPT_DIR/modules/observium-server/add-host-via-ssh.sh $HOSTNAME $IP"
+	remote_hosts_set="sudo $SCRIPT_DIR/modules/observium-server/add-host-via-ssh.sh $LOCAL_HOSTNAME $IP"
 	set_installed observium-client-via-ssh norun
 else
 	SNMP_REMOTE_PORT=161
@@ -34,7 +34,7 @@ set_installed observium-client
 
 # TODO: BUG - won't work via SSH
 if [[ -z $EXTERNAL ]]; then
-	apt-get install -y autossh
+	apt-get $(add_silent_opt) install autossh
 	ufw allow from 127.0.0.1 app "Observium Agent"
 	ufw allow from 127.0.0.1 to any port snmp
 else
@@ -50,6 +50,6 @@ ssh-copy-id "-p$SSH_PORT observium@$OBSERVIUM_SERVER"
 service snmpd restart
 service rsyslog restart
 
-ssh observium@$OBSERVIUM_SERVER -p $SSH_PORT "${remote_hosts_set}; ${remote_ufw_command}; /opt/observium/addhost.php $HOSTNAME $SNMP_COMMUNITY v2c $SNMP_REMOTE_PORT tcp"
+ssh observium@$OBSERVIUM_SERVER -p $SSH_PORT "${remote_hosts_set}; ${remote_ufw_command}; /opt/observium/addhost.php $LOCAL_HOSTNAME $SNMP_COMMUNITY v2c $SNMP_REMOTE_PORT tcp"
 
 service autossh-snmp start

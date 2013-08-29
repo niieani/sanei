@@ -1,4 +1,4 @@
-apt-get -y install openssh-server
+apt-get $(add_silent_opt) install openssh-server
 
 set_installed ssh
 

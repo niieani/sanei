@@ -18,7 +18,7 @@ fi
 
 # start
 apt-get update
-apt-get -y install software-properties-common byobu zsh git htop mc ufw
+apt-get $(add_silent_opt) install software-properties-common byobu zsh git htop mc ufw dialog
 
 mkdir -p $SCRIPT_DIR
 

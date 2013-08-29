@@ -6,6 +6,6 @@ silent=yes
 source $SCRIPT_DIR/functions.sh
 
 if ! is_installed $THIS; then
-    echo "$now: it works!" >> /shared/tmp/it_works
+    echo "$TIME_NOW: it works!" >> /shared/tmp/it_works
     set_installed $THIS
 fi

@@ -1,4 +1,4 @@
 sanei_install_dependencies php
-apt-get -y install php5-pgsql
+apt-get $(add_silent_opt) install php5-pgsql
 
 set_installed php+postgresql

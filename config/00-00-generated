@@ -1,0 +1,4 @@
+# generated variables
+TIME_NOW=$(date +'%Y_%m_%d_(%H_%M)')
+LOCAL_HOSTNAME=$(hostname --fqdn)
+IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')

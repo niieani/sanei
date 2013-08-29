@@ -1,0 +1,18 @@
+set imap_user = "@@GMAIL_LOGIN@@@@@GMAIL_APPS_DOMAIN@@"
+set imap_pass = "@@GMAIL_PASS@@"
+
+set smtp_url = "smtp://@@GMAIL_LOGIN@@@smtp.gmail.com:587/"
+set smtp_pass = "@@GMAIL_PASS@@"
+set from = "@@GMAIL_LOGIN@@@@@GMAIL_APPS_DOMAIN@@"
+set realname = "SANEi @ @@LOCAL_HOSTNAME@@"
+
+set folder = "imaps://imap.gmail.com:993"
+set spoolfile = "+INBOX"
+set postponed="+[Gmail]/Drafts"
+set trash = "+[Gmail]/Trash"
+
+set header_cache=~/.mutt/cache/headers
+set message_cachedir=~/.mutt/cache/bodies
+set certificate_file=~/.mutt/certificates
+
+set move = no

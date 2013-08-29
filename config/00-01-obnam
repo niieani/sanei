@@ -1,0 +1,6 @@
+#!/bin/bash
+#OBNAM_REPOSITORY="sftp://backups@backupserver.com:${SSH_PORT}/~"
+OBNAM_REPOSITORY=""
+OBNAM_CONTAINER_EXCLUDE_PREFIX="^\/var\/lib\/lxc\/[\x00-\x7F][^\/]+"
+OBNAM_CONTAINER_EXCLUDE="${OBNAM_CONTAINER_EXCLUDE_PREFIX}\/shared, ${OBNAM_CONTAINER_EXCLUDE_PREFIX}\/tmp, ^\/var\/lib\/lxc\/[\x00-\x7F]+\/cache\/"
+OBNAM_HOST_EXCLUDE="^\/var\/lib\/lxc, ^\/mnt, ^\/tmp"

@@ -56,11 +56,6 @@ if [[ -z $CONFIG ]]; then
     done <<< "$CONFIG"
 fi
 
-# variables
-if [[ -z $now ]]; then now=`date +'%Y_%m_%d_(%H_%M)'`; fi
-HOSTNAME=$(hostname --fqdn)
-IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-
 # globals
 space="|    |    |    |    |    |"
 LIGHTGREEN=$'\033[1;32m'
@@ -99,7 +94,7 @@ askbreak(){
 print_config(){
     for index in ${!ConfigArr[*]}
     do
-        echo -e "${LIGHTBLUE}$index${RESET}: ${WHITE}${ConfigArr["$index"]}${RESET}"
+        echo "${LIGHTBLUE}$index${RESET}: ${WHITE}${ConfigArr["$index"]}${RESET}"
     done
 }
 is_installed(){
@@ -128,21 +123,45 @@ rm_installed(){
         rm $TEMPLATE_ROOT/opt/.install.$what
     fi
 }
+store_memory_config(){
+    local var=$1
+    local def=$2
+    export $var=$def
+    ConfigArr["${var}"]="${def}"
+}
+store_config_file(){
+    local var=$1
+    local def=$2
+    local path=$3
+    mkdir -p $SCRIPT_DIR/config
+    echo "$var=\"$def\"" > "${path}${var}"
+    chmod 700 "${path}${var}"
+    store_memory_config "$var" "$def"
+}
 store_local_config(){
     local var=$1
     local def=$2
     mkdir -p $TEMPLATE_ROOT/opt/.config
-    echo "$var=\"$def\"" > $TEMPLATE_ROOT/opt/.config/$var
-    chmod 700 $TEMPLATE_ROOT/opt/.config/$var
-    ConfigArr["${var}"]=${def}
+    store_config_file "$var" "$def" "$TEMPLATE_ROOT/opt/.config/"
 }
 store_shared_config(){
     local var=$1
     local def=$2
     mkdir -p $SCRIPT_DIR/config
-    echo "$var=\"$def\"" > $SCRIPT_DIR/config/50-$var
-    chmod 700 $SCRIPT_DIR/config/50-$var
-    ConfigArr["${var}"]=${def}
+    store_config_file "$var" "$def" "$SCRIPT_DIR/config/50-"
+}
+apt_install(){
+    local packages="$1"
+    local ppa="$2"
+    local norecommends="$3"
+    if [[ ! -z $ppa ]]; then
+        add-apt-repository $(add_silent_opt) $ppa
+        apt-get update
+    fi
+    if $norecommends; then
+        norecommends="--no-install-recommends"
+    fi
+    apt-get $(add_silent_opt) "$norecommends" install "$packages"
 }
 backup_file(){
     local file=$1
@@ -156,9 +175,9 @@ backup_file(){
     if [[ -e $fullpath || -d $fullpath || -h $fullpath ]];
 	then
 	    # uncomment for verbose backup
-	    if [[ $VERBOSE == 3 ]]; then echo "${space:0:$padding}Backing up: $fullpath => $backup/$now$targetdir"; fi
-	    mkdir -p $backup/$now$targetdir | sed "s/^/${space:0:$padding}/";
-	    mv $fullpath $backup/$now$fullpath | sed "s/^/${space:0:$padding}/";
+	    if [[ $VERBOSE == 3 ]]; then echo "${space:0:$padding}Backing up: $fullpath => $backup/$TIME_NOW$targetdir"; fi
+	    mkdir -p $backup/$TIME_NOW$targetdir | sed "s/^/${space:0:$padding}/";
+	    mv $fullpath $backup/$TIME_NOW$fullpath | sed "s/^/${space:0:$padding}/";
     fi
 }
 list_dirs_recursive(){
@@ -194,7 +213,7 @@ link(){
 
     if [[ ! $source == *.gitignore ]]; 
     then
-        if [[ $VERBOSE == 1 ]]; then echo -e "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE == 1 ]]; then info "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         backup_file $target "" $newpadding
         ln -nfs "$source" "$target" | sed "s/^/${space:0:$newpadding}/"
     fi
@@ -203,7 +222,7 @@ link_all_files(){
     local source=$1
     local target=$2
     if [[ -d $source ]]; then
-        if [[ $VERBOSE == 1 ]]; then echo -e "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE == 1 ]]; then info "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         (cd $target; find -L $source -maxdepth 1 -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
     fi
 }
@@ -211,7 +230,7 @@ link_all_files_recursive(){
     local source=$1
     local target=$2
     if [[ -d $source ]]; then
-        if [[ $VERBOSE == 1 ]]; then echo -e "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE == 1 ]]; then info "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
     fi
@@ -228,8 +247,17 @@ link_all_dirs(){
 }
 add_verbosity_opt(){
     local at_level=$1
+    local param=$2
+    if [[ -z $param ]]; then param="-v"; fi
     if [[ $VERBOSE == $at_level ]]; then
-        echo "-v"
+        echo $param
+    fi
+}
+add_silent_opt(){
+    local param=$1
+    if [[ -z $param ]]; then param="-y"; fi
+    if [[ $SILENT == true ]]; then
+        echo $param
     fi
 }
 copy_all_files_recursive(){
@@ -247,7 +275,7 @@ fill_template(){
     local newpadding=$(( $padding + 5 ))
 
     if [[ ! $source == *.gitignore ]]; then
-        if [[ $VERBOSE == 2 ]]; then echo -e "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE == 2 ]]; then info "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         backup_file $target "" $newpadding
         cp -a $source $target
 
@@ -269,7 +297,7 @@ fill_template_recursive(){
     local padding=$3
     local newpadding=$(( $padding + 5 ))
     if [[ -d $source ]]; then
-        if [[ $VERBOSE == 1 ]]; then echo -e "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE == 1 ]]; then info "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
     fi
@@ -282,13 +310,13 @@ enter_container(){
     TEMPLATE_ROOT=/lxc/$container/rootfs
     BACKUP_DIR=$TEMPLATE_ROOT/root/.backups
     CONTAINER_NAME=$container
-    info "Entered container $CONTAINER_NAME, with root: $TEMPLATE_ROOT."
+    info "Entered container ${LIGHTBLUE}$CONTAINER_NAME${RESET}, with root: ${WHITE}$TEMPLATE_ROOT${RESET}."
 }
 exit_container(){
     TEMPLATE_ROOT=$REAL_TEMPLATE_ROOT
     BACKUP_DIR=$REAL_BACKUP_DIR
-    info "Exited container: $CONTAINER_NAME."
-    CONTAINER_NAME=""
+    info "Exited container ${LIGHTBLUE}$CONTAINER_NAME${RESET}."
+    unset CONTAINER_NAME
 }
 is_special_module_runtime(){
     if [ -z $__SPECIAL ]; then
@@ -296,8 +324,35 @@ is_special_module_runtime(){
         return 1
     fi
 }
+generate_passphrase() {
+    # http://cl4ssic4l.wordpress.com/2011/05/12/generate-strong-password-inside-bash-shell/
+    local l=$1
+    [ "$l" == "" ] && l=20
+    tr -dc A-Za-z0-9_ < /dev/urandom | head -c ${l} | xargs
+}
+is_empty_config(){
+    # http://stackoverflow.com/questions/228544/how-to-tell-if-a-string-is-not-defined-in-a-bash-shell-script
+    local varname_to_test=$1
+    if [ -z "${!varname_to_test}" ] && [ "${!varname_to_test+test}" = "test" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+non_default_setting_needed(){
+    local error=false
+    for var in "$@"
+    do
+        if is_empty_config "$var"; then
+            error "You need to set ${WHITE}${var}${RESET} first."
+            error=true
+        fi
+    done
+    if $error; then
+        exit 1
+    fi
+}
 # dialog:
-
 dialog_setup_vars(){
     : ${DIALOG=dialog}
     : ${DIALOG_OK=0}
@@ -328,18 +383,18 @@ sanei_install(){
     local module=$1
 
     if [[ ! -z $module ]]; then
-        if is_installed "$module"; then
-            if [[ ! $REINSTALL ]]; then
-                info "You already installed: $module. Skipping..."
-                return 1
-            else
-                local re="RE"
-            fi
-        fi
-
         if [[ -d $SCRIPT_DIR/modules/$module ]]; then
-        #echo -e "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
-            echo -e "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
+            if is_installed "$module"; then
+                if [[ ! $REINSTALL ]]; then
+                    info "You already installed: $module. Skipping..."
+                    return 1
+                else
+                    local re="RE"
+                fi
+            fi
+
+            #info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
+            info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
 
             if [[ -f $SCRIPT_DIR/modules/$module/question.sh ]]; then
                 askbreak "$( $SCRIPT_DIR/modules/$module/question.sh ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}} )"
@@ -363,6 +418,7 @@ sanei_install_dependencies(){
     for module in "$@"
     do
         if ! is_installed "$module"; then
+            info "In order to continue, $module needs to be installed."
             sanei_install "$module"
         fi
     done
@@ -372,7 +428,7 @@ sanei_update(){
     local module=$1
 
     if [[ ! -z $module && -d $SCRIPT_DIR/modules/$module ]]; then
-        echo -e "${LIGHTRED}UPDATING${RESET}: ${WHITE}${module}${RESET}."
+        info "${LIGHTRED}UPDATING${RESET}: ${WHITE}${module}${RESET}."
 
         # /etc #
         # recursive linking #
@@ -392,6 +448,8 @@ sanei_update(){
         copy_all_files_recursive $SCRIPT_DIR/modules/$module/usr $TEMPLATE_ROOT/usr $PADDING_SIZE
 
         # dotfiles
+        fill_template_recursive $SCRIPT_DIR/modules/$module/root-template $TEMPLATE_ROOT/root $PADDING_SIZE
+
         if [[ -d $SCRIPT_DIR/modules/$module/root ]]; then
             link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT/root $PADDING_SIZE
             # link also folders #
@@ -458,7 +516,7 @@ sanei_list_modules_with_status(){
         if [[ $dialog_mode ]]; then
             printf "$module $(sanei_get_module_description $module) $(if is_installed $module; then printf on; else printf off; fi) "
         else
-            echo -e $(if is_installed $module; then echo -e ${LIGHTBLUE}; else echo -e ${LIGHTRED}; fi) "$module" "${RESET}"
+            echo $(if is_installed $module; then echo -e ${LIGHTBLUE}; else echo -e ${LIGHTRED}; fi) "$module" "${RESET}"
         fi
     done
 }

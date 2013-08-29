@@ -1,0 +1,7 @@
+#!/bin/bash
+SCRIPT_DIR=/shared
+BACKUP_DIR=/root/.backup
+DISTRO=raring
+TIMEZONE=Europe/Warsaw
+SSH_PORT=1234
+SSH_PERMITROOTLOGIN=no

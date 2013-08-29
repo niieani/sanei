@@ -1,0 +1,7 @@
+#!/bin/bash
+OBSERVIUM_SERVER="127.0.0.1"
+OBSERVIUM_HOSTNAME="localhost"
+RSYSLOG_PORT=514
+SNMP_CONTACT="root <your@email.com>"
+SNMP_LOCATION="London, United Kingdom"
+SNMP_PORT_START=16001

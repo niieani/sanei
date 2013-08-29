@@ -1,4 +1,4 @@
 sanei_install_dependencies php
-apt-get -y install php5-mysqlnd
+apt-get $(add_silent_opt) install php5-mysqlnd
 
 set_installed php+mysql

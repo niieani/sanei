@@ -1,0 +1,3 @@
+#!/bin/bash
+PMA_HOSTNAME="pma"
+PMA_PORT="9000"
