@@ -163,6 +163,14 @@ apt_install(){
     fi
     apt-get $(add_silent_opt) "$norecommends" install "$packages"
 }
+is_apt_installed(){
+    local package="$1"
+    if $(dpkg -s "$package"); then
+        return 0
+    else
+        return 1
+    fi
+}
 backup_file(){
     local file=$1
     local backup=$2
@@ -419,7 +427,15 @@ sanei_install_dependencies(){
     do
         if ! is_installed "$module"; then
             info "In order to continue, $module needs to be installed."
-            sanei_install "$module"
+            if [[ $module == apt\:* ]]; then
+                $apt_package=$(echo "$module" | cut -d "apt:" -f2)
+                if ! is_apt_installed "$apt_package"; then
+                    apt_install "$apt_package"
+                fi
+                # set_installed "$module"
+            else
+                sanei_install "$module"
+            fi
         fi
     done
 }
