@@ -165,7 +165,7 @@ apt_install(){
 }
 is_apt_installed(){
     local package="$1"
-    if $(dpkg -s "$package"); then
+    if (dpkg -s "$package" >/dev/null); then
         return 0
     else
         return 1
@@ -426,14 +426,15 @@ sanei_install_dependencies(){
     for module in "$@"
     do
         if ! is_installed "$module"; then
-            info "In order to continue, $module needs to be installed."
             if [[ $module == apt\:* ]]; then
-                $apt_package=$(echo "$module" | cut -d "apt:" -f2)
+                apt_package=$(echo "$module" | cut -c "5-")
                 if ! is_apt_installed "$apt_package"; then
+                    info "In order to continue, apt package $module needs to be installed."
                     apt_install "$apt_package"
                 fi
                 # set_installed "$module"
             else
+                info "In order to continue, $module needs to be installed."
                 sanei_install "$module"
             fi
         fi
