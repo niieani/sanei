@@ -161,7 +161,7 @@ apt_install(){
     if $norecommends; then
         norecommends="--no-install-recommends"
     fi
-    apt-get $(add_silent_opt) "$norecommends" install "$packages"
+    apt-get $(add_silent_opt) "$norecommends" install $packages
 }
 is_apt_installed(){
     local package="$1"

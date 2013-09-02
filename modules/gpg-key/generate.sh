@@ -58,6 +58,7 @@ gpg --allow-secret-key-import --import $gpg_temp_path.sec.gpg
 # --secret-keyring ${gpg_temp_path}.sec.gpg --list-secret-keys
 
 key_id=${BASH_REMATCH[1]}
+mkdir -p "$GPG_KEY_ID_PATH"
 echo $key_id > "$GPG_KEY_ID_PATH/$gpg_name"
 
 echo $passphrase_string | mutt -a "$gpg_temp_path.sec.gpg" -a "$gpg_temp_path.pub.gpg" -s "GPG Key: $key_id for $gpg_name" -- $GPG_KEY_RECIPIENT
