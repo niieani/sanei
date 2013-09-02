@@ -1,8 +1,8 @@
 set imap_user = "@@GMAIL_LOGIN@@@@@GMAIL_APPS_DOMAIN@@"
-set imap_pass = "@@GMAIL_PASS@@"
+set imap_pass = "@@GMAIL_PASSWORD@@"
 
 set smtp_url = "smtp://@@GMAIL_LOGIN@@@smtp.gmail.com:587/"
-set smtp_pass = "@@GMAIL_PASS@@"
+set smtp_pass = "@@GMAIL_PASSWORD@@"
 set from = "@@GMAIL_LOGIN@@@@@GMAIL_APPS_DOMAIN@@"
 set realname = "SANEi @ @@LOCAL_HOSTNAME@@"
 
