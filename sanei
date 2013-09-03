@@ -9,6 +9,7 @@ if [[ ! $(whoami) == "root" ]]; then
     exit 1
 fi
 
+# TODO: make it into a function call
 case ${ARGUMENTS[0]} in
     "install" )
         sanei_install "${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}"
@@ -52,9 +53,16 @@ case ${ARGUMENTS[0]} in
         sanei_list_modules_with_status
         ;;
     "module" )
+        # TODO: make this into a function call
         if [[ ${ARGUMENTS[1]} && -d $SCRIPT_DIR/modules/${ARGUMENTS[1]} ]]; then
             if [[ -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/${ARGUMENTS[2]}.sh ]]; then
                 MODULE_DIR=$SCRIPT_DIR/modules/${ARGUMENTS[1]}
+                if [[ -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/functions.sh ]]; then
+                    source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/functions.sh
+                fi
+                if [[ -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/dependencies.sh ]]; then
+                    source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/dependencies.sh
+                fi
                 source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/${ARGUMENTS[2]}.sh "${ARGUMENTS[@]:3:${#ARGUMENTS[@]}}" ""
             else
                 if [[ ${ARGUMENTS[2]} ]]; then
