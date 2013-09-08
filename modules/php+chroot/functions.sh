@@ -19,7 +19,7 @@ save_website(){
 }
 rm_website(){
 	username=$1
-	for website in $(list_files_recursive $WEBSITES_DIR | grep "$username")
+	for website in $(list_files_recursive "$WEBSITES_DIR" | grep "$username")
 	do
 		rm -f $WEBSITES_DIR/$website
 	done

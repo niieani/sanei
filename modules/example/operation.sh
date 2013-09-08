@@ -1,0 +1,1 @@
+info "example module"

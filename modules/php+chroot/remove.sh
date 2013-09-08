@@ -28,7 +28,7 @@ unmount_website $USERNAME
 # Remove the user and their home directory
 userdel -rf $USERNAME
 # Delete the users group from the system
-groupdel $USERNAME
+# groupdel $USERNAME
  
 # Delete the virtual host config
 rm -f $NGINX_CONFIG/$DOMAIN.conf

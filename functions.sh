@@ -92,6 +92,7 @@ askbreak(){
     fi
 }
 print_config(){
+    local index
     for index in ${!ConfigArr[*]}
     do
         echo "${LIGHTBLUE}$index${RESET}: ${WHITE}${ConfigArr["$index"]}${RESET}"
@@ -99,7 +100,7 @@ print_config(){
 }
 is_installed(){
     local what=$1
-    if [[ -e $TEMPLATE_ROOT$SANEI_DIR/.install.$what ]]; then
+    if [[ -e "$TEMPLATE_ROOT$SANEI_DIR/.install.$what" ]]; then
 	    return 0
     fi
     return 1
@@ -151,7 +152,7 @@ store_shared_config(){
     store_config_file "$var" "$def" "$SCRIPT_DIR/config/50-"
 }
 apt_install(){
-    if [[ ! $SKIPAPT -eq true ]]; then
+    if [[ -z $SKIPAPT || $SKIPAPT -ne true ]]; then
         local packages="$1"
         local ppa="$2"
         local norecommends="$3"
@@ -257,6 +258,7 @@ link_all_dirs(){
     local target=$2
     local padding=$3
     # non-recursive linking of folders #
+    local to_link
     for to_link in $(list_dirs $source)
     do
         link $source/$to_link $target/$to_link | sed "s/^/${space:0:$padding}/"
@@ -290,6 +292,7 @@ fill_template(){
     local target=$2
     local padding=$3
     local newpadding=$(( $padding + 5 ))
+    local key
 
     if [[ ! $source == *.gitignore ]]; then
         if [[ $VERBOSE == 2 ]]; then info "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
@@ -362,6 +365,7 @@ is_empty_config(){
 }
 non_default_setting_needed(){
     local error=false
+    local var
     for var in "$@"
     do
         if is_empty_config "$var"; then
@@ -421,7 +425,7 @@ sanei_invoke_module_script(){
                 error "No operation $2 for module $1."
             fi
             echo "Available commands are:"
-            list_files $SCRIPT_DIR/modules/$1 | grep "\.sh" | sed s/.sh$// | sed "s/^/  /"
+            list_files $SCRIPT_DIR/modules/$1 | grep "\.sh$" | sed s/.sh$// | sed "s/^/  /"
         fi
     fi
 }
@@ -436,11 +440,11 @@ sanei_install(){
                     return 1
                 else
                     local re="RE"
+                    rm_installed "$module"
                 fi
             fi
 
-            #info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
-            info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module.${RESET}"
+            info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
             if [[ -f $SCRIPT_DIR/modules/$module/question.sh ]]; then
                 askbreak "$( $SCRIPT_DIR/modules/$module/question.sh ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}} )"
@@ -449,7 +453,7 @@ sanei_install(){
             fi
 
             if [[ -f $SCRIPT_DIR/modules/$module/install.sh ]]; then
-                sanei_invoke_module_script "$module" install "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
+                sanei_invoke_module_script "$module" install ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}
                 if ! is_installed $module; then
                     set_installed $module
                 fi
@@ -473,6 +477,8 @@ sanei_create_module_dir(){
     fi
 }
 sanei_resolve_dependencies(){
+    REAL_LOCAL_MODULE_DIR=$LOCAL_MODULE_DIR
+    local module
     for module in "$@"
     do
         if ! is_installed "$module"; then
@@ -489,6 +495,7 @@ sanei_resolve_dependencies(){
             fi
         fi
     done
+    LOCAL_MODULE_DIR=$REAL_LOCAL_MODULE_DIR
 }
 sanei_update(){
     # TODO: change $TEMPLATE_ROOT for a local variable passed to the function
@@ -542,6 +549,7 @@ sanei_update(){
 }
 sanei_updateall(){
     # TODO: change $TEMPLATE_ROOT for a local variable passed to the function
+    local module
     for module in $(list_installed)
     do
         sanei_update $module
@@ -549,7 +557,7 @@ sanei_updateall(){
 }
 sanei_updateall_containers(){
     # for each container that wants to have auto-updated links
-    containers=($(/usr/bin/lxc-ls -1))
+    local containers=($(/usr/bin/lxc-ls -1))
 
     for container in ${containers[@]}
     do
@@ -560,6 +568,8 @@ sanei_updateall_containers(){
     done
 }
 sanei_override(){
+    local module
+
     dialog_selector_generate 'MODULE OVERRIDE LIST' "Use this to override the installed \n\
 modules on the local system" "$(sanei_list_modules_with_status true)"
     # dialog_selector_generate testa testa 'test test on'
@@ -589,6 +599,7 @@ sanei_list_modules(){
 }
 sanei_list_modules_with_status(){
     local dialog_mode=$1
+    local module
     for module in $(sanei_list_modules); do
         if [[ $dialog_mode ]]; then
             printf "$module $(sanei_get_module_description $module) $(if is_installed $module; then printf on; else printf off; fi) "
@@ -598,6 +609,7 @@ sanei_list_modules_with_status(){
     done
 }
 sanei_clean_installed_modules(){
+    local module
     for module in $(sanei_list_modules); do
         rm_installed $module
     done

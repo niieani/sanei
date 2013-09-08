@@ -31,6 +31,7 @@ echo "Please specify the username prefix for this site:"
 read USERNAME_PREFIX
 DOMAIN_SAFE="$(echo "${DOMAIN//./_}" | sed 's/\xd1\x8f/ya/;s/\xd1\x81/s/;s/\xd0\xbd/n/;s/\xd0\xbe/o/' | sed -e 's/[àâą]/a/g;s/[ęêệ]/e/g;s/[ć]/c/g;s/[ł]/l/g;s/[ń]/n/g;s/[ś]/s/g;s/[źż]/z/g;s/[ọõó]/o/g;s/[í,ì]/i/g' | tr -cd '\11\12\40-\176')"
 USERNAME="${USERNAME_PREFIX}_${DOMAIN_SAFE}"
+PUNY_DOMAIN=$(generate_punycode "$DOMAIN")
 
 adduser "$USERNAME" --conf="$MODULE_DIR/config/adduser.chroot.conf"
 
@@ -62,7 +63,7 @@ cp -fv /etc/{host.conf,hostname,localtime,networks,nsswitch.conf,protocols,resol
 cp $MODULE_DIR/templates/{passwd,group,hosts} $SRV_DIR/$USERNAME/etc
 echo "$USERNAME:x:$(id -u $USERNAME):$(id -g $USERNAME):$DOMAIN,,,:$SRV_DIR/$USERNAME:/bin/false" >> "$SRV_DIR/$USERNAME/etc/passwd"
 echo "$USERNAME:x:$(id -g $USERNAME):www-data,sftp" >> "$SRV_DIR/$USERNAME/etc/group"
-PUNY_DOMAIN=$(generate_punycode "$DOMAIN")
+
 echo $PUNY_DOMAIN > "$SRV_DIR/$USERNAME/etc/hostname"
 $SED -i "s/@@PUNY_DOMAIN@@/$PUNY_DOMAIN/g" "$SRV_DIR/$USERNAME/etc/hosts"
 
