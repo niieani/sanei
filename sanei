@@ -55,6 +55,12 @@ case ${ARGUMENTS[0]} in
     "module" )
         sanei_invoke_module_script ${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}
         ;;
+    "selfupdate" )
+        sanei_invoke_module_script selfupdate do
+        ;;
+    "sendchanges" )
+        sanei_invoke_module_script selfupdate send
+        ;;
     "lxc" )
         case ${ARGUMENTS[1]} in
             "create" )
@@ -99,5 +105,6 @@ case ${ARGUMENTS[0]} in
         echo "  module [MODULE] [OPERATION] [PARAMETERS]"
         echo "  lxc updateall"
         echo "  lxc create [TEMPLATE_NAME]"
+        echo "  selfupdate"
         ;;
 esac
