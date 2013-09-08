@@ -447,8 +447,8 @@ modules on the local system" "$(sanei_list_modules_with_status true)"
     case $retval in
       $DIALOG_OK)
         for module in $(cat $tempfile); do
-            if ! is_installed "$module"; then
-                sanei_install "$module"
+            if ! is_installed $(eval echo "$module"); then
+                sanei_install $(eval echo "$module")
             fi
         done
         ;;
@@ -618,8 +618,7 @@ modules on the local system" "$(sanei_list_modules_with_status true)"
       $DIALOG_OK)
         sanei_clean_installed_modules
         for module in $(cat $tempfile); do
-            # set_installed $(eval echo $module) norun noinfo # TODO FIX
-            set_installed "$module" norun noinfo # TODO FIX
+            set_installed $(eval echo "$module") norun noinfo # TODO FIX
         done
         ;;
       $DIALOG_CANCEL)
