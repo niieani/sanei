@@ -191,6 +191,12 @@ backup_file(){
 	    mv "$fullpath" "$backup/$TIME_NOW$fullpath" | sed "s/^/${space:0:$padding}/";
     fi
 }
+cleanup(){
+    # TODO
+    if [[ -h $target ]]; then
+        rm "$target"
+    fi
+}
 list_dirs_recursive(){
     local dir=$1
     if [[ -d $dir ]];
@@ -321,6 +327,7 @@ fill_template_recursive(){
     local newpadding=$(( $padding + 5 ))
     if [[ -d $source ]]; then
         if [[ $VERBOSE == 1 ]]; then info "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        cleanup "$target"
         (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
     fi
@@ -432,6 +439,32 @@ sanei_invoke_module_script(){
         fi
     fi
 }
+sanei_install_select(){
+    local module
+    dialog_selector_generate 'SELECT MODULES TO INSTALL' "Use this to mass install \n\
+modules on the local system" "$(sanei_list_modules_with_status true)"
+    retval=$?
+    case $retval in
+      $DIALOG_OK)
+        for module in $(cat $tempfile); do
+            if ! is_installed "$module"; then
+                sanei_install "$module"
+            fi
+        done
+        ;;
+      $DIALOG_CANCEL)
+        info "Cancelled."
+        ;;
+      $DIALOG_ESC)
+        if test -s $tempfile ; then
+          # cat $tempfile
+          error "This shouldn't happen."
+        else
+          info "ESC pressed."
+        fi
+        ;;
+    esac
+}
 sanei_install(){
     local module=$1
 
@@ -469,7 +502,8 @@ sanei_install(){
             error "Module $module does not exist."
         fi
     else
-        error "No module provided."
+        sanei_install_select
+        #error "No module provided."
     fi
 }
 sanei_create_module_dir(){
@@ -584,7 +618,8 @@ modules on the local system" "$(sanei_list_modules_with_status true)"
       $DIALOG_OK)
         sanei_clean_installed_modules
         for module in $(cat $tempfile); do
-            set_installed $(eval echo $module) norun noinfo # TODO FIX
+            # set_installed $(eval echo $module) norun noinfo # TODO FIX
+            set_installed "$module" norun noinfo # TODO FIX
         done
         ;;
       $DIALOG_CANCEL)
