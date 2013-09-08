@@ -373,14 +373,26 @@ is_empty_config(){
         return 1
     fi
 }
+ask_for_config(){
+    local var=$1
+    local input
+    read input
+    if [[ -z "$input" ]]; then
+        return 1
+    else
+        store_shared_config "$var" "$input"
+    fi
+}
 non_default_setting_needed(){
     local error=false
     local var
     for var in "$@"
     do
         if is_empty_config "$var"; then
-            error "You need to set ${WHITE}${var}${RESET} first."
-            error=true
+            info "You need to set ${WHITE}${var}${RESET} first:"
+            if ! ask_for_config "$var"; then
+                error=true
+            fi
         fi
     done
     if $error; then
