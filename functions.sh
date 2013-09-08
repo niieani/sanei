@@ -180,15 +180,15 @@ backup_file(){
     local padding=$3
     if [[ -z $backup ]]; then backup=$BACKUP_DIR; fi
 
-    targetdir=$(dirname $file)
-    fullpath=$(echo $targetdir/$(basename $file))
+    targetdir=$(dirname "$file")
+    fullpath=$(echo "$targetdir/$(basename $file)")
 
     if [[ -e $fullpath || -d $fullpath || -h $fullpath ]];
 	then
 	    # uncomment for verbose backup
 	    if [[ $VERBOSE == 3 ]]; then echo "${space:0:$padding}Backing up: $fullpath => $backup/$TIME_NOW$targetdir"; fi
-	    mkdir -p $backup/$TIME_NOW$targetdir | sed "s/^/${space:0:$padding}/";
-	    mv $fullpath $backup/$TIME_NOW$fullpath | sed "s/^/${space:0:$padding}/";
+	    mkdir -p "$backup/$TIME_NOW$targetdir" | sed "s/^/${space:0:$padding}/";
+	    mv "$fullpath" "$backup/$TIME_NOW$fullpath" | sed "s/^/${space:0:$padding}/";
     fi
 }
 list_dirs_recursive(){
@@ -232,7 +232,10 @@ link(){
     if [[ ! $source == *.gitignore ]]; 
     then
         if [[ $VERBOSE == 1 ]]; then info "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
-        backup_file $target "" $newpadding
+        backup_file "$target" "" $newpadding
+        # this shouldn't be necessary:
+        if [[ -h "$target" ]]; then rm "$target"; fi
+        # actual link:
         ln -nfs "$source" "$target" | sed "s/^/${space:0:$newpadding}/"
     fi
 }
