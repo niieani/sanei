@@ -3,7 +3,7 @@
 # load argument loading
 __IMPORT__BASE_PATH="$SCRIPT_DIR/vendor/bash-modules/main/bash-modules/src/bash-modules"
 source $SCRIPT_DIR/vendor/bash-modules/main/bash-modules/src/import.sh arguments log
-parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" "--skip-apt)SKIPAPT;B" -- "${@:+$@}"
+parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" "--skip-apt)SKIPAPT;B" "-s|--silent)SILENT;B" -- "${@:+$@}"
 # parse_arguments "-n|--name)NAME;S" -- "$@" || {
 #   error "Cannot parse command line."
 #   exit 1
@@ -82,7 +82,7 @@ asksure(){
     return $retval
 }
 askbreak(){
-    if [[ -z $silent ]]; then
+    if [[ $SILENT -eq true ]]; then
         local text=$1
         if ! asksure "$text"; then
             exit 1
@@ -278,7 +278,7 @@ add_verbosity_opt(){
 add_silent_opt(){
     local param=$1
     if [[ -z $param ]]; then param="-y"; fi
-    if [[ $SILENT == true ]]; then
+    if [[ $SILENT -eq true ]]; then
         echo $param
     fi
 }

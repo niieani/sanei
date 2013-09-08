@@ -1,9 +1,9 @@
 #!/bin/bash
 # to start the installation do this:
-# wget -O - https://raw.github.com/niieani/lxc-shared/master/support/install.sh | bash
+# wget -O - https://raw.github.com/niieani/sanei/edge/support/install.sh | bash
 
 if [[ ! $(whoami) == "root" ]]; then
-    echo "You need to be root in order to install sanei."
+    echo "You need to be root in order to install SANEi."
     exit 1
 fi
 
@@ -18,16 +18,12 @@ fi
 
 # start
 apt-get update
-apt-get $(add_silent_opt) install software-properties-common byobu zsh git htop mc ufw dialog
+apt-get install software-properties-common git ufw dialog
 
 mkdir -p $SCRIPT_DIR
 
-git clone https://github.com/niieani/lxc-shared.git $SCRIPT_DIR
+git clone https://github.com/niieani/sanei.git $SCRIPT_DIR
 cd $SCRIPT_DIR
-(git submodule init && git submodule update && git submodule status)
+git submodule init && git submodule update && git submodule status
 
 ln -s $SCRIPT_DIR/sanei /usr/bin/sanei
-
-sanei install timezone
-
-chsh -s /bin/zsh

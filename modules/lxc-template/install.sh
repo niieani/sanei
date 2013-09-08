@@ -45,7 +45,7 @@ enter_container $TEMPLATE_NAME
 	
 	# inside of the new template
 	# set_installed lxc-common
-	# set_installed lxc-container
-	sanei_resolve_dependencies lxc-common lxc-container dotfiles xterm-screen
+	set_installed dotfiles # we don't want to run the install inside a container
+	sanei_resolve_dependencies lxc-common lxc-container xterm-screen
 
 exit_container

@@ -8,14 +8,14 @@
 
      # delete this script from bash_profile
      #sed -ie '$d' ~/.bash_profile
-     rm ~/.bash_profile
-     apt-get -y install zsh htop mc software-properties-common ufw wget dialog
      apt-get --purge -y remove openssh-server
+     apt-get -y install software-properties-common ufw wget dialog zsh htop mc
      ln -s $SCRIPT_DIR/sanei /usr/bin/sanei
      ufw allow lxc-net
      ufw enable
      chsh -s /bin/zsh
      rmdir "$lockdir"
+     rm ~/.bash_profile
      exit
  else
      #echo >&2 "cannot acquire lock, giving up on $lockdir"

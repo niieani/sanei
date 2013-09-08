@@ -1,1 +1,3 @@
-sanei_resolve_dependencies xterm-screen
+sanei_resolve_dependencies xterm-screen timezone
+apt_install "zsh htop mc"
+chsh -s /bin/zsh
