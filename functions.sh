@@ -278,7 +278,7 @@ add_verbosity_opt(){
 add_silent_opt(){
     local param=$1
     if [[ -z $param ]]; then param="-y"; fi
-    if [[ $SILENT -eq true ]]; then
+    if [[ $SILENT -ne true ]]; then
         echo $param
     fi
 }
