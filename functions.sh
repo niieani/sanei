@@ -450,12 +450,14 @@ sanei_install(){
             info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
             if [[ -f $SCRIPT_DIR/modules/$module/question.sh ]]; then
+                # TODO: correct ARGUMENTS
                 askbreak "$( $SCRIPT_DIR/modules/$module/question.sh ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}} )"
             else
                 askbreak "Are you sure this is what you want?"
             fi
 
             if [[ -f $SCRIPT_DIR/modules/$module/install.sh ]]; then
+                # TODO: correct ARGUMENTS
                 sanei_invoke_module_script "$module" install ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}
                 if ! is_installed $module; then
                     set_installed $module
@@ -502,6 +504,7 @@ sanei_resolve_dependencies(){
 }
 sanei_update(){
     # TODO: change $TEMPLATE_ROOT for a local variable passed to the function
+    # TODO: support multiple modules passed
     local module=$1
 
     if [[ ! -z $module && -d $SCRIPT_DIR/modules/$module ]]; then

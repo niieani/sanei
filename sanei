@@ -12,10 +12,10 @@ fi
 # TODO: make it into a function call
 case ${ARGUMENTS[0]} in
     "install" )
-        sanei_install "${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}"
+        sanei_install ${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}
         ;;
     "update" )
-        sanei_update "${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}"
+        sanei_update ${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}
         ;;
     "updateall" )
         sanei_updateall
@@ -31,7 +31,7 @@ case ${ARGUMENTS[0]} in
             "list" )
                 print_config | sort
                 ;;
-            "set" )
+            "setshared" )
                 if [[ ! -z ${ARGUMENTS[2]} ]]; then
                     store_shared_config ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}
                 fi
@@ -44,7 +44,7 @@ case ${ARGUMENTS[0]} in
             * )
                 echo "Available commands are:"
                 echo "  config list"
-                echo "  config set [VAR] [VALUE]"
+                echo "  config setshared [VAR] [VALUE]"
                 echo "  config setlocal [VAR] [VALUE]"
                 ;;
         esac
@@ -53,32 +53,14 @@ case ${ARGUMENTS[0]} in
         sanei_list_modules_with_status
         ;;
     "module" )
-        # TODO: make this into a function call
-        if [[ ${ARGUMENTS[1]} && -d $SCRIPT_DIR/modules/${ARGUMENTS[1]} ]]; then
-            if [[ -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/${ARGUMENTS[2]}.sh ]]; then
-                MODULE_DIR=$SCRIPT_DIR/modules/${ARGUMENTS[1]}
-                if [[ -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/functions.sh ]]; then
-                    source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/functions.sh
-                fi
-                if [[ -f $SCRIPT_DIR/modules/${ARGUMENTS[1]}/dependencies.sh ]]; then
-                    source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/dependencies.sh
-                fi
-                source $SCRIPT_DIR/modules/${ARGUMENTS[1]}/${ARGUMENTS[2]}.sh "${ARGUMENTS[@]:3:${#ARGUMENTS[@]}}" ""
-            else
-                if [[ ${ARGUMENTS[2]} ]]; then
-                    error "No operation ${ARGUMENTS[2]} for module ${ARGUMENTS[1]}."
-                fi
-                echo "Available commands are:"
-                list_files $SCRIPT_DIR/modules/${ARGUMENTS[1]} | sed s/.sh$// | sed "s/^/  /"
-            fi
-        fi
+        sanei_invoke_module_script ${ARGUMENTS[@]:1:${#ARGUMENTS[@]}}
         ;;
     "lxc" )
         case ${ARGUMENTS[1]} in
             "create" )
                 REINSTALL=true
                 __SPECIAL=true
-                sanei_install lxc-template "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
+                sanei_install lxc-template ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}
                 ;;
             "updateall" )
                 sanei_updateall_containers
@@ -102,18 +84,19 @@ case ${ARGUMENTS[0]} in
         sanei_configure
         ;;
     * )
-        echo "Welcome to SANEi 0.9"
+        echo "Welcome to SANEi 0.92"
         echo
         echo "Available commands are:"
         echo "  install"
         echo "  update [MODULE]"
         echo "  updateall"
+        echo "  setinstalled"
         echo "  override"
         echo "  list"
         echo "  config list"
-        echo "  config set [VAR] [VALUE]"
+        echo "  config setshared [VAR] [VALUE]"
         echo "  config setlocal [VAR] [VALUE]"
-        echo "  module [MODULE] [OPERATION]"
+        echo "  module [MODULE] [OPERATION] [PARAMETERS]"
         echo "  lxc updateall"
         echo "  lxc create [TEMPLATE_NAME]"
         ;;
