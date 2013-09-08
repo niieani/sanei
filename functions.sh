@@ -3,7 +3,7 @@
 # load argument loading
 __IMPORT__BASE_PATH="$SCRIPT_DIR/vendor/bash-modules/main/bash-modules/src/bash-modules"
 source $SCRIPT_DIR/vendor/bash-modules/main/bash-modules/src/import.sh arguments log
-parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" -- "${@:+$@}"
+parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" "--skip-apt)SKIPAPT;B" -- "${@:+$@}"
 # parse_arguments "-n|--name)NAME;S" -- "$@" || {
 #   error "Cannot parse command line."
 #   exit 1
@@ -151,17 +151,19 @@ store_shared_config(){
     store_config_file "$var" "$def" "$SCRIPT_DIR/config/50-"
 }
 apt_install(){
-    local packages="$1"
-    local ppa="$2"
-    local norecommends="$3"
-    if [[ ! -z $ppa ]]; then
-        add-apt-repository $(add_silent_opt) $ppa
-        apt-get update
+    if [[ ! $SKIPAPT -eq true ]]; then
+        local packages="$1"
+        local ppa="$2"
+        local norecommends="$3"
+        if [[ ! -z $ppa ]]; then
+            add-apt-repository $(add_silent_opt) $ppa
+            apt-get update
+        fi
+        if $norecommends; then
+            norecommends="--no-install-recommends"
+        fi
+        apt-get $(add_silent_opt) "$norecommends" install $packages
     fi
-    if $norecommends; then
-        norecommends="--no-install-recommends"
-    fi
-    apt-get $(add_silent_opt) "$norecommends" install $packages
 }
 is_apt_installed(){
     local package="$1"
@@ -411,6 +413,11 @@ sanei_install(){
             fi
 
             if [[ -f $SCRIPT_DIR/modules/$module/install.sh ]]; then
+                # TODO: call the module install function call
+                MODULE_DIR=$SCRIPT_DIR/modules/$module
+                if [[ -f $SCRIPT_DIR/modules/$module/functions.sh ]]; then
+                    source $SCRIPT_DIR/modules/$module/functions.sh
+                fi
                 source $SCRIPT_DIR/modules/$module/install.sh "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
             else
                 set_installed $module

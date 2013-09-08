@@ -1,0 +1,1 @@
+/root/.byobu/color

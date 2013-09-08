@@ -1,0 +1,85 @@
+# tic -o outputdir .terminfo
+# A screen- based TERMINFO that declares the escape sequences
+# enabled by the tmux config "set-window-option -g xterm-keys".
+#
+# Prefix the name with xterm- since some applications inspect
+# the TERM *name* in addition to the terminal capabilities advertised.
+xterm-screen-256color|GNU Screen with 256 colors bce and tmux xterm-keys,
+
+# As of Nov'11, the below keys are picked up by
+# .../tmux/blob/master/trunk/xterm-keys.c:
+	kDC=\E[3;2~, kEND=\E[1;2F, kHOM=\E[1;2H,
+	kIC=\E[2;2~, kLFT=\E[1;2D, kNXT=\E[6;2~, kPRV=\E[5;2~,
+	kRIT=\E[1;2C,
+
+# Some names are extensions allowed by ncurses, e.g.,
+#       kDN, kDN5, kDN6, kLFT5, kLFT6, kRIT5, kRIT6, kUP, kUP5, kUP6
+#
+# The uppercase names are made up, since there are no standards that apply.
+# If they were limited to two characters, they could in principle be translated
+# to termcap.  However, termcap sizes are limited to 1023 bytes, so there is
+# little point in ensuring that extended key names can be translated to
+# termcap.  A terminfo file can be up to 4096 bytes; using all extended keys
+# that xterm can generate would in fact exceed that limit.
+#
+# The numbers correspond to the modifier parameters documented in Xterm
+# Control Sequences:
+#
+#       2       Shift
+#       3       Alt
+#       4       Shift + Alt
+#       5       Control
+#       6       Shift + Control
+#       7       Alt + Control
+#       8       Shift + Alt + Control
+#
+# X/Open Curses defines some shift combinations, which are also used here
+# where applicable.  Since it does define some shift combinations, no number
+# (2) is used for suffixing the made-up names.  Some combinations are not
+# useful, e.g., they may reboot your computer, or they may require too many
+# fingers.  I stopped at modifier 7, just to keep things simple -TD
+#
+# XTerm resources:
+# ---------------
+# The xterm+pcfn, xterm+pcf0, xterm+pcf1, xterm+pcf2 and xterm+pcf3 fragments
+# correspond to default resource settings for xterm on a 104-key PC keyboard
+# with 12 function-keys:
+#
+#       *sunKeyboard:false
+#       *oldXtermFKeys:false
+#       *modifyCursorKeys:2
+#       *modifyFunctionKeys:2
+#       *ctrlFKeys:10
+#
+# The key numbers are computed based on the modifiers:
+#
+#       kf1-kf12 are F1-F12
+#       kf13-kf24 are shift F1-F12
+#       kf25-kf36 are control F1-F12
+#       kf37-kf48 are control+shift F1-F12
+#       kf49-kf60 are alt F1-F12
+#       kf61-kf63 are shift-alt F1-F3
+#
+# Note that ncurses would allow definition of kf64 and beyond, if there were
+# an application that required it.
+#kf1=\e[11~, kf2=\e[12~, kf3=\e[13~, kf4=\e[14~, kf5=\e[15~, kf6=\e[17~, kf7=\e[18~, kf8=\e[19,
+#kf9=\e[20~, kf10=\e[21~, kf11=\e[23~, kf12=\e[24~, 
+#kf13=\e[15~, kf14=\e[17~, kf15=\e[18~, kf16=\e[29,
+
+# putty S-F1-F10
+	kf13=\E[25~,
+	kf14=\E[26~, kf15=\E[28~, kf16=\E[29~,
+	kf17=\E[31~, kf18=\E[32~, kf19=\E[33~,
+	kf20=\E[34~, kf21=\E[35~, kf22=\E[36~,
+
+# control+ left/control+ right
+#kPRV=\e[5;*~, kNXT=\e[6;*~,
+#	kLFT5=\eOD, kRIT5=\eOC, kUP5=\eOA, kDN5=\eOB,
+
+# Italics & Standout
+#	sitm=\E[3m, ritm=\E[23m,
+#	smso=\E[7m, rmso=\E[27m,
+
+# Change this to screen-256color if the terminal you run tmux in
+# doesn't support bce:
+	use=screen-256color,
