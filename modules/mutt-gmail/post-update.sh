@@ -1,1 +1,1 @@
-chmod 600 /root/.muttrc
+chmod 600 /root/.sanei/muttrc

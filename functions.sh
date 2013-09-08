@@ -389,7 +389,7 @@ non_default_setting_needed(){
     for var in "$@"
     do
         if is_empty_config "$var"; then
-            info "You need to set ${WHITE}${var}${RESET} first:"
+            info "You need to provide ${WHITE}${var}${RESET} first:"
             if ! ask_for_config "$var"; then
                 error=true
             fi
@@ -430,7 +430,8 @@ sanei_invoke_module_script(){
     # $1 module
     # $2 script
     # $@ arguments
-
+    local MODULE_DIR
+    local LOCAL_MODULE_DIR
     if [[ $1 && -d $SCRIPT_DIR/modules/$1 ]]; then
         if [[ -f $SCRIPT_DIR/modules/$1/$2.sh ]]; then
             MODULE_DIR="$SCRIPT_DIR/modules/$1"
