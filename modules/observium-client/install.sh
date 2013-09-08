@@ -3,13 +3,11 @@ if [[ $1 == "external" ]]; then
     EXTERNAL=true
 fi
 
-mkdir -p /opt/observium-client/plugins
+sanei_create_module_dir /plugins
 #link /shared/modules/observium-client/local-default /opt/observium-client/local
 
 # fix hostname problem with rsyslog
-apt-add-repository -y ppa:tmortensen/rsyslogv7
-apt-get update
-apt-get $(add_silent_opt) install rsyslog snmpd xinetd
+apt_install "rsyslog snmpd xinetd" "ppa:tmortensen/rsyslogv7"
 
 SNMP_COMMUNITY=$(cat /proc/sys/kernel/random/uuid)
 store_local_config "SNMP_COMMUNITY" $SNMP_COMMUNITY
@@ -42,7 +40,7 @@ else
 	ufw allow from $OBSERVIUM_SERVER to any port snmp
 fi
 
-sanei_install_dependencies ssh-key
+sanei_resolve_dependencies ssh-key
 
 echo "Enter your Observium SSH password:"
 ssh-copy-id "-p$SSH_PORT observium@$OBSERVIUM_SERVER"
@@ -50,6 +48,6 @@ ssh-copy-id "-p$SSH_PORT observium@$OBSERVIUM_SERVER"
 service snmpd restart
 service rsyslog restart
 
-ssh observium@$OBSERVIUM_SERVER -p $SSH_PORT "${remote_hosts_set}; ${remote_ufw_command}; /opt/observium/addhost.php $LOCAL_HOSTNAME $SNMP_COMMUNITY v2c $SNMP_REMOTE_PORT tcp"
+ssh observium@$OBSERVIUM_SERVER -p $SSH_PORT "${remote_hosts_set}; ${remote_ufw_command}; /opt/sanei/observium/addhost.php $LOCAL_HOSTNAME $SNMP_COMMUNITY v2c $SNMP_REMOTE_PORT tcp"
 
 service autossh-snmp start

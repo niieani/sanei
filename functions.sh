@@ -32,7 +32,7 @@ if [[ -z $CONFIG ]]; then
     # done
 
     # load local overrides
-    for file in /opt/.config/* ; do
+    for file in /opt/sanei/.config/* ; do
       if [ -f "$file" ] ; then
         if [[ $VERBOSE ]]; then info "Loading local config: $file"; fi
         source "$file"
@@ -99,7 +99,7 @@ print_config(){
 }
 is_installed(){
     local what=$1
-    if [[ -e $TEMPLATE_ROOT/opt/.install.$what ]]; then
+    if [[ -e $TEMPLATE_ROOT$SANEI_DIR/.install.$what ]]; then
 	    return 0
     fi
     return 1
@@ -108,10 +108,10 @@ set_installed(){
     local what=$1
     local norun=$2
     local noinfo=$3
-    touch $TEMPLATE_ROOT/opt/.install.$what
+    mkdir -p "$TEMPLATE_ROOT$SANEI_DIR"
+    touch "$TEMPLATE_ROOT$SANEI_DIR/.install.$what"
     if [[ -z $norun ]]; then
-        #source $SCRIPT_DIR/create-links.sh
-        sanei_update $what
+        sanei_update "$what"
     fi
     if [[ -z $noinfo ]]; then
         info "Set as installed: $what"
@@ -119,8 +119,8 @@ set_installed(){
 }
 rm_installed(){
     local what=$1
-    if [[ -f $TEMPLATE_ROOT/opt/.install.$what ]]; then
-        rm $TEMPLATE_ROOT/opt/.install.$what
+    if [[ -f $TEMPLATE_ROOT$SANEI_DIR/.install.$what ]]; then
+        rm $TEMPLATE_ROOT$SANEI_DIR/.install.$what
     fi
 }
 store_memory_config(){
@@ -141,8 +141,8 @@ store_config_file(){
 store_local_config(){
     local var=$1
     local def=$2
-    mkdir -p $TEMPLATE_ROOT/opt/.config
-    store_config_file "$var" "$def" "$TEMPLATE_ROOT/opt/.config/"
+    mkdir -p $TEMPLATE_ROOT$SANEI_DIR/.config
+    store_config_file "$var" "$def" "$TEMPLATE_ROOT$SANEI_DIR/.config/"
 }
 store_shared_config(){
     local var=$1
@@ -211,9 +211,16 @@ list_files(){
         find -L ${dir} -maxdepth 1 -type f -printf "%P\n" | sed '/^$/d' | sort
     fi
 }
+list_files_recursive(){
+    local dir=$1
+    if [[ -d $dir ]];
+    then
+        find -L ${dir} -type f -printf "%P\n" | sed '/^$/d' | sort
+    fi
+}
 list_installed(){
     local dir=$1
-    list_files $TEMPLATE_ROOT/opt | grep ".install." | sed s/.install.//
+    list_files $TEMPLATE_ROOT$SANEI_DIR | grep ".install." | sed s/.install.//
 }
 link(){
     local source=$1
@@ -317,14 +324,18 @@ enter_container(){
 
     REAL_TEMPLATE_ROOT=$TEMPLATE_ROOT
     REAL_BACKUP_DIR=$BACKUP_DIR
+    REAL_HOME_DIR=$HOME_DIR
     TEMPLATE_ROOT=/lxc/$container/rootfs
     BACKUP_DIR=$TEMPLATE_ROOT/root/.backups
+    # we always want $HOME of containers to be /root
+    HOME_DIR=/root
     CONTAINER_NAME=$container
     info "Entered container ${LIGHTBLUE}$CONTAINER_NAME${RESET}, with root: ${WHITE}$TEMPLATE_ROOT${RESET}."
 }
 exit_container(){
     TEMPLATE_ROOT=$REAL_TEMPLATE_ROOT
     BACKUP_DIR=$REAL_BACKUP_DIR
+    HOME_DIR=$REAL_HOME_DIR
     info "Exited container ${LIGHTBLUE}$CONTAINER_NAME${RESET}."
     unset CONTAINER_NAME
 }
@@ -389,6 +400,31 @@ dialog_selector_generate(){
 }
 
 # sanei specific functions:
+sanei_invoke_module_script(){
+    # $1 module
+    # $2 script
+    # $@ arguments
+
+    if [[ $1 && -d $SCRIPT_DIR/modules/$1 ]]; then
+        if [[ -f $SCRIPT_DIR/modules/$1/$2.sh ]]; then
+            MODULE_DIR="$SCRIPT_DIR/modules/$1"
+            LOCAL_MODULE_DIR="$SANEI_DIR/$1"
+            if [[ -f $SCRIPT_DIR/modules/$1/functions.sh ]]; then
+                source $SCRIPT_DIR/modules/$1/functions.sh
+            fi
+            if [[ -f $SCRIPT_DIR/modules/$1/dependencies.sh ]]; then
+                source $SCRIPT_DIR/modules/$1/dependencies.sh
+            fi
+            source $SCRIPT_DIR/modules/$1/$2.sh "${@:3:${#@}}" ""
+        else
+            if [[ $2 ]]; then
+                error "No operation $2 for module $1."
+            fi
+            echo "Available commands are:"
+            list_files $SCRIPT_DIR/modules/$1 | grep "\.sh" | sed s/.sh$// | sed "s/^/  /"
+        fi
+    fi
+}
 sanei_install(){
     local module=$1
 
@@ -413,12 +449,10 @@ sanei_install(){
             fi
 
             if [[ -f $SCRIPT_DIR/modules/$module/install.sh ]]; then
-                # TODO: call the module install function call
-                MODULE_DIR=$SCRIPT_DIR/modules/$module
-                if [[ -f $SCRIPT_DIR/modules/$module/functions.sh ]]; then
-                    source $SCRIPT_DIR/modules/$module/functions.sh
+                sanei_invoke_module_script "$module" install "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
+                if ! is_installed $module; then
+                    set_installed $module
                 fi
-                source $SCRIPT_DIR/modules/$module/install.sh "${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}"
             else
                 set_installed $module
             fi
@@ -429,7 +463,16 @@ sanei_install(){
         error "No module provided."
     fi
 }
-sanei_install_dependencies(){
+sanei_create_module_dir(){
+    subpath=$1 # optional
+    if [[ ! -z $LOCAL_MODULE_DIR ]]; then
+        mkdir -p $LOCAL_MODULE_DIR$subpath
+    else
+        error "Local module directory not defined."
+        return 1
+    fi
+}
+sanei_resolve_dependencies(){
     for module in "$@"
     do
         if ! is_installed "$module"; then
@@ -472,16 +515,26 @@ sanei_update(){
         copy_all_files_recursive $SCRIPT_DIR/modules/$module/usr $TEMPLATE_ROOT/usr $PADDING_SIZE
 
         # dotfiles
-        fill_template_recursive $SCRIPT_DIR/modules/$module/root-template $TEMPLATE_ROOT/root $PADDING_SIZE
+        fill_template_recursive $SCRIPT_DIR/modules/$module/root-template $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
 
         if [[ -d $SCRIPT_DIR/modules/$module/root ]]; then
-            link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT/root $PADDING_SIZE
+            link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
             # link also folders #
-            link_all_dirs $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT/root $PADDING_SIZE
+            link_all_dirs $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
         fi
 
         if [[ -f $SCRIPT_DIR/modules/$module/post-update.sh ]]; then
             source $SCRIPT_DIR/modules/$module/post-update.sh
+        fi
+
+        if [ "$HOME_DIR" != "/root" ]; then
+            if logname; then
+                user=$(logname)
+                # TODO: do this at the copying/linking level
+                chown -R "$user.$user" "$TEMPLATE_ROOT$HOME_DIR"
+            else
+                error "Cannot find the real username."
+            fi
         fi
     else
         error "No module provided or module doesn't exist."

@@ -15,4 +15,10 @@ profile lxc-container-chrooting flags=(attach_disconnected,mediate_deleted) {
   mount options=(rw, bind) /lib64/ -> /home/*/lib64/,
   mount options=(rw, bind) /usr/ -> /home/*/usr/,
   mount options=(rw, bind) /shared/run/ -> /home/*/run/,
+
+  mount options=(rw, bind) /bin/ -> /srv/*/bin/,
+  mount options=(rw, bind) /lib/ -> /srv/*/lib/,
+  mount options=(rw, bind) /lib64/ -> /srv/*/lib64/,
+  mount options=(rw, bind) /usr/ -> /srv/*/usr/,
+  mount options=(rw, bind) /shared/run/ -> /srv/*/run/,
 }

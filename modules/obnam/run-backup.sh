@@ -1,5 +1,6 @@
 #!/bin/bash
-backup_list=($(find /opt/obnam -type f -name '*.conf'))
+# TODO: static folder path
+backup_list=($(find /opt/sanei/obnam -type f -name '*.conf'))
 obnam=/usr/bin/obnam
 for backup_job in ${backup_list[@]}
 do

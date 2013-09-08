@@ -1,7 +1,7 @@
 #apt-get $(add_silent_opt) install 12345
 # todo "Actual installation."
 
-sanei_install_dependencies php+mysql
+sanei_resolve_dependencies php+mysql
 apt_install "php5-cli php5-mcrypt php5-snmp snmp graphviz subversion mariadb-client rrdtool fping imagemagick whois mtr-tiny nmap ipmitool python-mysqldb"
 mkdir -p /opt/observium && cd /opt
 

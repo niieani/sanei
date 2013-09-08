@@ -1,6 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR=/shared
 BACKUP_DIR=/root/.backup
+SANEI_DIR=/opt/sanei
 DISTRO=raring
 TIMEZONE=Europe/Warsaw
 SSH_PORT=1234

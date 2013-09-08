@@ -1,0 +1,53 @@
+[@@USER@@]
+user = $pool
+group = $pool
+
+listen = /var/run/php5-fpm_$pool.sock
+listen.owner = $pool
+listen.group = www-data
+listen.mode = 0660
+
+slowlog = /srv/$pool/srv/log/$pool.php-slow.log
+request_slowlog_timeout = 12s
+chroot = /srv/$pool
+chdir = /srv
+
+pm = dynamic
+
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+
+;access.log = /srv/$pool/srv/log/$pool.access.log
+;access.format = "%R - %u %t \"%m %r%Q%q\" %s %f %{mili}d %{kilo}M %C%%"
+
+request_slowlog_timeout = 8s
+request_terminate_timeout = 5m
+
+security.limit_extensions = .php
+
+catch_workers_output = yes
+
+rlimit_files = 10240
+
+php_admin_value[sendmail_path] = /usr/local/bin/ssmtp -t -f
+;php_admin_value[sendmail_path] = /sbin/savemail.sh
+;php_flag[display_errors] = on
+;php_admin_value[error_log] = /srv/log/php_error.log
+;php_admin_value[mail.log] = /srv/log/phpmail.log
+php_admin_flag[log_errors] = on
+php_admin_value[session.save_path] = "/tmp/sessions"
+
+php_admin_value[pdo_mysql.default_socket] = "/run/mysqld/mysqld.sock"
+php_admin_value[mysql.default_socket] = "/run/mysqld/mysqld.sock"
+php_admin_value[mysqli.default_socket] = "/run/mysqld/mysqld.sock"
+
+;php_admin_value[memory_limit] = 32M
+;php_admin_value[open_basedir] = "/srv:/usr/share/pear:/usr/share/php:/tmp:/usr/local/lib/php"
+
+;env[HOSTNAME] = $HOSTNAME
+;env[PATH] = /usr/local/bin:/usr/bin:/bin
+;env[TMP] = /tmp
+;env[TMPDIR] = /tmp
+;env[TEMP] = /tmp

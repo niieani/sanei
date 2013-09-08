@@ -1,4 +1,4 @@
-sanei_install_dependencies "php+mysql" 
+sanei_resolve_dependencies "php+mysql" 
 
 add-apt-repository $(add_silent_opt) ppa:nijel/phpmyadmin
 apt-get $(add_silent_opt) install mariadb-client phpmyadmin

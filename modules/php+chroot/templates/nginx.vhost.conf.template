@@ -1,0 +1,20 @@
+server {
+	listen 80 deferred;
+	set $username "@@USERNAME@@";
+	set $rootdir "public";
+
+	server_name @@HOSTNAME@@;
+	charset utf-8;
+	include sanei/defaults-php.conf;
+
+	location / {
+	        try_files $uri $uri/ /index.php$uri?$args;
+	}
+
+	access_log /srv/log/@@USERNAME@@.access.log;
+	error_log /srv/log/@@USERNAME@@.error.log;
+}
+server {
+	server_name www.@@HOSTNAME@@;
+	return 301 $scheme://@@HOSTNAME@@$request_uri;
+}

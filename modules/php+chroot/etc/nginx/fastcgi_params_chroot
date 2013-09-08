@@ -1,0 +1,3 @@
+include fastcgi_params;
+fastcgi_param	SCRIPT_FILENAME		/www/$rootdir$fastcgi_script_name;
+fastcgi_param	DOCUMENT_ROOT		/www/$rootdir;

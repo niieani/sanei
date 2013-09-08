@@ -26,7 +26,7 @@ if [[ ! -z $4 ]]; then
 fi
 
 non_default_setting_needed GPG_KEY_RECIPIENT
-sanei_install_dependencies mutt-gmail apt:rng-tools
+sanei_resolve_dependencies mutt-gmail apt:rng-tools
 
 rngd -f -r /dev/urandom &
 RNGD_PID=$!

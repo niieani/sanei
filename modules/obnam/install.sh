@@ -1,9 +1,9 @@
 non_default_setting_needed OBNAM_REPOSITORY
 # TODO (in case of sftp)
-sanei_install_dependencies ssh-key
+sanei_resolve_dependencies ssh-key
 
 apt_install obnam "ppa:chris-bigballofwax/obnam-ppa"
-mkdir -p /opt/obnam
+sanei_create_module_dir
 
 get_obnam_repository_details
 

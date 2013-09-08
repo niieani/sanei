@@ -1,1 +1,1 @@
-0 3 * * * root bash @@MODULES_DIR@@/run-backup.sh
+0 3 * * * root sanei module obnam run-backup

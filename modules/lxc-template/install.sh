@@ -8,7 +8,7 @@ if [ -z $1 ]; then
         exit 1
 fi
 
-sanei_install_dependencies "lxc-host"
+sanei_resolve_dependencies "lxc-host"
 
 TEMPLATE_NAME=$1
 
@@ -27,9 +27,9 @@ enter_container $TEMPLATE_NAME
 	chmod 777 ${TEMPLATE_ROOT}${SCRIPT_DIR}
 
 	# remove default user
-	chroot ${TEMPLATE_ROOT} deluser ubuntu
+	chroot $TEMPLATE_ROOT deluser ubuntu
 	# --remove-home
-	rm -rf ${TEMPLATE_ROOT}/home/ubuntu
+	rm -rf $TEMPLATE_ROOT/home/ubuntu
 
 	echo "bash $SCRIPT_DIR/modules/lxc-template/firstlogin.sh" >> $TEMPLATE_ROOT/root/.bash_profile
 
@@ -46,6 +46,6 @@ enter_container $TEMPLATE_NAME
 	# inside of the new template
 	# set_installed lxc-common
 	# set_installed lxc-container
-	sanei_install_dependencies lxc-common lxc-container dotfiles
+	sanei_resolve_dependencies lxc-common lxc-container dotfiles xterm-screen
 
 exit_container
