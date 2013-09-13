@@ -58,7 +58,7 @@ case ${ARGUMENTS[0]} in
     "selfupdate" )
         sanei_invoke_module_script selfupdate do
         ;;
-    "sendchanges" )
+    "push" )
         sanei_invoke_module_script selfupdate send
         ;;
     "lxc" )

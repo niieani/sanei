@@ -13,3 +13,5 @@ fi
 
 store_memory_config GPG_KEY_ID $(cat "$GPG_KEY_ID_PATH/obnam_$CONTAINER_NAME")
 fill_template $MODULE_DIR/templates/lxc-container.conf $LOCAL_MODULE_DIR/$CONTAINER_NAME.conf
+
+info "Ready. If needed, make changes to $LOCAL_MODULE_DIR/$CONTAINER_NAME.conf and run: ${WHITE}sanei module obnam run-backup${RESET} to execute the backup."
