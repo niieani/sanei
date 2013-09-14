@@ -8,5 +8,3 @@ rmdir /run/mysqld
 ln -s /shared/run/mysqld /run/mysqld
 chown mysql.root /shared/run/mysqld
 service mysql start
-
-set_installed mysql-server
