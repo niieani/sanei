@@ -1,3 +1,5 @@
+# $1 container name
+
 # schedule
 if [[ -z $1 ]]; then
 	error "You need to provide a container name."
