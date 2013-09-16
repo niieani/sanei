@@ -1,0 +1,1 @@
+0 1 * * * root @@SCRIPT_DIR@@/sanei module mysql-xtrabackup backup

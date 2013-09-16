@@ -1,1 +1,1 @@
-0 3 * * * root sanei module obnam run-backup
+0 3 * * * root @@SCRIPT_DIR@@/sanei module obnam backup-all

@@ -1,8 +1,8 @@
 # generated variables
 TIME_NOW=$(date +'%Y_%m_%d_(%H_%M)')
-if ! LOCAL_HOSTNAME=$(hostname --fqdn); then
+if ! LOCAL_HOSTNAME=$(hostname --fqdn 2> /dev/null); then
 	info "Not using a fully qualified domain name."
-	LOCAL_HOSTNAME=$(hostname)
+	LOCAL_HOSTNAME=$(hostname 2> /dev/null)
 fi
 IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
 MODULES_DIR=$SCRIPT_DIR/modules

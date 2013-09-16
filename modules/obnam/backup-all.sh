@@ -1,7 +1,7 @@
 #!/bin/bash
 # TODO: static folder path
 
-find /opt/sanei/obnam -type f -name '*.conf' | parallel --gnu $MODULE_DIR/helper-scripts/run_obnam_backup.sh
+find /opt/sanei/obnam -type f -name '*.conf' | parallel --gnu $MODULE_DIR/backup.sh
 if [[ $? -gt 0 ]]; then
 	echo "$? jobs are still running or failed."
 fi
