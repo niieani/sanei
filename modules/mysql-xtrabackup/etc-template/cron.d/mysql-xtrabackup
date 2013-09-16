@@ -1,1 +1,4 @@
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+
 0 1 * * * root @@SCRIPT_DIR@@/sanei module mysql-xtrabackup backup
+# TODO: obnam should wait until this is complete, 2h might not be enough
