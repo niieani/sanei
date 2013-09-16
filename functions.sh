@@ -600,7 +600,7 @@ sanei_update(){
             fi
         fi
     else
-        error "No module provided or module doesn't exist."
+        error "No module provided or module ${WHITE}$module${RESET} doesn't exist."
     fi
 }
 sanei_updateall(){
