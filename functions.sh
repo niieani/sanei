@@ -591,7 +591,7 @@ sanei_update(){
             if logname; then
                 user=$(logname)
                 # TODO: do this at the copying/linking level
-                chown -R "$user.$user" "$TEMPLATE_ROOT$HOME_DIR"
+                chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
             else
                 error "Cannot find the real username."
             fi
