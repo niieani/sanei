@@ -54,6 +54,9 @@ if [[ -z $CONFIG ]]; then
     	ThisConfigTrim=$(echo $ThisConfigTrim | sed "s/'\\\'//g") # unescape
     	ConfigArr["${ThisConfig[0]}"]="$ThisConfigTrim"
     done <<< "$CONFIG"
+
+    # finally add the variable added at the beginning
+    ConfigArr["SCRIPT_DIR"]="${SCRIPT_DIR}"
 fi
 
 # globals
@@ -311,7 +314,7 @@ fill_template(){
 	if [[ ! -h $source ]]; then
             for key in ${!ConfigArr[@]}; do
                 # debug:
-	        	#echo "s/@@${key}@@/${ConfigArr[$key]}/g"
+	        	# echo "s/@@${key}@@/${ConfigArr[$key]}/g"
 			    # escape
 			    newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
 		        sed -i "s/@@${key}@@/${newOutput}/g" $target
