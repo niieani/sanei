@@ -177,6 +177,10 @@ is_apt_installed(){
         return 1
     fi
 }
+create_directory_structure(){
+    local filename=$1
+    mkdir -p "$(dirname "$filename")"
+}
 backup_file(){
     local file=$1
     local backup=$2
@@ -437,21 +441,27 @@ sanei_invoke_module_script(){
     local LOCAL_MODULE_DIR
     if [[ $1 && -d $SCRIPT_DIR/modules/$1 ]]; then
         if [[ -f $SCRIPT_DIR/modules/$1/$2.sh ]]; then
-            MODULE_DIR="$SCRIPT_DIR/modules/$1"
-            LOCAL_MODULE_DIR="$SANEI_DIR/$1"
-            if [[ -f $SCRIPT_DIR/modules/$1/functions.sh ]]; then
-                source $SCRIPT_DIR/modules/$1/functions.sh
-            fi
-            if [[ -f $SCRIPT_DIR/modules/$1/dependencies.sh ]]; then
-                source $SCRIPT_DIR/modules/$1/dependencies.sh
-            fi
-            source $SCRIPT_DIR/modules/$1/$2.sh "${@:3:${#@}}" ""
+            ( # start a subshell
+                # locally available variables
+                MODULE="$1"
+                MODULE_DIR="$SCRIPT_DIR/modules/$1"
+                LOCAL_MODULE_DIR="$SANEI_DIR/$1"
+                if [[ -f $MODULE_DIR/functions.sh ]]; then
+                    source $MODULE_DIR/functions.sh
+                fi
+                if [[ -f $MODULE_DIR/dependencies.sh ]]; then
+                    source $MODULE_DIR/dependencies.sh
+                fi
+
+                # "" at the end as we must pass a final empty argument not to break certain scripts
+                source $MODULE_DIR/$2.sh "${@:3:${#@}}" ""
+            )
         else
             if [[ $2 ]]; then
                 error "No operation $2 for module $1."
             fi
             echo "Available commands are:"
-            list_files $SCRIPT_DIR/modules/$1 | grep "\.sh$" | sed s/.sh$// | sed "s/^/  /"
+            list_files "$SCRIPT_DIR/modules/$1" | grep "\.sh$" | sed s/.sh$// | sed "s/^/  /"
         fi
     fi
 }
@@ -559,6 +569,10 @@ sanei_update(){
 
     if [[ ! -z $module && -d $SCRIPT_DIR/modules/$module ]]; then
         info "${LIGHTRED}UPDATING${RESET}: ${WHITE}${module}${RESET}."
+
+        # TODO: add a function to do this also before invoking a module script
+        store_memory_config MODULE "$module"
+        store_memory_config MODULE_DIR "$SCRIPT_DIR/modules/$module"
 
         # /etc #
         # recursive linking #

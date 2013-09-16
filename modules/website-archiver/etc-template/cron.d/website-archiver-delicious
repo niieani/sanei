@@ -1,0 +1,1 @@
+0 * * * * @@DELICIOUS_SYSTEM_USER@@ bash @@MODULE_DIR@@/delicious.sh

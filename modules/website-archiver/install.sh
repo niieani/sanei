@@ -1,0 +1,1 @@
+sanei_resolve_dependencies apt:phantomjs
