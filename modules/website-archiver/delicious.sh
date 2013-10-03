@@ -1,7 +1,14 @@
-## REQUIRES: DELICIOUS_API_KEY, DELICIOUS_LOGIN, DELICIOUS_PASSWORD
-# takes all tasks tagged !archive, 
-# makes a local copy of them 
-# and changes the tag !archive to !local-copy
+# :Date: 2013-09-28
+# :Version: 1
+# :Author: Bazyli Brzoska
+# :Variables: - DELICIOUS_API_KEY
+#             - DELICIOUS_LOGIN
+#             - DELICIOUS_PASSWORD
+# :Description: takes all tasks tagged **!archive**, 
+#               makes a local copy of them 
+#               
+#               and renames the tag **!archive** to **!local-copy**
+#
 non_default_setting_needed DELICIOUS_API_KEY DELICIOUS_LOGIN DELICIOUS_PASSWORD DELICIOUS_SYSTEM_USER
 sanei_resolve_dependencies jq apt:curl
 
@@ -12,6 +19,9 @@ local delicious_link_url;
 local delicious_link_domain;
 
 # cd /tmp
+# tutaj mamy dluzszy komentarz
+# 
+# i przerwa
 #wget -O "this.json"
 
 delicious_url="http://feeds.delicious.com/v2/json/$DELICIOUS_LOGIN/!archive?count=100&private=$DELICIOUS_API_KEY"

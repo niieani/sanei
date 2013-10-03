@@ -18,7 +18,7 @@ if [[ -z $CONFIG ]]; then
     ( set -o posix ; set ) >/tmp/variables.before
     for file in $SCRIPT_DIR/config/* ; do
       if [ -f "$file" ] ; then
-        if [[ $VERBOSE ]]; then info "Loading config: $file"; fi
+        if [[ $VERBOSE -gt 1 ]]; then info "Loading config: $file"; fi
         source "$file"
       fi
     done
@@ -34,7 +34,7 @@ if [[ -z $CONFIG ]]; then
     # load local overrides
     for file in /opt/sanei/.config/* ; do
       if [ -f "$file" ] ; then
-        if [[ $VERBOSE ]]; then info "Loading local config: $file"; fi
+        if [[ $VERBOSE -gt 1 ]]; then info "Loading local config: $file"; fi
         source "$file"
       fi
     done
@@ -61,6 +61,25 @@ fi
 
 # globals
 space="|    |    |    |    |    |"
+
+export COLOR_NC='\e[0m' # No Color
+export COLOR_WHITE='\e[1;37m'
+export COLOR_BLACK='\e[0;30m'
+export COLOR_BLUE='\e[0;34m'
+export COLOR_LIGHT_BLUE='\e[1;34m'
+export COLOR_GREEN='\e[0;32m'
+export COLOR_LIGHT_GREEN='\e[1;32m'
+export COLOR_CYAN='\e[0;36m'
+export COLOR_LIGHT_CYAN='\e[1;36m'
+export COLOR_RED='\e[0;31m'
+export COLOR_LIGHT_RED='\e[1;31m'
+export COLOR_PURPLE='\e[0;35m'
+export COLOR_LIGHT_PURPLE='\e[1;35m'
+export COLOR_BROWN='\e[0;33m'
+export COLOR_YELLOW='\e[1;33m'
+export COLOR_GRAY='\e[0;30m'
+export COLOR_LIGHT_GRAY='\e[0;37m'
+
 LIGHTGREEN=$'\033[1;32m'
 LIGHTBLUE=$'\033[1;34m'
 LIGHTRED=$'\033[1;31m'
@@ -71,6 +90,13 @@ WHITE=$'\033[0;37m'
 RESET=$'\033[0;00m'
 PADDING_SIZE=5
 
+generate_help(){
+    # http://www.thelinuxdaily.com/2012/09/self-documenting-scripts/
+    pfx="$1"
+    file="$2"
+    if [ "$pfx" = "" ]; then pfx='##' ; fi
+    grep "^$pfx" "$file" | sed -e "s/^$pfx//" 1>&2 # -e "s/_FILE_/$me/"
+}
 asksure(){
     local text=$1
     echo -n "$text (Y/N)? "
