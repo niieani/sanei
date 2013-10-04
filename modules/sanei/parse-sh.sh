@@ -12,7 +12,7 @@ temp_file="/tmp/doc_$(basename "$source_file").rst"
 
 if [[ -f "$source_file" ]]; then
 	# prepare the file
-	$VENDOR_DIR/bashdoc/bashdoc -o "$temp_file" -H better.basic raw "$source_file"
+	BASHDOC_LIB="$BASHDOC_LIB" $VENDOR_DIR/bashdoc/bashdoc -o "$temp_file" -H better.basic raw "$source_file"
 
 	if [[ -f "$temp_file" ]]; then
 		# invoke parsing
