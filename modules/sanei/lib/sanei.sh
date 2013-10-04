@@ -473,10 +473,13 @@ dialog_selector_generate(){
     eval $DIALOG_CMD
     return $?
 }
-function sanei_get_required_vars(){
+sanei_get_required_vars(){
     local module="$1"
     local operation="$2"
     local var_prefix="$3"
+    if [[ -f "$MODULES_DIR/$module/README.rst" ]]; then
+        NO_SUBSHELL=true sanei_invoke_module_script sanei parse-raw "$MODULES_DIR/$module/README.rst" "$var_prefix"
+    fi
     NO_SUBSHELL=true sanei_invoke_module_script sanei parse-sh "$MODULES_DIR/$module/$operation.sh" "$var_prefix"
 }
 # sanei specific functions:
@@ -486,6 +489,7 @@ sanei_invoke_module_script(){
     # $@ arguments
     local MODULE_DIR
     local LOCAL_MODULE_DIR
+    ((INVOKED_COUNT++))
     if [[ $1 && -d $SCRIPT_DIR/modules/$1 ]]; then
         if [[ -f $SCRIPT_DIR/modules/$1/$2.sh ]]; then
             if [[ -z $NO_SUBSHELL ]]; then
@@ -573,15 +577,13 @@ sanei_install(){
             info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
             if [[ -f $SCRIPT_DIR/modules/$module/question.sh ]]; then
-                # TODO: correct ARGUMENTS
-                askbreak "$( $SCRIPT_DIR/modules/$module/question.sh ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}} )"
+                askbreak "$( $SCRIPT_DIR/modules/$module/question.sh ${@:2:${#@}} )"
             else
                 askbreak "Are you sure this is what you want?"
             fi
 
             if [[ -f $SCRIPT_DIR/modules/$module/install.sh ]]; then
-                # TODO: correct ARGUMENTS
-                sanei_invoke_module_script "$module" install ${ARGUMENTS[@]:2:${#ARGUMENTS[@]}}
+                sanei_invoke_module_script "$module" install ${@:2:${#@}}
                 if ! is_installed $module; then
                     set_installed $module
                 fi

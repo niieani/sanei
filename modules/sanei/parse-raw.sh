@@ -11,7 +11,7 @@ declare -a parsed_list
 # raw mode::
 parse_rst "$1"
 
-if [[ $VERBOSE -ge 1 ]]; then
+if [[ $VERBOSE -ge 1 && $INVOKED_COUNT -le 1 || $VERBOSE -ge 4 ]]; then
 	# for each parsed part
 	for key in ${!parsed_type[@]}; do
 		echo "${GREEN}[${parsed_type[$key]},${parsed_list[$key]}] ${WHITE}${parsed_name[$key]}${RESET}"

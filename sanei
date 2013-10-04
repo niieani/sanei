@@ -39,4 +39,4 @@ if [[ ! $(whoami) == "root" ]]; then
     exit 1
 fi
 
-sanei_invoke_module_script sanei ${ARGUMENTS[@]}
+INVOKED_COUNT=0 sanei_invoke_module_script sanei ${ARGUMENTS[@]}
