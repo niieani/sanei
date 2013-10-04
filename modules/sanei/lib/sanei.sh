@@ -479,11 +479,13 @@ sanei_parsing_info(){
     local module="$1"
     local operation="$2"
     local var_prefix="$3"
-        echo parsing "$MODULES_DIR/$module/README.rst"
+    #echo parsing "$MODULES_DIR/$module/README.rst"
     if [[ -f "$MODULES_DIR/$module/README.rst" ]]; then
         NO_SUBSHELL=true sanei_invoke_module_script sanei parse-raw "$MODULES_DIR/$module/README.rst" "$var_prefix"
     fi
+    if [[ -f "$MODULES_DIR/$module/$operation.sh" ]]; then
     NO_SUBSHELL=true sanei_invoke_module_script sanei parse-sh "$MODULES_DIR/$module/$operation.sh" "$var_prefix"
+    fi
 }
 # sanei specific functions:
 sanei_invoke_module_script(){
@@ -498,7 +500,6 @@ sanei_invoke_module_script(){
             if [[ -z $NO_SUBSHELL ]]; then
             ( # start a subshell
                 # locally available variables
-                echo $1
                 MODULE="$1"
                 OPERATION="$2"
                 MODULE_DIR="$SCRIPT_DIR/modules/$1"
@@ -513,11 +514,13 @@ sanei_invoke_module_script(){
                     source $MODULE_DIR/dependencies.sh
                 fi
                 # new system of dependencies:
-                ( 
-                    sanei_parsing_info $MODULE $OPERATION
-                    non_default_setting_needed ${VAR_ENVVAR[@]}
-                    sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
-                )
+                if [[ $OPERATION != "install" ]]; then
+                    ( 
+                        sanei_parsing_info $MODULE $OPERATION
+                        non_default_setting_needed ${VAR_ENVVAR[@]}
+                        sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
+                    )
+                fi
 
                 # "" at the end as we must pass a final empty argument not to break certain scripts
                 source "$MODULE_DIR/$2.sh" "${@:3:${#@}}" ""
