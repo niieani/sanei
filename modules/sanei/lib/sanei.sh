@@ -18,7 +18,7 @@ if [[ -z $CONFIG ]]; then
     ( set -o posix ; set ) >/tmp/variables.before
     for file in $SCRIPT_DIR/config/* ; do
       if [ -f "$file" ] ; then
-        if [[ $VERBOSE -gt 1 ]]; then info "Loading config: $file"; fi
+        if [[ $VERBOSE -gt 4 ]]; then info "Loading config: $file"; fi
         source "$file"
       fi
     done
@@ -34,7 +34,7 @@ if [[ -z $CONFIG ]]; then
     # load local overrides
     for file in /opt/sanei/.config/* ; do
       if [ -f "$file" ] ; then
-        if [[ $VERBOSE -gt 1 ]]; then info "Loading local config: $file"; fi
+        if [[ $VERBOSE -gt 4 ]]; then info "Loading local config: $file"; fi
         source "$file"
       fi
     done
@@ -192,12 +192,14 @@ apt_install(){
         if $norecommends; then
             norecommends="--no-install-recommends"
         fi
-        apt-get $(add_silent_opt) "$norecommends" install $packages
+        if ! apt-get $(add_silent_opt) "$norecommends" install $packages; then
+            return 1
+        fi
     fi
 }
 is_apt_installed(){
     local package="$1"
-    if (dpkg -s "$package" >/dev/null); then
+    if (dpkg -s "$package" 2>/dev/null); then
         return 0
     else
         return 1
@@ -616,8 +618,10 @@ sanei_resolve_dependencies(){
             if [[ $module == apt\:* ]]; then
                 apt_package=$(echo "$module" | cut -c "5-")
                 if ! is_apt_installed "$apt_package"; then
-                    info "In order to continue, apt package $module needs to be installed."
-                    apt_install "$apt_package"
+                    info "In order to continue, apt package $apt_package needs to be installed."
+                    if ! apt_install "$apt_package"; then
+                        exit 1
+                    fi
                 fi
                 # set_installed "$module"
             else

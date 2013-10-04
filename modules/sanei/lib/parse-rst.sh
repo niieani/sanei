@@ -51,8 +51,8 @@ function parse_rst(){
 	# first stage:
 	declare -A lines
 	local file="$1"
-	local line_number=0
-	local prev_line_number=0
+	local line_number=1
+	local prev_line_number
 
 	# second stage:
 	# declare -a parsed_text
@@ -86,22 +86,36 @@ function parse_rst(){
 	list_numbered_alt='^#. (.+)$'
 	list_params='^- (.+)$'
 
+	started=0
+	first_content_line=1
+
 	# heading
 	#heading_regex="^(=+|-+|`+|:+|\.+|\'+|"+|~+|\^+|_+|\*+|\++|#+)"
 
 	# the great parsing looper:
 	# http://stackoverflow.com/questions/4165135/how-to-use-while-read-bash-to-read-the-last-line-in-a-file-if-theres-no-new
 	while IFS= read -r line || [[ -n "$line" ]]; do
+		line=$(tabs_to_spaces "$line")
 
-		prev_line_number=$line_number
+		if [[ $started -eq 0 && -z "$(trim_spacing "$line")" ]]; then
+
+			lines["$line_number,type"]=empty
+			((line_number++))
+			((first_content_line++))
+
+			continue
+		fi
+
+		started=1
+
+		prev_line_number=$(( $line_number - 1 ))
 		while [[ ${lines["$prev_line_number,type"]} == empty ]]; do
 			# ignoring empty lines for reference/start lines
 			((prev_line_number--))
 		done
-
-		((line_number++))
-
-		line=$(tabs_to_spaces "$line")
+		if [[ $prev_line_number -lt $first_content_line ]]; then
+			prev_line_number=$(($first_content_line - 1))
+		fi
 
 		# lines["$line_number,spacing"]
 		# prev: lines["$((line_number - 1)),spacing"]
@@ -140,7 +154,20 @@ function parse_rst(){
 		fi
 
 		# TODO: should recognize "source"
-		lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,value"]} ))
+		case "${lines["$line_number,type"]}" in
+			directive )
+				lines["$line_number,length"]=$(( ${lines["$line_number,spacing"]} + 3 ))
+				;;
+			field )
+				lines["$line_number,length"]=$(( ${lines["$line_number,spacing"]} + 1))
+				;;
+            * )
+				lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,value"]:-0} ))
+				;;
+		esac
+		
+		# lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,name"]:-0} - ${#lines["$line_number,value"]:-0} ))
+		# lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,value"]:-0} ))
 
 		# support for lists
 		if rematch "${lines["$line_number,value"]}" "$list_bulleted"; then
@@ -157,31 +184,51 @@ function parse_rst(){
 			lines["$line_number,value"]="$(rematch "${lines["$line_number,value"]}" "$list_params" 1)"
 		fi
 
-		if [[ -z "${lines["$line_number,type"]}" ]]; then
-			# if the spacing is the same as previous line
-			# -ge ${prev_line_number,parentline}
-			last_parent="${lines["$prev_line_number,parentline"]:-$prev_line_number}"
-			# echo "${lines["$last_parent,length"]}"
-			# "${lines["${lines["$prev_line_number,parentline"]",length"]}"
-			#if [[ "${lines["$line_number,length"]}" -ge "${lines["$last_parent,length"]}" || "${lines["$line_number,length"]}" -ge "${lines["$prev_line_number,length"]}" ]]; then
-			if [[ "${lines["$line_number,length"]}" -ge "${lines["$last_parent,length"]}" ]]; then
-				# continuing the same thing
-				# && [[ "${lines["$prev_line_number,type"]}" != empty ]]
-				#lines["$line_number,parentline"]="${lines["$prev_line_number,parentline"]:-$prev_line_number}"
+		# if the spacing is the same as previous line
+		# -ge ${prev_line_number,parentline}
+
+		last_parent="${lines["$prev_line_number,parentline"]:-$prev_line_number}"
+		# echo "${lines["$last_parent,length"]}"
+		# "${lines["${lines["$prev_line_number,parentline"]",length"]}"
+		#if [[ "${lines["$line_number,length"]}" -ge "${lines["$last_parent,length"]}" || "${lines["$line_number,length"]}" -ge "${lines["$prev_line_number,length"]}" ]]; then
+		if [[ "${lines["$line_number,length"]}" -ge "${lines["$last_parent,length"]}" && "$prev_line_number" -ge "$first_content_line" ]]; then
+			# continuing the same thing
+			# && [[ "${lines["$prev_line_number,type"]}" != empty ]]
+			#lines["$line_number,parentline"]="${lines["$prev_line_number,parentline"]:-$prev_line_number}"
+
+			if [[ -z "${lines["$line_number,type"]}" ]]; then
 				lines["$line_number,parentline"]="$last_parent"
-				if [[ "$last_parent" -gt 0 && $(( ${lines["$line_number,length"]} - ${lines["$last_parent,length"]} )) -gt 0 ]]; then
-					lines["$line_number,indentation"]=$(( ${lines["$line_number,length"]} - ${lines["$last_parent,length"]} ))
+				if [[ "$last_parent" -gt 0 && $(( ${lines["$line_number,length"]} - ${lines["$last_parent,length"]:-0} )) -gt 0 ]]; then
+					indentation_based_upon=$(( $last_parent + 1 ))
+					lines["$line_number,indentation"]=$(( ${lines["$line_number,length"]} - ${lines["$indentation_based_upon,length"]} ))
 				fi
-				# lines["$line_number,type"]="${lines["$prev_line_number,type"]}"
-			else
-				lines["$line_number,type"]=text
 			fi
+			# "${lines["$line_number,type"]}"==field && 
+
+
+			# lines["$line_number,type"]="${lines["$prev_line_number,type"]}"
+		elif [[ -z "${lines["$line_number,type"]}" ]]; then
+			lines["$line_number,type"]=text
 		fi
+
+		parent_line_number=$line_number
+				
+		until [[ "${lines["$parent_line_number,type"]}" && "${lines["$parent_line_number,type"]}" != empty && "${lines["$parent_line_number,length"]}" -lt "${lines["$line_number,length"]}" ]] || [[ $parent_line_number -le "$first_content_line" ]]; do
+			((parent_line_number--))
+		done
+		# if [[ "${lines["$line_number,type"]}" != "${lines["$parent_line_number,type"]}" ]]; then
+			lines["$line_number,parentblock"]="$parent_line_number"
+		# fi
 
 		# second stage of parsing:
 
+		# while [[ ${parsed_type[$last_defined_parsed_segment]} == empty ]]; do
+		# 	# ignoring empty lines for reference/start lines
+		# 	((prev_line_number--))
+		# done
+
 		if [[ "${lines["$line_number,type"]}" != empty ]]; then
-			#statements
+			
 
 			if [[ -z "${lines["$line_number,parentline"]}" ]]; then
 				# parent="${lines["$line_number,parentline"]}"
@@ -189,8 +236,7 @@ function parse_rst(){
 			# elif [[ "${lines["$((line_number - 1)),type"]}" == empty ]]; then
 				# echo "${lines["${lines["$line_number,parentline"]},type"]}"
 			# if prev line is empty and this line has a parent and type = text or source then add enter
-			elif [[ "${lines["$((line_number - 1)),type"]}" == empty ]]; then
-				# && [[ "${lines["${lines["$line_number,parentline"]},type"]}" == source || "${lines["${lines["$line_number,parentline"]},type"]}" == text ]]; then
+			elif [[ "${lines["$((line_number - 1)),type"]}" == empty ]] && [[ "${lines["${lines["$line_number,parentline"]},type"]}" == source || "${lines["${lines["$line_number,parentline"]},type"]}" == text || "${lines["${lines["$line_number,parentline"]},type"]}" == field ]]; then  #"${lines["${lines["$line_number,parentline"]},type"]}"
 				parsed_text[$parsed_segment]+="
 "
 			fi
@@ -215,6 +261,11 @@ function parse_rst(){
 				parsed_text[$parsed_segment]+="
 "
 			fi
+			if [[ "${lines["$line_number,parentblock"]}" && "$parsed_segment" != "${lines["${lines["$line_number,parentblock"]},segment"]}" ]]; then
+				parsed_parent[$parsed_segment]="${lines["${lines["$line_number,parentblock"]},segment"]}" #"${lines["${lines["$line_number,parentline"]},type"]}"
+			fi
+			
+			lines["$line_number,segment"]=$parsed_segment
 			parsed_text[$parsed_segment]+="$(space_x_times "${lines["$line_number,indentation"]}")${lines["$line_number,value"]}"
 
 		# elif [[ "${lines["$((line_number - 1)),type"]}"==empty ]]; then
@@ -222,9 +273,33 @@ function parse_rst(){
 			# ((parsed_segment++))
 			# parsed_type[$parsed_segment]="${lines["${lines["$prev_line_number,parentline"]},type"]}" #"${lines["${lines["$line_number,parentline"]},type"]}"
 		fi
-		[[ $VERBOSE -ge 2 ]] && ( echo -e "$line_number.\t(${lines["$line_number,length"]})\t<p:${lines["$line_number,parentline"]}>\t[${lines["$line_number,type"]}]\t\t${lines["$line_number,name"]}\t${lines["$line_number,value"]}" )
+
+		# if [[ ${parsed_type[$parsed_segment]} ==  ]]; then
+		# 	#statements
+		# fi
+		
+		#[[ $VERBOSE -ge 2 && $INVOKED_COUNT -le 2 ]] && ( echo "$line" )
+		[[ $VERBOSE -ge 2 && $INVOKED_COUNT -le 2 ]] && ( echo -e "$line_number.\t(${lines["$line_number,length"]})\t<p:${lines["$line_number,parentline"]}><b:${lines["$line_number,parentblock"]}><s:${lines["$line_number,segment"]}>\t[${lines["$line_number,type"]}]\t\t${lines["$line_number,name"]}\t${lines["$line_number,value"]}" )
+
+		((line_number++))
 	done < "$file"
 
 	total_lines=$line_number
 
 }
+
+# todo:
+#
+# example_operation.module = example.operation
+# example_operation.module.synopsis = An example operation.
+# example_operation.module.platform = raring
+#
+# module.description = This is an example of a long description.
+# 						It can span over multiple lines.
+# 						And we can use **coloring** *like* that.
+#
+# 						More info on possibilities:
+# 						http://sphinx-doc.org/domains.html
+#
+# variables.envvar.1 = HOSTNAME
+# variables.envvar.2 = BLABLA

@@ -27,7 +27,10 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 
+'sphinxcontrib.issuetracker',
+'sphinx.ext.coverage'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['.templates']
@@ -36,14 +39,14 @@ templates_path = ['.templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-#source_encoding = 'utf-8-sig'
+# source_encoding = 'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
 project = 'SANEi'
-copyright = '2013, Bazyli Brzóska'
+copyright = '2013, Bazyli Brzoska'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -83,7 +86,8 @@ exclude_patterns = []
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'colorful'
+# pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -93,7 +97,15 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'celery'
+
+html_theme_path = [".theme"]
+
+# html_sidebars = {
+#     'index': ['sidebarintro.html', 'sourcelink.html', 'searchbox.html'],
+#     '**': ['sidebarlogo.html', 'relations.html',
+#            'sourcelink.html', 'searchbox.html'],
+# }
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -123,6 +135,17 @@ html_theme = 'default'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['.static']
+
+html_use_smartypants = True
+
+add_module_names = True
+highlight_language = 'bash'
+
+# If false, no module index is generated.
+html_use_modindex = True
+
+# If false, no index is generated.
+html_use_index = True
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -168,6 +191,13 @@ html_static_path = ['.static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'SANEidoc'
 
+### Issuetracker
+
+if False:
+    issuetracker = "github"
+    issuetracker_project = "sanei/sanei"
+    issuetracker_issue_pattern = r'[Ii]ssue #(\d+)'
+
 
 # -- Options for LaTeX output --------------------------------------------------
 
@@ -186,7 +216,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'SANEi.tex', 'SANEi Documentation',
-   'Bazyli Brzóska', 'manual'),
+   'Bazyli Brzoska', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -216,7 +246,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'sanei', 'SANEi Documentation',
-     ['Bazyli Brzóska'], 1)
+     ['Bazyli Brzoska'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -230,7 +260,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'SANEi', 'SANEi Documentation',
-   'Bazyli Brzóska', 'SANEi', 'One line description of project.',
+   'Bazyli Brzoska', 'SANEi', 'One line description of project.',
    'Miscellaneous'),
 ]
 

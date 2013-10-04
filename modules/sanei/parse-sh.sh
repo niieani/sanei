@@ -8,11 +8,20 @@
 
 source_file="$1"
 output_prefix="${2:-VAR_}"
-temp_file="/tmp/doc.rst"
+temp_file="/tmp/doc_$(basename "$source_file").rst"
 
-# prepare the file
-$VENDOR_DIR/bashdoc/bashdoc -o "$temp_file" -H better.basic raw "$source_file"
+if [[ -f "$source_file" ]]; then
+	# prepare the file
+	$VENDOR_DIR/bashdoc/bashdoc -o "$temp_file" -H better.basic raw "$source_file"
 
-# invoke parsing
-sanei_invoke_module_script sanei parse-raw "$temp_file" "$output_prefix"
-rm "$temp_file"
+	if [[ -f "$temp_file" ]]; then
+		# invoke parsing
+		sanei_invoke_module_script sanei parse-raw "$temp_file" "$output_prefix"
+		rm "$temp_file"
+	else
+		error "bashdoc didn't generate the file."
+	fi
+
+else
+	error "Source file $source_file doesn't exist."
+fi

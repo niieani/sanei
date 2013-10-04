@@ -1,3 +1,24 @@
+# Example Operation
+# =================
+# .. module:: sanei.internal.generate-docs
+#    :synopsis: Generates documentation for SANEi.
+#    :platform: raring
+# .. moduleauthor:: Bazyli Brzoska <bazyli.brzoska@gmail.com>
+#
+# :Dependencies: - apt:python-sphinxcontrib.issuetracker
+#
+# Arguments
+# +++++++++
+#
+# .. cmdoption:: $1
+#
+#    Output dir for docs.
+#
+# .. cmdoption:: $2
+#
+#    Source dir of the script.
+#
+
 output_dir="${1:-$DOCS_DIR}/source"
 source_dir="${2:-$SCRIPT_DIR}"
 
