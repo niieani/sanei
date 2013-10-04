@@ -1,12 +1,22 @@
-# :Date: 2013-09-28
-# :Version: 1
-# :Author: Bazyli Brzoska
+# :program:delicious
+# ==================
+# .. module:: website-archiver.delicious
+# .. program:: delicious
+# .. cmdoption:: test
+#
+#    The first parameter.
+#
+# .. envvar:: DELICIOUS_API_KEY
+#
+#    Your API key for Delicious.
+# 
 # :Variables: - DELICIOUS_API_KEY
 #             - DELICIOUS_LOGIN
 #             - DELICIOUS_PASSWORD
+# :Dependencies: - jq
+#                - apt:curl
 # :Description: takes all tasks tagged **!archive**, 
-#               makes a local copy of them 
-#               
+#               makes a local copy of them
 #               and renames the tag **!archive** to **!local-copy**
 #
 non_default_setting_needed DELICIOUS_API_KEY DELICIOUS_LOGIN DELICIOUS_PASSWORD DELICIOUS_SYSTEM_USER

@@ -63,6 +63,8 @@ function parse_rst(){
 
 	# required parsing styles
 
+	# TODO: better lexers /usr/share/pyshared/pygments/lexers/text.py
+
 	# directive
 	# .. module:: parrot
 	directive_regex='^.. ([a-zA-Z0-9]+)::[ ]*(.*)'
@@ -84,7 +86,8 @@ function parse_rst(){
 	list_numbered_alt='^#. (.+)$'
 	list_params='^- (.+)$'
 
-
+	# heading
+	#heading_regex="^(=+|-+|`+|:+|\.+|\'+|"+|~+|\^+|_+|\*+|\++|#+)"
 
 	# the great parsing looper:
 	# http://stackoverflow.com/questions/4165135/how-to-use-while-read-bash-to-read-the-last-line-in-a-file-if-theres-no-new

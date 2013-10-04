@@ -5,7 +5,10 @@ if ! LOCAL_HOSTNAME=$(hostname --fqdn 2> /dev/null); then
 	LOCAL_HOSTNAME=$(hostname 2> /dev/null)
 fi
 IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
-MODULES_DIR=$SCRIPT_DIR/modules
-VENDOR_DIR=$SCRIPT_DIR/vendor
-RUN_DIR=$SCRIPT_DIR/run
+MODULES_DIR="$SCRIPT_DIR/modules"
+VENDOR_DIR="$SCRIPT_DIR/vendor"
+DOCS_DIR="$SCRIPT_DIR/docs"
+BASHDOC_LIB="$VENDOR_DIR/bashdoc/lib"
+SANEI_LIB="$MODULES_DIR/sanei/lib"
+RUN_DIR="$SCRIPT_DIR/run"
 HOME_DIR=$HOME

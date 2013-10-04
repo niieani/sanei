@@ -258,6 +258,19 @@ list_files_recursive(){
         find -L ${dir} -type f -printf "%P\n" | sed '/^$/d' | sort
     fi
 }
+recreate_dir_structure(){
+    local source=$1
+    local target=$2
+    if [[ -d $source ]]; then
+        (
+            mkdir -v -p "$target" | sed "s/^/${space:0:5}/"
+            cd "$target"
+            list_dirs_recursive "$source" | while read dir; do mkdir -p "$dir"; done
+        )
+    else
+        return 1
+    fi
+}
 list_installed(){
     local dir=$1
     list_files $TEMPLATE_ROOT$SANEI_DIR | grep ".install." | sed s/.install.//
@@ -270,7 +283,7 @@ link(){
 
     if [[ ! $source == *.gitignore ]]; 
     then
-        if [[ $VERBOSE == 1 ]]; then info "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE -ge 1 ]]; then info "${space:0:$padding}Linking: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         backup_file "$target" "" $newpadding
         # this shouldn't be necessary:
         if [[ -h "$target" ]]; then rm "$target"; fi
@@ -283,16 +296,17 @@ link_all_files(){
     local target=$2
     if [[ -d $source ]]; then
         if [[ $VERBOSE == 1 ]]; then info "Linking files in directory: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
-        (cd $target; find -L $source -maxdepth 1 -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+        (cd $target; list_files "$source" | while read file; do link "$source/$file" "$target/$file" 5; done)
     fi
 }
 link_all_files_recursive(){
     local source=$1
     local target=$2
     if [[ -d $source ]]; then
-        if [[ $VERBOSE == 1 ]]; then info "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
-        (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
-        (cd $target; find -L $source -type f -printf "%P\n" | while read file; do link "$source/$file" "$target/$file" 5; done)
+        if [[ $VERBOSE -ge 1 ]]; then info "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        recreate_dir_structure "$source" "$target"
+        # (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
+        (cd $target; list_files_recursive "$source" | while read file; do link "$source/$file" "$target/$file" 5; done)
     fi
 }
 link_all_dirs(){
@@ -310,7 +324,7 @@ add_verbosity_opt(){
     local at_level=$1
     local param=$2
     if [[ -z $param ]]; then param="-v"; fi
-    if [[ $VERBOSE == $at_level ]]; then
+    if [[ $VERBOSE -ge $at_level ]]; then
         echo $param
     fi
 }
@@ -359,10 +373,12 @@ fill_template_recursive(){
     local padding=$3
     local newpadding=$(( $padding + 5 ))
     if [[ -d $source ]]; then
-        if [[ $VERBOSE == 1 ]]; then info "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
+        if [[ $VERBOSE -ge 1 ]]; then info "Copying & filling files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         cleanup "$target"
-        (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
-        (cd $target; find -L $source -type f -printf "%P\n" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
+        recreate_dir_structure "$source" "$target"
+        # (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
+        #  find -L $source -type f -printf "%P\n"
+        (cd $target; list_files_recursive | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
     fi
 }
 enter_container(){
@@ -399,7 +415,7 @@ generate_passphrase() {
 }
 is_empty_config(){
     # http://stackoverflow.com/questions/228544/how-to-tell-if-a-string-is-not-defined-in-a-bash-shell-script
-    local varname_to_test=$1
+    local varname_to_test="$1"
     if [ -z "${!varname_to_test}" ] && [ "${!varname_to_test+test}" = "test" ]; then
         return 0
     else
@@ -407,7 +423,7 @@ is_empty_config(){
     fi
 }
 ask_for_config(){
-    local var=$1
+    local var="$1"
     local input
     read input
     if [[ -z "$input" ]]; then
@@ -457,7 +473,12 @@ dialog_selector_generate(){
     eval $DIALOG_CMD
     return $?
 }
-
+function sanei_get_required_vars(){
+    local module="$1"
+    local operation="$2"
+    local var_prefix="$3"
+    NO_SUBSHELL=true sanei_invoke_module_script sanei parse-sh "$MODULES_DIR/$module/$operation.sh" "$var_prefix"
+}
 # sanei specific functions:
 sanei_invoke_module_script(){
     # $1 module
@@ -467,9 +488,11 @@ sanei_invoke_module_script(){
     local LOCAL_MODULE_DIR
     if [[ $1 && -d $SCRIPT_DIR/modules/$1 ]]; then
         if [[ -f $SCRIPT_DIR/modules/$1/$2.sh ]]; then
+            if [[ -z $NO_SUBSHELL ]]; then
             ( # start a subshell
                 # locally available variables
                 MODULE="$1"
+                OPERATION="$2"
                 MODULE_DIR="$SCRIPT_DIR/modules/$1"
                 LOCAL_MODULE_DIR="$SANEI_DIR/$1"
                 if [[ -f $MODULE_DIR/functions.sh ]]; then
@@ -478,10 +501,23 @@ sanei_invoke_module_script(){
                 if [[ -f $MODULE_DIR/dependencies.sh ]]; then
                     source $MODULE_DIR/dependencies.sh
                 fi
+                # new system of dependencies:
+                ( 
+                    sanei_get_required_vars $MODULE $OPERATION
+                    non_default_setting_needed ${VAR_ENVVAR[@]}
+                    sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
+                    # for var in "${VAR_ENVVAR[@]}"; do
+                    #     sanei_resolve_dependencies
+                    # done
+                )
 
                 # "" at the end as we must pass a final empty argument not to break certain scripts
-                source $MODULE_DIR/$2.sh "${@:3:${#@}}" ""
+                source "$MODULE_DIR/$2.sh" "${@:3:${#@}}" ""
             )
+            else
+                source "$SCRIPT_DIR/modules/$1/$2.sh" "${@:3:${#@}}" ""
+                unset NO_SUBSHELL
+            fi
         else
             if [[ $2 ]]; then
                 error "No operation $2 for module $1."
@@ -489,6 +525,8 @@ sanei_invoke_module_script(){
             echo "Available commands are:"
             list_files "$SCRIPT_DIR/modules/$1" | grep "\.sh$" | sed s/.sh$// | sed "s/^/  /"
         fi
+    else
+        return 1
     fi
 }
 sanei_install_select(){
@@ -694,7 +732,7 @@ sanei_list_modules(){
     list_dirs $SCRIPT_DIR/modules
 }
 sanei_list_modules_with_status(){
-    local dialog_mode=$1
+    local dialog_mode="$1"
     local module
     for module in $(sanei_list_modules); do
         if [[ $dialog_mode ]]; then
@@ -711,6 +749,7 @@ sanei_clean_installed_modules(){
     done
 }
 sanei_get_module_description(){
+    local module="$1"
     # TODO:
     printf "\"\""
 }

@@ -1,0 +1,1 @@
+sanei_install "$@"

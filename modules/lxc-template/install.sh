@@ -4,8 +4,8 @@ if [[ ! is_special_module_runtime ]]; then
 fi
 
 if [ -z $1 ]; then
-        echo "No name given"
-        exit 1
+    echo "No name given"
+    exit 1
 fi
 
 sanei_resolve_dependencies "lxc-host"

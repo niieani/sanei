@@ -13,25 +13,3 @@
 :Description: takes all tasks tagged **!archive**, 
               makes a local copy of them 
               and changes the tag **!archive** to **!local-copy**
-
-just text
-more text
-indent enter here
-
-
-    more text
-    one hit should be there
-
-:mod:section
-
-* test
-* test2
-* test3
-    * indented
-    1. test
-    2. test2
-
-    lalala
-
-:test:something else
-some text

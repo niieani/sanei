@@ -2,7 +2,7 @@ source_file="$1"
 output_prefix="${2:-VAR_}"
 
 # load the lib
-source $MODULE_DIR/lib/parse-rst.sh
+source "$SANEI_LIB/parse-rst.sh"
 # start the parsing
 declare -a parsed_name
 declare -a parsed_text
@@ -29,8 +29,8 @@ fi
 # for each parsed part that has a name (fields, directives, sections), export it into a variable
 for key in ${!parsed_name[@]}; do
 	field_name="${output_prefix}$(sanitize "${parsed_name[$key]}")"
-	export "$field_name"="${parsed_text[$key]}"
+	eval "$field_name=(\"\${$field_name[@]}\" \"${parsed_text[$key]}\")"
 	# export "${output_prefix}${parsed_name[$key]}"="${parsed_text[$key]}"
 done
-
+# declare -p VAR_ENVVAR
 # echo "$VAR_VARIABLES"
