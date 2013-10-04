@@ -515,6 +515,7 @@ sanei_invoke_module_script(){
                     sanei_parsing_info $MODULE $OPERATION
                     non_default_setting_needed ${VAR_ENVVAR[@]}
                     sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
+                    echo deps ${VAR_DEPENDENCIES[@]}
                     # for var in "${VAR_ENVVAR[@]}"; do
                     #     sanei_resolve_dependencies
                     # done
@@ -682,9 +683,12 @@ sanei_update(){
         fi
 
         if [ "$HOME_DIR" != "/root" ]; then
-            if logname; then
+            if logname 2&> /dev/null; then
                 user=$(logname)
                 # TODO: do this at the copying/linking level
+                chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
+            elif [[ -z "$SUDO_USER" ]]; then
+                user="$SUDO_USER"
                 chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
             else
                 error "Cannot find the real username."

@@ -1,1 +1,1 @@
-/root/.byobu/keybindings
+keybindings
