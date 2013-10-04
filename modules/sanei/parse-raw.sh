@@ -39,12 +39,13 @@ if [[ -f "$source_file" ]]; then
 		eval "$field_name=(\"\${$field_name[@]}\" \"\${parsed_text[$key]}\")"
 
 		#eval "$field_name=($glued \"\${parsed_text[$key]}\")"
-		# export "${output_prefix}${parsed_name[$key]}"="${parsed_text[$key]}"
+		export "${output_prefix}${parsed_name[$key]}"="${parsed_text[$key]}"
+		# echo "${output_prefix}${parsed_name[$key]}"
 	done
 	# declare -p VAR_ENVVAR
 	# declare -p parsed_parent
 	# echo "$VAR_VARIABLES"
-	echo ${VAR_ENVVAR[0]} | sed -n 1p
+	#echo ${VAR_ENVVAR[0]} | sed -n 1p
 else
 	error "Source file $source_file doesn't exist."
 fi

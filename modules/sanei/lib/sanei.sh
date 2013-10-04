@@ -199,7 +199,7 @@ apt_install(){
 }
 is_apt_installed(){
     local package="$1"
-    if (dpkg -s "$package" 2>/dev/null); then
+    if (dpkg -s "$package" 2&>/dev/null); then
         return 0
     else
         return 1
@@ -479,6 +479,7 @@ sanei_parsing_info(){
     local module="$1"
     local operation="$2"
     local var_prefix="$3"
+        echo parsing "$MODULES_DIR/$module/README.rst"
     if [[ -f "$MODULES_DIR/$module/README.rst" ]]; then
         NO_SUBSHELL=true sanei_invoke_module_script sanei parse-raw "$MODULES_DIR/$module/README.rst" "$var_prefix"
     fi
@@ -497,6 +498,7 @@ sanei_invoke_module_script(){
             if [[ -z $NO_SUBSHELL ]]; then
             ( # start a subshell
                 # locally available variables
+                echo $1
                 MODULE="$1"
                 OPERATION="$2"
                 MODULE_DIR="$SCRIPT_DIR/modules/$1"
@@ -515,10 +517,6 @@ sanei_invoke_module_script(){
                     sanei_parsing_info $MODULE $OPERATION
                     non_default_setting_needed ${VAR_ENVVAR[@]}
                     sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
-                    echo deps ${VAR_DEPENDENCIES[@]}
-                    # for var in "${VAR_ENVVAR[@]}"; do
-                    #     sanei_resolve_dependencies
-                    # done
                 )
 
                 # "" at the end as we must pass a final empty argument not to break certain scripts
@@ -579,6 +577,11 @@ sanei_install(){
                     rm_installed "$module"
                 fi
             fi
+            ( 
+                sanei_parsing_info $module "install"
+                non_default_setting_needed ${VAR_ENVVAR[@]}
+                sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
+            )
 
             info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
