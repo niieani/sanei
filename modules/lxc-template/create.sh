@@ -42,6 +42,7 @@ enter_container $TEMPLATE_NAME
 	fi
 
 	link $SCRIPT_DIR/sanei $TEMPLATE_ROOT/usr/bin/sanei
+	link $SCRIPT_DIR/sanei $TEMPLATE_ROOT/usr/bin/sanmod
 	
 	# inside of the new template
 	# set_installed lxc-common

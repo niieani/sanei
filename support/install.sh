@@ -27,3 +27,4 @@ cd $SCRIPT_DIR
 git submodule init && git submodule update && git submodule status
 
 ln -s $SCRIPT_DIR/sanei /usr/bin/sanei
+ln -s $SCRIPT_DIR/sanei /usr/bin/sanmod
