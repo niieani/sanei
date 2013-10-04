@@ -308,7 +308,10 @@ link_all_files_recursive(){
         if [[ $VERBOSE -ge 1 ]]; then info "Linking files recursively in: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
         recreate_dir_structure "$source" "$target"
         # (mkdir -v -p $target | sed "s/^/${space:0:5}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
-        (cd $target; list_files_recursive "$source" | while read file; do link "$source/$file" "$target/$file" 5; done)
+        (
+            cd $target
+            list_files_recursive "$source" | while read file; do link "$source/$file" "$target/$file" 5; done
+        )
     fi
 }
 link_all_dirs(){
@@ -380,7 +383,11 @@ fill_template_recursive(){
         recreate_dir_structure "$source" "$target"
         # (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         #  find -L $source -type f -printf "%P\n"
-        (cd $target; list_files_recursive | while read file; do echo "$source/$file" => "$target/$file"; fill_template "$source/$file" "$target/$file" $padding; done)
+        (
+            cd $target
+            # echo "$source/$file" => "$target/$file"; 
+            list_files_recursive "$source" | while read file; do fill_template "$source/$file" "$target/$file" $padding; done
+        )
     fi
 }
 enter_container(){
