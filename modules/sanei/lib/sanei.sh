@@ -693,7 +693,7 @@ sanei_update(){
                 user=$(logname)
                 # TODO: do this at the copying/linking level
                 chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
-            elif [[ -z "$SUDO_USER" ]]; then
+            elif [[ "$SUDO_USER" ]]; then
                 user="$SUDO_USER"
                 chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
             else
