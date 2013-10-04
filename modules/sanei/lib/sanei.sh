@@ -475,7 +475,7 @@ dialog_selector_generate(){
     eval $DIALOG_CMD
     return $?
 }
-sanei_get_required_vars(){
+sanei_parsing_info(){
     local module="$1"
     local operation="$2"
     local var_prefix="$3"
@@ -504,12 +504,15 @@ sanei_invoke_module_script(){
                 if [[ -f $MODULE_DIR/functions.sh ]]; then
                     source $MODULE_DIR/functions.sh
                 fi
+
+                # TODO: deprecated:
+
                 if [[ -f $MODULE_DIR/dependencies.sh ]]; then
                     source $MODULE_DIR/dependencies.sh
                 fi
                 # new system of dependencies:
                 ( 
-                    sanei_get_required_vars $MODULE $OPERATION
+                    sanei_parsing_info $MODULE $OPERATION
                     non_default_setting_needed ${VAR_ENVVAR[@]}
                     sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
                     # for var in "${VAR_ENVVAR[@]}"; do
@@ -665,9 +668,13 @@ sanei_update(){
         fill_template_recursive $SCRIPT_DIR/modules/$module/root-template $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
 
         if [[ -d $SCRIPT_DIR/modules/$module/root ]]; then
-            link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
-            # link also folders #
-            link_all_dirs $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
+            if [[ "$HOME_DIR" == "/root" ]]; then
+                link_all_files $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
+                # link also folders #
+                link_all_dirs $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
+            else # if we're not using root - we don't want permissions problems
+                copy_all_files_recursive $SCRIPT_DIR/modules/$module/root $TEMPLATE_ROOT$HOME_DIR $PADDING_SIZE
+            fi
         fi
 
         if [[ -f $SCRIPT_DIR/modules/$module/post-update.sh ]]; then

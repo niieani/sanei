@@ -32,12 +32,19 @@ if [[ -f "$source_file" ]]; then
 	# for each parsed part that has a name (fields, directives, sections), export it into a variable
 	for key in ${!parsed_name[@]}; do
 		field_name="${output_prefix}$(sanitize "${parsed_name[$key]}")"
-		eval "$field_name=(\"\${$field_name[@]}\" \"${parsed_text[$key]}\")"
+		#echo "${parsed_text[$key]}"
+		# for elem in "${field_name[@]}"; do
+		# 	glued = glued + "'$elem'"
+		# done
+		eval "$field_name=(\"\${$field_name[@]}\" \"\${parsed_text[$key]}\")"
+
+		#eval "$field_name=($glued \"\${parsed_text[$key]}\")"
 		# export "${output_prefix}${parsed_name[$key]}"="${parsed_text[$key]}"
 	done
 	# declare -p VAR_ENVVAR
 	# declare -p parsed_parent
 	# echo "$VAR_VARIABLES"
+	echo ${VAR_ENVVAR[0]} | sed -n 1p
 else
 	error "Source file $source_file doesn't exist."
 fi
