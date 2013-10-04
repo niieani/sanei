@@ -354,8 +354,8 @@ fill_template(){
 
     if [[ ! $source == *.gitignore ]]; then
         if [[ $VERBOSE == 2 ]]; then info "${space:0:$padding}Copying: ${LIGHTGREEN}${source} ${LIGHTRED}=> ${WHITE}${target}${RESET}"; fi
-        backup_file $target "" $newpadding
-        cp -a $source $target
+        backup_file "$target" "" $newpadding
+        cp -a "$source" "$target"
 
 	if [[ ! -h $source ]]; then
             for key in ${!ConfigArr[@]}; do
@@ -363,7 +363,7 @@ fill_template(){
 	        	# echo "s/@@${key}@@/${ConfigArr[$key]}/g"
 			    # escape
 			    newOutput=$(echo ${ConfigArr[$key]} | sed -e 's/[\/&]/\\&/g')
-		        sed -i "s/@@${key}@@/${newOutput}/g" $target
+		        sed -i "s/@@${key}@@/${newOutput}/g" "$target"
 		        #echo "ConfigArr[$key] = ${ConfigArr[$key]}"
             done
         fi
@@ -380,7 +380,7 @@ fill_template_recursive(){
         recreate_dir_structure "$source" "$target"
         # (mkdir -v -p $target | sed "s/^/${space:0:$newpadding}/"; cd $target; find -L ${source} -mindepth 1 -depth -type d -printf "%P\n" | while read dir; do mkdir -p "$dir"; done)
         #  find -L $source -type f -printf "%P\n"
-        (cd $target; list_files_recursive | while read file; do fill_template "$source/$file" "$target/$file" $padding; done)
+        (cd $target; list_files_recursive | while read file; do echo "$source/$file" => "$target/$file"; fill_template "$source/$file" "$target/$file" $padding; done)
     fi
 }
 enter_container(){
