@@ -1,0 +1,4 @@
+[phpMyAdmin]
+title=phpMyAdmin
+description=phpMyAdmin under nginx
+ports=@@PMA_PORT@@/tcp

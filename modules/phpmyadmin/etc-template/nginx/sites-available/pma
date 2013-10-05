@@ -3,6 +3,6 @@ server {
         server_name @@PMA_HOSTNAME@@;
         root /usr/share/phpmyadmin;
 
-        include _defaults_php_single;
+        include sanei/php-single.conf;
         client_max_body_size 1024m;
 }
