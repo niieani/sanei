@@ -76,6 +76,9 @@ usermod -G sftp "$USERNAME"
 # this already happens via adduser
 # usermod -s /bin/false "$USERNAME"
 
+# adding permissions for nginx to be able to read files
+adduser www-data "$USERNAME"
+
 # extra security
 chown root:root "$SRV_DIR/$USERNAME"
 chmod 0755 "$SRV_DIR/$USERNAME"

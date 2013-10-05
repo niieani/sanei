@@ -11,8 +11,8 @@ server {
 	        try_files $uri $uri/ /index.php$uri?$args;
 	}
 
-	access_log /srv/log/@@USERNAME@@.access.log;
-	error_log /srv/log/@@USERNAME@@.error.log;
+	access_log /srv/@@USERNAME@@/srv/log/@@USERNAME@@.access.log;
+	error_log /srv/@@USERNAME@@/srv/log/@@USERNAME@@.error.log;
 }
 server {
 	server_name www.@@HOSTNAME@@;
