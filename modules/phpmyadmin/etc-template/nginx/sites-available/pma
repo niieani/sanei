@@ -1,5 +1,5 @@
 server {
-        listen @@PMA_PORT@@;
+        listen @@PMA_PORT@@ ssl;
         server_name @@PMA_HOSTNAME@@;
         root /usr/share/phpmyadmin;
 

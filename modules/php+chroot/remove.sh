@@ -25,6 +25,7 @@ USERNAME=$1
 
 unmount_website $USERNAME
 
+deluser $USERNAME www-data
 # Remove the user and their home directory
 userdel -rf $USERNAME
 # Delete the users group from the system
