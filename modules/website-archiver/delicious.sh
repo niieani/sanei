@@ -19,7 +19,7 @@
 #               makes a local copy of them
 #               and renames the tag **!archive** to **!local-copy**
 #
-non_default_setting_needed DELICIOUS_API_KEY DELICIOUS_LOGIN DELICIOUS_PASSWORD DELICIOUS_SYSTEM_USER
+resolve_settings DELICIOUS_API_KEY DELICIOUS_LOGIN DELICIOUS_PASSWORD DELICIOUS_SYSTEM_USER
 sanei_resolve_dependencies jq apt:curl
 
 local delicious_url;

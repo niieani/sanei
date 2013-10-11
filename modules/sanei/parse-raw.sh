@@ -1,5 +1,6 @@
 source_file="$1"
 output_prefix="${2:-VAR_}"
+output_temp_path="${3:-/tmp}"
 
 if [[ -f "$source_file" ]]; then
 
@@ -32,16 +33,40 @@ if [[ -f "$source_file" ]]; then
 	# for each parsed part that has a name (fields, directives, sections), export it into a variable
 	for key in ${!parsed_name[@]}; do
 		field_name="${output_prefix}$(sanitize "${parsed_name[$key]}")"
+		#echo "${$field_name[@]}" > "/tmp/$field_name"
+		echo "${parsed_text[$key]}" >> "$output_temp_path/$field_name"
+
 		#echo "${parsed_text[$key]}"
 		# for elem in "${field_name[@]}"; do
 		# 	glued = glued + "'$elem'"
 		# done
+
 		eval "$field_name=(\"\${$field_name[@]}\" \"\${parsed_text[$key]}\")"
 
 		#eval "$field_name=($glued \"\${parsed_text[$key]}\")"
-		export "${output_prefix}${parsed_name[$key]}"="${parsed_text[$key]}"
+
+		#export "${output_prefix}${parsed_name[$key]}"="${parsed_text[$key]}"
+
 		# echo "${output_prefix}${parsed_name[$key]}"
 	done
+
+	# get unique names
+	printf -v all_vars "%s\n" "${parsed_name[@]}"
+	all_vars=$(echo "${all_vars%.}" | sort | uniq)
+
+	# TODO: when the configuration loading function is ready - dump this to a config file instead
+	for key in $all_vars; do
+		field_name="${output_prefix}$(sanitize "$key")"
+		# export "$field_name"="$(cat "$output_temp_path/$field_name")"
+
+		# rm "$output_temp_path/$field_name"
+
+		#statements
+	done
+
+	# export "${output_prefix}FIELDS_LIST"="$all_vars"
+	export "PARSED_FIELDS_LIST"="$all_vars"
+
 	# declare -p VAR_ENVVAR
 	# declare -p parsed_parent
 	# echo "$VAR_VARIABLES"

@@ -424,10 +424,15 @@ generate_passphrase() {
 }
 is_empty_config(){
     # http://stackoverflow.com/questions/228544/how-to-tell-if-a-string-is-not-defined-in-a-bash-shell-script
+
     local varname_to_test="$1"
-    if [ -z "${!varname_to_test}" ] && [ "${!varname_to_test+test}" = "test" ]; then
+    # echo "testing for empty: $varname_to_test (${!varname_to_test})"
+    # if [ -z "${!varname_to_test}" ] && [ "${!varname_to_test+test}" = "test" ]; then
+    if [ -z "${!varname_to_test}" ]; then
+        # echo "empty"
         return 0
     else
+        # echo "not empty"
         return 1
     fi
 }
@@ -441,11 +446,12 @@ ask_for_config(){
         store_shared_config "$var" "$input"
     fi
 }
-non_default_setting_needed(){
+resolve_settings(){
     local error=false
     local var
     for var in "$@"
     do
+        # echo "testing for resolve of $var"
         if is_empty_config "$var"; then
             info "You need to provide ${WHITE}${var}${RESET} first:"
             if ! ask_for_config "$var"; then
@@ -482,16 +488,36 @@ dialog_selector_generate(){
     eval $DIALOG_CMD
     return $?
 }
+# TODO: belongs to parser
+source_parsed_fields(){
+    local all_vars="$1"
+    local output_prefix="${2:-VAR_}"
+    local output_temp_path="${3:-/tmp}"
+
+    for key in ${all_vars}; do
+        field_name="${output_prefix}$(sanitize "$key")"
+        # field_name="$(sanitize "$key")"
+        if [[ $VERBOSE -gt 4 ]]; then echo Exporting field "$field_name"; fi
+        export "$field_name"="$(cat "$output_temp_path/$field_name")"
+        # export "$field_name"="$(cat "$output_temp_path/$key")"
+        rm "$output_temp_path/$field_name"
+        # rm "$output_temp_path/$key"
+    done
+}
 sanei_parsing_info(){
     local module="$1"
     local operation="$2"
-    local var_prefix="$3"
+    local var_prefix="${3:-PARSED_${module}_}"
     #echo parsing "$MODULES_DIR/$module/README.rst"
     if [[ -f "$MODULES_DIR/$module/README.rst" ]]; then
         NO_SUBSHELL=true sanei_invoke_module_script sanei parse-raw "$MODULES_DIR/$module/README.rst" "$var_prefix"
+        # source_parsed_fields "${var_prefix}FIELDS_LIST" "$var_prefix"
+        source_parsed_fields "$PARSED_FIELDS_LIST" "$var_prefix"
+        
     fi
     if [[ -f "$MODULES_DIR/$module/$operation.sh" ]]; then
-    NO_SUBSHELL=true sanei_invoke_module_script sanei parse-sh "$MODULES_DIR/$module/$operation.sh" "$var_prefix"
+        NO_SUBSHELL=true sanei_invoke_module_script sanei parse-sh "$MODULES_DIR/$module/$operation.sh" "$var_prefix"
+        source_parsed_fields "$PARSED_FIELDS_LIST" "$var_prefix"
     fi
 }
 # sanei specific functions:
@@ -522,11 +548,11 @@ sanei_invoke_module_script(){
                 fi
                 # new system of dependencies:
                 if [[ $OPERATION != "install" ]]; then
-                    ( 
-                        sanei_parsing_info $MODULE $OPERATION
-                        non_default_setting_needed ${VAR_ENVVAR[@]}
-                        sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
-                    )
+                    # (
+                    # )
+                    sanei_parsing_info $MODULE $OPERATION "PARSED_${MODULE}_"
+                    eval resolve_settings "\${PARSED_${MODULE}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+                    eval sanei_resolve_dependencies "\${PARSED_${MODULE}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
                 fi
 
                 # "" at the end as we must pass a final empty argument not to break certain scripts
@@ -587,11 +613,11 @@ sanei_install(){
                     rm_installed "$module"
                 fi
             fi
-            ( 
-                sanei_parsing_info $module "install"
-                non_default_setting_needed ${VAR_ENVVAR[@]}
-                sanei_resolve_dependencies ${VAR_DEPENDENCIES[@]}
-            )
+            # ( 
+            # )
+            sanei_parsing_info $module "install" "PARSED_${module}_"
+            eval resolve_settings "\${PARSED_${module}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+            eval sanei_resolve_dependencies "\${PARSED_${module}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
 
             info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
@@ -635,7 +661,7 @@ sanei_resolve_dependencies(){
             if [[ $module == apt\:* ]]; then
                 apt_package=$(echo "$module" | cut -c "5-")
                 if ! is_apt_installed "$apt_package"; then
-                    info "In order to continue, apt package $apt_package needs to be installed."
+                    askbreak "In order to continue, apt package $apt_package needs to be installed."
                     if ! apt_install "$apt_package"; then
                         exit 1
                     fi

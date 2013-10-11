@@ -25,7 +25,7 @@ if [[ ! -z $4 ]]; then
 	passphrase_string="Passphrase: $passphrase"
 fi
 
-non_default_setting_needed GPG_KEY_RECIPIENT
+resolve_settings GPG_KEY_RECIPIENT
 sanei_resolve_dependencies mutt-gmail apt:rng-tools
 
 rngd -f -r /dev/urandom &

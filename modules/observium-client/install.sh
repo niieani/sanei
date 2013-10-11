@@ -1,4 +1,4 @@
-non_default_setting_needed SNMP_CONTACT SNMP_LOCATION
+resolve_settings SNMP_CONTACT SNMP_LOCATION
 
 if [[ $1 == "external" ]]; then
     echo "Using the external IP ($IP) instead of an AutoSSH tunnel."

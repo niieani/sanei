@@ -89,6 +89,8 @@ function parse_rst(){
 	started=0
 	first_content_line=1
 
+	length_addition=0
+
 	# heading
 	#heading_regex="^(=+|-+|`+|:+|\.+|\'+|"+|~+|\^+|_+|\*+|\++|#+)"
 
@@ -157,12 +159,21 @@ function parse_rst(){
 		case "${lines["$line_number,type"]}" in
 			directive )
 				lines["$line_number,length"]=$(( ${lines["$line_number,spacing"]} + 3 ))
+				length_addition=1
 				;;
 			field )
-				lines["$line_number,length"]=$(( ${lines["$line_number,spacing"]} + 1))
+				lines["$line_number,length"]=$(( ${lines["$line_number,spacing"]} + 2 ))
+				# length_addition=0
+				;;
+			"" )
+				lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,value"]:-0} + $length_addition ))
+				;;
+			empty )
+				lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,value"]:-0} ))
 				;;
             * )
 				lines["$line_number,length"]=$(( ${#line} - ${#lines["$line_number,value"]:-0} ))
+				length_addition=0
 				;;
 		esac
 		
@@ -198,7 +209,7 @@ function parse_rst(){
 
 			if [[ -z "${lines["$line_number,type"]}" ]]; then
 				lines["$line_number,parentline"]="$last_parent"
-				if [[ "$last_parent" -gt 0 && $(( ${lines["$line_number,length"]} - ${lines["$last_parent,length"]:-0} )) -gt 0 ]]; then
+				if [[ "$last_parent" -gt 0 && $(( ${lines["$line_number,length"]} - $length_addition - ${lines["$last_parent,length"]:-0} )) -gt 0 ]]; then
 					indentation_based_upon=$(( $last_parent + 1 ))
 					lines["$line_number,indentation"]=$(( ${lines["$line_number,length"]} - ${lines["$indentation_based_upon,length"]} ))
 				fi
@@ -236,9 +247,16 @@ function parse_rst(){
 			# elif [[ "${lines["$((line_number - 1)),type"]}" == empty ]]; then
 				# echo "${lines["${lines["$line_number,parentline"]},type"]}"
 			# if prev line is empty and this line has a parent and type = text or source then add enter
-			elif [[ "${lines["$((line_number - 1)),type"]}" == empty ]] && [[ "${lines["${lines["$line_number,parentline"]},type"]}" == source || "${lines["${lines["$line_number,parentline"]},type"]}" == text || "${lines["${lines["$line_number,parentline"]},type"]}" == field ]]; then  #"${lines["${lines["$line_number,parentline"]},type"]}"
+			elif [[ "${lines["$((line_number - 1)),type"]}" == empty ]]; then
+				if [[ "${lines["${lines["$line_number,parentline"]},type"]}" == source || "${lines["${lines["$line_number,parentline"]},type"]}" == text || "${lines["${lines["$line_number,parentline"]},type"]}" == field ]]; then  #"${lines["${lines["$line_number,parentline"]},type"]}"
 				parsed_text[$parsed_segment]+="
 "
+				# if last one was empty and before that it was a directive, make a new segment too
+				elif [[ "${lines["${lines["$line_number,parentline"]},type"]}" == directive ]]; then  #"${lines["${lines["$line_number,parentline"]},type"]}"
+					((parsed_segment++))
+					# also make this line relative to the directive, not to it's root
+					parsed_parent[$parsed_segment]="${lines["${lines["$line_number,parentline"]},segment"]}";
+				fi
 			fi
 
 			if [[ "${lines["$prev_line_number,list"]}" ]] && [[ "${lines["$prev_line_number,list"]}" != "${lines["$line_number,list"]}" ]]; then
@@ -254,14 +272,18 @@ function parse_rst(){
 			fi
 
 			if [[ -z "${parsed_type[$parsed_segment]}" ]]; then
-				parsed_type[$parsed_segment]="${lines["$line_number,type"]}"
+				if [[ "${lines["$line_number,type"]}"  ]]; then
+					parsed_type[$parsed_segment]="${lines["$line_number,type"]}"
+				else
+					parsed_type[$parsed_segment]=text
+				fi
 			fi
 
 			if [[ "${parsed_text[$parsed_segment]}" ]]; then
 				parsed_text[$parsed_segment]+="
 "
 			fi
-			if [[ "${lines["$line_number,parentblock"]}" && "$parsed_segment" != "${lines["${lines["$line_number,parentblock"]},segment"]}" ]]; then
+			if [[ -z "${parsed_parent[$parsed_segment]}" && "${lines["$line_number,parentblock"]}" && "$parsed_segment" != "${lines["${lines["$line_number,parentblock"]},segment"]}" ]]; then
 				parsed_parent[$parsed_segment]="${lines["${lines["$line_number,parentblock"]},segment"]}" #"${lines["${lines["$line_number,parentline"]},type"]}"
 			fi
 			

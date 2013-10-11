@@ -1,4 +1,4 @@
-non_default_setting_needed OBNAM_REPOSITORY
+resolve_settings OBNAM_REPOSITORY
 # TODO (in case of sftp)
 sanei_resolve_dependencies ssh-key "apt:parallel"
 

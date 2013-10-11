@@ -6,7 +6,7 @@ if [[ -z $1 ]]; then
 	exit 1
 fi
 
-non_default_setting_needed OBNAM_REPOSITORY
+resolve_settings OBNAM_REPOSITORY
 store_memory_config CONTAINER_NAME "$1"
 if ! sanei_invoke_module_script gpg-key generate obnam_$CONTAINER_NAME; then
 	error "Cannot continue."
