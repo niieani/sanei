@@ -15,7 +15,7 @@ Module
 Variables
 +++++++++
 
-.. envvar:: HOSTNAME
+.. envvar:: LOCAL_HOSTNAME
 
    This hostname.
 
