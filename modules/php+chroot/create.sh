@@ -59,7 +59,8 @@ ln -s "$CONFIG" "$NGINX_SITES_ENABLED/$USERNAME.conf"
 /bin/mknod -m 0444 $SRV_DIR/$USERNAME/dev/urandom c 1 9
 
 # add /etc
-cp -fv /etc/{host.conf,hostname,localtime,networks,nsswitch.conf,protocols,resolv.conf,services} "$SRV_DIR/$USERNAME/etc"
+cp -fv /etc/{host.conf,hostname,localtime,networks,nsswitch.conf,protocols,resolv.conf,services,sudoers} "$SRV_DIR/$USERNAME/etc"
+cp -Lr /etc/{pam.d,php5} "$SRV_DIR/$USERNAME/etc"
 cp $MODULE_DIR/templates/{passwd,group,hosts} $SRV_DIR/$USERNAME/etc
 echo "$USERNAME:x:$(id -u $USERNAME):$(id -g $USERNAME):$DOMAIN,,,:$SRV_DIR/$USERNAME:/bin/false" >> "$SRV_DIR/$USERNAME/etc/passwd"
 echo "$USERNAME:x:$(id -g $USERNAME):www-data,sftp" >> "$SRV_DIR/$USERNAME/etc/group"
@@ -70,6 +71,7 @@ $SED -i "s/@@PUNY_DOMAIN@@/$PUNY_DOMAIN/g" "$SRV_DIR/$USERNAME/etc/hosts"
 chown $USERNAME:$USERNAME "$SRV_DIR/$USERNAME" -R
 
 ln -s /usr/local/sbin "$SRV_DIR/$USERNAME/sbin"
+ln -s /usr/local/etc/ssmtp "$SRV_DIR/$USERNAME/etc/ssmtp"
 
 # TODO: make sftp optional
 usermod -G sftp "$USERNAME"

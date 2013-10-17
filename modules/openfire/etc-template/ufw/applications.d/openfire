@@ -1,0 +1,12 @@
+[Openfire]
+title=Openfire
+description=Openfire XMMP server
+ports=9090,9091,5222,7777,7443,7070,3478,3479/tcp
+
+# Port 9090 : for the web interface.
+# Port 9091 : for SSL web interface.
+# Port 5222 : the main port used for client/server communication by Openfire.
+# Port 7777 : used for file transfer.
+# Port 7443 : used for unsecured Http client connections.
+# Port 7070 : used for secure Http client connections.
+# Port 3478, 3479 : used by the STUN Servive for entities behind a NAT.
