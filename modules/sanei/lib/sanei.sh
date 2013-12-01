@@ -560,23 +560,29 @@ sanei_invoke_module_script(){
                 if [[ $OPERATION != "install" ]]; then
                     # (
                     # )
-                    sanei_parsing_info $MODULE $OPERATION "PARSED_${MODULE}_"
-                    eval _settings="\${PARSED_${MODULE}_ENVVAR[@]}_"
-                    eval _dependencies="\${PARSED_${MODULE}_DEPENDENCIES[@]}_"
-                    
-                    # TODO: needs testing
-                    # echo OPICA $_settings
-                    # echo OPICA $_dependencies
-                    # echo OPICA $PARSED_relaymail_MODULE
+                    # TODO: this is duplicated code, fix me
+
+                    local module_for_export="${MODULE//[-.]/}"
+                    local parsed_prefix="${module_for_export^^}_" # let's uppercase
+
+                    eval export "${parsed_prefix}ENVVAR" "_"
+                    eval export "${parsed_prefix}DEPENDENCIES" "_"
+
+                    sanei_parsing_info $module "install" "${parsed_prefix}"
+
+                    eval _settings="\${${parsed_prefix}ENVVAR[@]}_"
+                    eval _dependencies="\${${parsed_prefix}DEPENDENCIES[@]}_"
 
                     if [[ $_settings != "_" ]]; then
-                        eval resolve_settings "\${PARSED_${MODULE}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+                        eval resolve_settings "\${${parsed_prefix}ENVVAR[@]}" # ${VAR_ENVVAR[@]}
                     fi
                     if [[ $_dependencies != "_" ]]; then
-                        eval sanei_resolve_dependencies "\${PARSED_${MODULE}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
+                        eval sanei_resolve_dependencies "\${${parsed_prefix}DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
                     fi
-                    unset $_settings
-                    unset $_dependencies
+                    unset _settings
+                    unset _dependencies
+                    unset module_for_export
+                    unset parsed_prefix
             
                     # eval resolve_settings "\${PARSED_${MODULE}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
                     # eval sanei_resolve_dependencies "\${PARSED_${MODULE}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
@@ -642,21 +648,28 @@ sanei_install(){
             fi
             # ( 
             # )
-            sanei_parsing_info $module "install" "PARSED_${module}_"
 
-            # eval echo resolve "\${PARSED_${module}_${ENVVAR[@]}}"
-            # echo "${ENVVAR[@]}"
-            eval _settings="\${PARSED_${module}_ENVVAR[@]}_"
-            eval _dependencies="\${PARSED_${module}_DEPENDENCIES[@]}_"
+            local module_for_export="${module//[-.]/}"
+            local parsed_prefix="${module_for_export^^}_" # let's uppercase
+
+            eval export "${parsed_prefix}ENVVAR" "_"
+            eval export "${parsed_prefix}DEPENDENCIES" "_"
+
+            sanei_parsing_info $module "install" "${parsed_prefix}"
+
+            eval _settings="\${${parsed_prefix}ENVVAR[@]}_"
+            eval _dependencies="\${${parsed_prefix}DEPENDENCIES[@]}_"
 
             if [[ $_settings != "_" ]]; then
-                eval resolve_settings "\${PARSED_${module}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+                eval resolve_settings "\${${parsed_prefix}ENVVAR[@]}" # ${VAR_ENVVAR[@]}
             fi
             if [[ $_dependencies != "_" ]]; then
-                eval sanei_resolve_dependencies "\${PARSED_${module}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
+                eval sanei_resolve_dependencies "\${${parsed_prefix}DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
             fi
-            unset $_settings
-            unset $_dependencies
+            unset _settings
+            unset _dependencies
+            unset module_for_export
+            unset parsed_prefix
 
             info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
