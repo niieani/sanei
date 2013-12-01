@@ -496,13 +496,17 @@ source_parsed_fields(){
 
     for key in ${all_vars}; do
         field_name="${output_prefix}$(sanitize "$key")"
+
         # field_name="$(sanitize "$key")"
-        if [[ $VERBOSE -gt 4 ]]; then echo Exporting field "$field_name"; fi
+        if [[ $VERBOSE -gt 4 ]]; then 
+            echo Exporting field "$field_name", with the value "$(cat "$output_temp_path/$field_name")"
+        fi
         export "$field_name"="$(cat "$output_temp_path/$field_name")"
         # export "$field_name"="$(cat "$output_temp_path/$key")"
         rm "$output_temp_path/$field_name"
         # rm "$output_temp_path/$key"
     done
+    # echo OPICA $PARSED_relaymail_MODULE
 }
 sanei_parsing_info(){
     local module="$1"
@@ -513,12 +517,18 @@ sanei_parsing_info(){
         NO_SUBSHELL=true sanei_invoke_module_script sanei parse-raw "$MODULES_DIR/$module/README.rst" "$var_prefix"
         # source_parsed_fields "${var_prefix}FIELDS_LIST" "$var_prefix"
         source_parsed_fields "$PARSED_FIELDS_LIST" "$var_prefix"
-        
+
+        # declare -p PARSED_FIELDS_LIST
+        # echo "$var_prefix"
     fi
     if [[ -f "$MODULES_DIR/$module/$operation.sh" ]]; then
         NO_SUBSHELL=true sanei_invoke_module_script sanei parse-sh "$MODULES_DIR/$module/$operation.sh" "$var_prefix"
         source_parsed_fields "$PARSED_FIELDS_LIST" "$var_prefix"
+
+        # declare -p PARSED_FIELDS_LIST
+        # echo "$var_prefix"
     fi
+    # echo OPICA $PARSED_relaymail_MODULE
 }
 # sanei specific functions:
 sanei_invoke_module_script(){
@@ -551,8 +561,25 @@ sanei_invoke_module_script(){
                     # (
                     # )
                     sanei_parsing_info $MODULE $OPERATION "PARSED_${MODULE}_"
-                    eval resolve_settings "\${PARSED_${MODULE}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
-                    eval sanei_resolve_dependencies "\${PARSED_${MODULE}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
+                    eval _settings="\${PARSED_${MODULE}_ENVVAR[@]}_"
+                    eval _dependencies="\${PARSED_${MODULE}_DEPENDENCIES[@]}_"
+                    
+                    # TODO: needs testing
+                    # echo OPICA $_settings
+                    # echo OPICA $_dependencies
+                    # echo OPICA $PARSED_relaymail_MODULE
+
+                    if [[ $_settings != "_" ]]; then
+                        eval resolve_settings "\${PARSED_${MODULE}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+                    fi
+                    if [[ $_dependencies != "_" ]]; then
+                        eval sanei_resolve_dependencies "\${PARSED_${MODULE}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
+                    fi
+                    unset $_settings
+                    unset $_dependencies
+            
+                    # eval resolve_settings "\${PARSED_${MODULE}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+                    # eval sanei_resolve_dependencies "\${PARSED_${MODULE}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
                 fi
 
                 # "" at the end as we must pass a final empty argument not to break certain scripts
@@ -616,8 +643,20 @@ sanei_install(){
             # ( 
             # )
             sanei_parsing_info $module "install" "PARSED_${module}_"
-            eval resolve_settings "\${PARSED_${module}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
-            eval sanei_resolve_dependencies "\${PARSED_${module}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
+
+            # eval echo resolve "\${PARSED_${module}_${ENVVAR[@]}}"
+            # echo "${ENVVAR[@]}"
+            eval _settings="\${PARSED_${module}_ENVVAR[@]}_"
+            eval _dependencies="\${PARSED_${module}_DEPENDENCIES[@]}_"
+
+            if [[ $_settings != "_" ]]; then
+                eval resolve_settings "\${PARSED_${module}_ENVVAR[@]}" # ${VAR_ENVVAR[@]}
+            fi
+            if [[ $_dependencies != "_" ]]; then
+                eval sanei_resolve_dependencies "\${PARSED_${module}_DEPENDENCIES[@]}" #${VAR_DEPENDENCIES[@]}
+            fi
+            unset $_settings
+            unset $_dependencies
 
             info "${LIGHTBLUE}WILL ${re}INSTALL: ${WHITE}$module${RESET}."
 
