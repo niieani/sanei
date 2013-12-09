@@ -8,6 +8,7 @@
 
      # delete this script from bash_profile
      #sed -ie '$d' ~/.bash_profile
+     # TODO: move this to the lxc creation profile
      apt-get --purge -y remove openssh-server
      apt-get -y install software-properties-common ufw wget dialog zsh htop mc
      ufw allow lxc-net

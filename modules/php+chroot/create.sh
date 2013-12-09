@@ -60,7 +60,12 @@ ln -s "$CONFIG" "$NGINX_SITES_ENABLED/$USERNAME.conf"
 
 # add /etc
 cp -fv /etc/{host.conf,hostname,localtime,networks,nsswitch.conf,protocols,resolv.conf,services,sudoers} "$SRV_DIR/$USERNAME/etc"
+# copy dereferrencing links
 cp -Lr /etc/{pam.d,php5} "$SRV_DIR/$USERNAME/etc"
+# copy with links
+cp -r /etc/{alternatives} "$SRV_DIR/$USERNAME/etc"
+
+# copy and fill
 cp $MODULE_DIR/templates/{passwd,group,hosts} $SRV_DIR/$USERNAME/etc
 echo "$USERNAME:x:$(id -u $USERNAME):$(id -g $USERNAME):$DOMAIN,,,:$SRV_DIR/$USERNAME:/bin/false" >> "$SRV_DIR/$USERNAME/etc/passwd"
 echo "$USERNAME:x:$(id -g $USERNAME):www-data,sftp" >> "$SRV_DIR/$USERNAME/etc/group"

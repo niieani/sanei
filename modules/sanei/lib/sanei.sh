@@ -562,7 +562,7 @@ sanei_invoke_module_script(){
                     # )
                     # TODO: this is duplicated code, fix me
 
-                    local module_for_export="${MODULE//[-.]/}"
+                    local module_for_export="${MODULE//[+-.]/}"
                     local parsed_prefix="${module_for_export^^}_" # let's uppercase
 
                     eval export "${parsed_prefix}ENVVAR" "_"
@@ -649,7 +649,7 @@ sanei_install(){
             # ( 
             # )
 
-            local module_for_export="${module//[-.]/}"
+            local module_for_export="${module//[+-.]/}"
             local parsed_prefix="${module_for_export^^}_" # let's uppercase
 
             eval export "${parsed_prefix}ENVVAR" "_"

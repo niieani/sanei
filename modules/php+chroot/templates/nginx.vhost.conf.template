@@ -1,5 +1,5 @@
 server {
-	listen 80 deferred;
+	listen 80;
 	set $username "@@USERNAME@@";
 	set $rootdir "public";
 
