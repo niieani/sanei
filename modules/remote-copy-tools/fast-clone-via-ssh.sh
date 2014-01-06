@@ -10,8 +10,10 @@
 # :Description: TODO. Great for millions of files. 
 #               Needs to be installed on both ends (or at least the dependencies).
 #
+#               Reference:
+#               http://superuser.com/questions/291803/best-way-to-copy-millions-of-files-between-2-servers
+#
 # :Dependencies: - apt:liblz4-tool
-#                - apt:liblz4
 #                - apt:openssh-client
 #
 # Arguments
@@ -39,7 +41,8 @@ local destpath="$2"
 local destserver="$3"
 local destport="$4"
 
-tar --numeric-owner -cvf "$src" | lz4c -c | ssh -carcfour128 "$destserver" "-p$destport" "lz4c -d | tar -x > $dest"
+eval "sleep 2; while killall -USR1 tar; do sleep 1; done"
+tar --numeric-owner -c --totals --totals=USR1 "$src" | lz4c -c | ssh -carcfour128 "$destserver" "-p$destport" "lz4c -d | tar -x > $dest"
 
 # TODO: option with rsync
 # preserves symlinks, archive mode (for copying system), verbose, compressed 
