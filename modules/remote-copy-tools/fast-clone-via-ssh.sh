@@ -41,7 +41,7 @@ local destpath="$2"
 local destserver="$3"
 local destport="$4"
 
-eval "sleep 2; while killall -USR1 tar; do sleep 1; done"
+eval "sleep 20; while killall -USR1 tar; do sleep 1; done"
 tar --numeric-owner -c --totals --totals=USR1 "$src" | lz4c -c stdin stdout | ssh -carcfour128 "$destserver" "-p$destport" "lz4c -d | tar -x > $dest"
 
 # TODO: option with rsync
