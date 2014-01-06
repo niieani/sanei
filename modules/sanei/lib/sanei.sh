@@ -199,7 +199,7 @@ apt_install(){
 }
 is_apt_installed(){
     local package="$1"
-    if (dpkg -s "$package" 2&>/dev/null); then
+    if $(dpkg -s "$package" 2&>/dev/null); then
         return 0
     else
         return 1
@@ -649,7 +649,7 @@ sanei_install(){
             # ( 
             # )
 
-            local module_for_export="${module//[+.-]/}"
+            local module_for_export="${module//[+.-]/}" # interesting quirk - doesn't work with: +-.
             local parsed_prefix="${module_for_export^^}_" # let's uppercase
 
             eval export "${parsed_prefix}ENVVAR" "_"
@@ -782,7 +782,7 @@ sanei_update(){
                 user="$SUDO_USER"
                 chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
             else
-                error "Cannot find the real username."
+                error "Cannot find the real username (you didn't use sudo -s ?)."
             fi
         fi
     else
