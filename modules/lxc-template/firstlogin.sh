@@ -1,4 +1,7 @@
 #!/bin/bash
+
+### depracated ###
+
 # locking
  lockdir=/tmp/firstlogin.lock
  if mkdir "$lockdir"

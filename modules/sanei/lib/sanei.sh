@@ -537,6 +537,7 @@ sanei_invoke_module_script(){
     # $@ arguments
     local MODULE_DIR
     local LOCAL_MODULE_DIR
+    local SHARED_MODULE_DIR
     ((INVOKED_COUNT++))
     if [[ $1 && -d $SCRIPT_DIR/modules/$1 ]]; then
         if [[ -f $SCRIPT_DIR/modules/$1/$2.sh ]]; then
@@ -545,8 +546,9 @@ sanei_invoke_module_script(){
                 # locally available variables
                 MODULE="$1"
                 OPERATION="$2"
-                MODULE_DIR="$SCRIPT_DIR/modules/$1"
-                LOCAL_MODULE_DIR="$SANEI_DIR/$1"
+                MODULE_DIR="$SCRIPT_DIR/modules/$MODULE"
+                LOCAL_MODULE_DIR="$SANEI_DIR/$MODULE"
+                SHARED_MODULE_DIR="$COMMON_DIR/$MODULE"
                 if [[ -f $MODULE_DIR/functions.sh ]]; then
                     source $MODULE_DIR/functions.sh
                 fi
@@ -774,13 +776,15 @@ sanei_update(){
         fi
 
         if [ "$HOME_DIR" != "/root" ]; then
-            if logname 2&> /dev/null; then
-                user=$(logname)
-                # TODO: do this at the copying/linking level
-                chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
-            elif [[ "$SUDO_USER" ]]; then
-                user="$SUDO_USER"
-                chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
+            if [[ "$PARENT_USERNAME" != "root" ]]; then
+                chown -R "$PARENT_USERNAME:$PARENT_USERNAME" "$TEMPLATE_ROOT$HOME_DIR"
+            # if logname 2&> /dev/null; then
+            #     user=$(logname)
+            #     # TODO: do this at the copying/linking level
+            #     chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
+            # elif [[ "$SUDO_USER" ]]; then
+            #     user="$SUDO_USER"
+            #     chown -R "$user:$user" "$TEMPLATE_ROOT$HOME_DIR"
             else
                 error "Cannot find the real username (you didn't use sudo -s ?)."
             fi
