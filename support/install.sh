@@ -7,8 +7,21 @@ if [[ ! $(whoami) == "root" ]]; then
     exit 1
 fi
 
-read -p "Are you sure? " -n 1
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+asksure(){
+    local text=$1
+    echo -n "$text (Y/N)? "
+    while read -r -n 1 answer; do
+      if [[ $answer = [YyNn] ]]; then
+        [[ $answer = [Yy] ]] && retval=0
+        [[ $answer = [Nn] ]] && retval=1
+        break
+      fi
+    done
+    echo # just a final linefeed, optics...
+    return $retval
+}
+
+if ! asksure "Are you sure?"; then
     exit 1
 fi
 
