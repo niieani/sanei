@@ -15,9 +15,9 @@ sanei_resolve_dependencies "lxc-host"
 TEMPLATE_NAME=$1
 
 if [[ ! -e /lxc ]]; then ln -v -s /var/lib/lxc /lxc; fi
-cp /usr/share/lxc/templates/lxc-ubuntu /usr/share/lxc/templates/lxc-ubuntu-sanei
 
 SANEI_LXC_TEMPLATE="/usr/share/lxc/templates/lxc-ubuntu-sanei"
+cp /usr/share/lxc/templates/lxc-ubuntu "$SANEI_LXC_TEMPLATE"
 
 sed -i 's/:-"ssh,vim"/:-"software-properties-common,ufw,wget,dialog,zsh,htop,mc"/g' "$SANEI_LXC_TEMPLATE"
 sed -i 's/finalize_user $user//g' "$SANEI_LXC_TEMPLATE"
