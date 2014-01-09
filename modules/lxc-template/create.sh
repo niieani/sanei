@@ -1,12 +1,14 @@
-if [[ ! is_special_module_runtime ]]; then
-    info "Try: sanei lxc create NAME"
-    exit 1
-fi
+# if [[ ! is_special_module_runtime ]]; then
+#     info "Try: sanei lxc create NAME"
+#     exit 1
+# fi
 
 if [ -z $1 ]; then
     echo "No name given"
     exit 1
 fi
+
+askbreak "Really create $1?"
 
 sanei_resolve_dependencies "lxc-host"
 

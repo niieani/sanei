@@ -1,8 +1,8 @@
 case "$1" in
     "create" )
-        REINSTALL=true
-        __SPECIAL=true
-        sanei_install lxc-template ${@:2:${#@}}
+        #REINSTALL=true
+        #__SPECIAL=true
+        sanei_invoke_module_script lxc-template create ${@:2:${#@}}
         ;;
     "updateall" )
         sanei_updateall_containers

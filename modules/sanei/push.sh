@@ -1,1 +1,1 @@
-sanei_invoke_module_script selfupdate send
+sanei_invoke_module_script sanei-selfupdate updateremote

@@ -1,1 +1,1 @@
-sanei_invoke_module_script selfupdate do
+sanei_invoke_module_script sanei-selfupdate updatelocal

@@ -7,4 +7,4 @@
 # m h  dom mon dow   command
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
 
-30 5 * * * root @@SCRIPT_DIR@@/sanei selfupdate
+30 5 * * * root @@SCRIPT_DIR@@/sanei selfupgrade
