@@ -26,6 +26,7 @@ lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME # -b
 #echo "/shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/fstab
 echo "lxc.mount.entry = /shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/config
 echo "lxc.aa_profile = lxc-container-chrooting" >> /lxc/$TEMPLATE_NAME/config
+echo "lxc.auto.start = 1" >> /lxc/$TEMPLATE_NAME/config
 
 # on the host
 set_installed lxc-template
