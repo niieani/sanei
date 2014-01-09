@@ -700,7 +700,16 @@ sanei_install(){
 sanei_create_module_dir(){
     subpath=$1 # optional
     if [[ ! -z $LOCAL_MODULE_DIR ]]; then
-        mkdir -p $LOCAL_MODULE_DIR$subpath
+        mkdir -p "$LOCAL_MODULE_DIR$subpath"
+    else
+        error "Local module directory not defined."
+        return 1
+    fi
+}
+sanei_create_shared_module_dir(){
+    subpath=$1 # optional
+    if [[ ! -z $SHARED_MODULE_DIR ]]; then
+        mkdir -p "$SHARED_MODULE_DIR$subpath"
     else
         error "Local module directory not defined."
         return 1

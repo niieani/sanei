@@ -40,7 +40,7 @@ enter_container $TEMPLATE_NAME
 	# --remove-home
 	# rm -rf $TEMPLATE_ROOT/home/ubuntu
 
-	chroot "$TEMPLATE_ROOT" apt-get --force-yes --purge -y remove openssh-server
+	#chroot "$TEMPLATE_ROOT" apt-get --force-yes --purge -y remove openssh-server
 	#chroot "$TEMPLATE_ROOT" apt-get --force-yes -y install software-properties-common ufw wget dialog zsh htop mc
 	chroot "$TEMPLATE_ROOT" ufw allow lxc-net
 	chroot "$TEMPLATE_ROOT" ufw enable
@@ -51,10 +51,11 @@ enter_container $TEMPLATE_NAME
 
 	# apt first time
 	if [[ ! -d "$SHARED_MODULE_DIR/apt-$DISTRO" ]]; then  # TODO: ? && ! -h $TEMPLATE_ROOT/etc/apt
-		mv -v "$TEMPLATE_ROOT/etc/apt" "$SHARED_MODULE_DIR/apt-$DISTRO"; 
+		sanei_create_shared_module_dir
+		mv -v "$TEMPLATE_ROOT/etc/apt" "$SHARED_MODULE_DIR/apt-$DISTRO";
 	fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
-	if [[ ! -e "$TEMPLATE_ROOT/etc/apt" ]]; then 
-		link "$SHARED_MODULE_DIR/apt-$DISTRO" "$TEMPLATE_ROOT/etc/apt"; 
+	if [[ ! -e "$TEMPLATE_ROOT/etc/apt" ]]; then
+		link "$SHARED_MODULE_DIR/apt-$DISTRO" "$TEMPLATE_ROOT/etc/apt";
 	fi
 
 	# old version
