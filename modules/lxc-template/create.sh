@@ -26,7 +26,7 @@ lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME # -b
 #echo "/shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/fstab
 echo "lxc.mount.entry = /shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/config
 echo "lxc.aa_profile = lxc-container-chrooting" >> /lxc/$TEMPLATE_NAME/config
-echo "lxc.auto.start = 1" >> /lxc/$TEMPLATE_NAME/config
+echo "lxc.start.auto = 1" >> /lxc/$TEMPLATE_NAME/config
 
 # on the host
 set_installed lxc-template
@@ -38,8 +38,8 @@ enter_container $TEMPLATE_NAME
 	mkdir -v "${TEMPLATE_ROOT}${SCRIPT_DIR}"
 	chmod 777 "${TEMPLATE_ROOT}${SCRIPT_DIR}"
 
-	## remove default user (off for not created -- root only))
-	# chroot $TEMPLATE_ROOT deluser ubuntu
+	## remove default user
+	chroot "$TEMPLATE_ROOT" deluser ubuntu
 	# --remove-home
 	# rm -rf $TEMPLATE_ROOT/home/ubuntu
 
@@ -56,9 +56,9 @@ enter_container $TEMPLATE_NAME
 		sanei_create_shared_module_dir
 		mv -v "$TEMPLATE_ROOT/etc/apt" "$SHARED_MODULE_DIR/apt-$DISTRO";
 	fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
-	if [[ ! -e "$TEMPLATE_ROOT/etc/apt" ]]; then
+	# if [[ ! -e "$TEMPLATE_ROOT/etc/apt" ]]; then
 		link "$SHARED_MODULE_DIR/apt-$DISTRO" "$TEMPLATE_ROOT/etc/apt";
-	fi
+	# fi
 
 	# old version
 	# apt first time
@@ -77,7 +77,7 @@ enter_container $TEMPLATE_NAME
 	set_installed dotfiles # we don't want to run the install inside a container
 	sanei_resolve_dependencies lxc-common lxc-container xterm-screen
 
-	chroot "$TEMPLATE_ROOT" ufw allow lxc-net
-	chroot "$TEMPLATE_ROOT" ufw enable
+	chroot "$TEMPLATE_ROOT" ufw allow lxc-net >/dev/null 2>&1
+	chroot "$TEMPLATE_ROOT" ufw enable >/dev/null 2>&1
 
 exit_container
