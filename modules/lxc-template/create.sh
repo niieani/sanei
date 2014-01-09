@@ -17,9 +17,12 @@ TEMPLATE_NAME=$1
 if [[ ! -e /lxc ]]; then ln -v -s /var/lib/lxc /lxc; fi
 cp /usr/share/lxc/templates/lxc-ubuntu /usr/share/lxc/templates/lxc-ubuntu-sanei
 
-sed -i 's/:-"ssh,vim"//g' "/usr/share/lxc/templates/lxc-ubuntu-sanei"
+SANEI_LXC_TEMPLATE="/usr/share/lxc/templates/lxc-ubuntu-sanei"
 
-lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME -- --packages "software-properties-common,ufw,wget,dialog,zsh,htop,mc" --user root --password "" # -b "$PARENT_USERNAME" 
+sed -i 's/:-"ssh,vim"/:-"software-properties-common,ufw,wget,dialog,zsh,htop,mc"/g' "$SANEI_LXC_TEMPLATE"
+sed -i 's/finalize_user $user//g' "$SANEI_LXC_TEMPLATE"
+
+lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME -- --user root --password "" # -b "$PARENT_USERNAME" #  --packages "software-properties-common,ufw,wget,dialog,zsh,htop,mc"
 echo "/shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/fstab
 
 # on the host
