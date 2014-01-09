@@ -15,13 +15,17 @@ sanei_resolve_dependencies "lxc-host"
 TEMPLATE_NAME=$1
 
 if [[ ! -e /lxc ]]; then ln -v -s /var/lib/lxc /lxc; fi
-lxc-create -t ubuntu -n $TEMPLATE_NAME --packages "software-properties-common,ufw,wget,dialog,zsh,htop,mc" --user root --password "" # -b "$PARENT_USERNAME" 
+cp /usr/share/lxc/templates/lxc-ubuntu /usr/share/lxc/templates/lxc-ubuntu-sanei
+
+sed -i 's/:-"ssh,vim"//g' "/usr/share/lxc/templates/lxc-ubuntu-sanei"
+
+lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME -- --packages "software-properties-common,ufw,wget,dialog,zsh,htop,mc" --user root --password "" # -b "$PARENT_USERNAME" 
 echo "/shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/fstab
 
 # on the host
 set_installed lxc-template
 
-# chroot to the container
+# chroot for SANEi to the container
 enter_container $TEMPLATE_NAME
 
 	# /shared in containers
@@ -34,10 +38,11 @@ enter_container $TEMPLATE_NAME
 	# rm -rf $TEMPLATE_ROOT/home/ubuntu
 
 	chroot "$TEMPLATE_ROOT" apt-get --force-yes --purge -y remove openssh-server
-	chroot "$TEMPLATE_ROOT" apt-get --force-yes -y install software-properties-common ufw wget dialog zsh htop mc
+	#chroot "$TEMPLATE_ROOT" apt-get --force-yes -y install software-properties-common ufw wget dialog zsh htop mc
 	chroot "$TEMPLATE_ROOT" ufw allow lxc-net
 	chroot "$TEMPLATE_ROOT" ufw enable
     chroot "$TEMPLATE_ROOT" chsh root -s /bin/zsh
+    chroot "$TEMPLATE_ROOT" passwd -l root
 
 	# echo "bash $SCRIPT_DIR/modules/lxc-template/firstlogin.sh" >> $TEMPLATE_ROOT/root/.bash_profile
 
