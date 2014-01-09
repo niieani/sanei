@@ -44,5 +44,7 @@ if [[ ! $(whoami) == "root" ]]; then
 fi
 
 # TODO: set -e
+# set SANEI_AUTOMATIC_SELFPUSH or SANEI_AUTOMATIC_SELFUPGRADE to automatically upgrade SANEI before every run
+sanei_automatic_selfupgrade
 
 INVOKED_COUNT=0 sanei_invoke_module_script sanei ${ARGUMENTS[@]}

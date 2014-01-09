@@ -697,6 +697,14 @@ sanei_install(){
         #error "No module provided."
     fi
 }
+sanei_automatic_selfupgrade(){
+    if [[ -n $SANEI_AUTOMATIC_SELFPUSH ]]; then
+        sanei_invoke_module_script sanei-selfupdate updateremote
+    fi
+    if [[ -n $SANEI_AUTOMATIC_SELFUPGRADE ]]; then
+        sanei_invoke_module_script sanei-selfupdate updatelocal
+    fi
+}
 sanei_create_module_dir(){
     subpath=$1 # optional
     if [[ ! -z $LOCAL_MODULE_DIR ]]; then
