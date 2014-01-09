@@ -42,8 +42,7 @@ enter_container $TEMPLATE_NAME
 
 	#chroot "$TEMPLATE_ROOT" apt-get --force-yes --purge -y remove openssh-server
 	#chroot "$TEMPLATE_ROOT" apt-get --force-yes -y install software-properties-common ufw wget dialog zsh htop mc
-	chroot "$TEMPLATE_ROOT" ufw allow lxc-net
-	chroot "$TEMPLATE_ROOT" ufw enable
+
     chroot "$TEMPLATE_ROOT" chsh root -s /bin/zsh
     chroot "$TEMPLATE_ROOT" passwd -l root
 
@@ -75,4 +74,7 @@ enter_container $TEMPLATE_NAME
 	set_installed dotfiles # we don't want to run the install inside a container
 	sanei_resolve_dependencies lxc-common lxc-container xterm-screen
 
+	chroot "$TEMPLATE_ROOT" ufw allow lxc-net
+	chroot "$TEMPLATE_ROOT" ufw enable
+	
 exit_container
