@@ -838,6 +838,7 @@ sanei_all_containers_setinstalled(){
 sanei_override(){
     local setinstalled="$1"
     local process_all_containers="$2"
+    local removeunselected="$3"
     local module
 
     if [[ ! -z process_all_containers ]]; then
@@ -851,7 +852,9 @@ modules on the local system" "$(sanei_list_modules_with_status true)"
     case $retval in
       $DIALOG_OK)
         if [[ -z process_all_containers ]]; then
-            sanei_clean_installed_modules
+            if [[ -n removeunselected ]]; then
+                sanei_clean_installed_modules
+            fi
             for module in $(cat $tempfile); do
                     if [[ -z setinstalled ]]; then
                         set_installed $(eval echo "$module") norun noinfo # TODO FIX
@@ -863,7 +866,9 @@ modules on the local system" "$(sanei_list_modules_with_status true)"
             for container in ${containers[@]}
             do
                 enter_container "$container"
-                    sanei_clean_installed_modules
+                    if [[ -n removeunselected ]]; then
+                        sanei_clean_installed_modules
+                    fi
                     for module in $(cat $tempfile); do
                             if [[ -z setinstalled ]]; then
                                 set_installed $(eval echo "$module") norun noinfo # TODO FIX
