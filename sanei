@@ -29,6 +29,11 @@
 # 
 # Code
 # ++++
+
+if [[ ! $(whoami) == "root" ]]; then
+    echo "ERROR: You need to be ${LIGHTRED}root${RESET} in order to run sanei."
+    exit 1
+fi
 if [[ "${BASH_SOURCE[0]}" =~ sanmod$ ]]; then
 	/usr/bin/sanei module "${@}"
 	exit 0
@@ -36,10 +41,6 @@ fi
 SCRIPT_DIR="$( cd "$( dirname "$( readlink -f "${BASH_SOURCE[0]}")" )" && pwd )"
 if ! source "$SCRIPT_DIR/modules/sanei/lib/sanei.sh"; then
     echo "ERROR: Missing library file."
-    exit 1
-fi
-if [[ ! $(whoami) == "root" ]]; then
-    error "You need to be ${LIGHTRED}root${RESET} in order to run sanei."
     exit 1
 fi
 

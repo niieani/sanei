@@ -1,0 +1,1 @@
+sanei_all_containers_setinstalled ${@:1:${#@}}

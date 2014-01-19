@@ -830,8 +830,17 @@ sanei_updateall_containers(){
         exit_container
     done
 }
+sanei_all_containers_setinstalled(){
+    sanei_override true true
+}
 sanei_override(){
+    local setinstalled="$1"
+    local process_all_containers="$2"
     local module
+
+    if [[ ! -z process_all_containers ]]; then
+        local containers=($(/usr/bin/lxc-ls -1))
+    fi
 
     dialog_selector_generate 'MODULE OVERRIDE LIST' "Use this to override the installed \n\
 modules on the local system" "$(sanei_list_modules_with_status true)"
@@ -839,10 +848,30 @@ modules on the local system" "$(sanei_list_modules_with_status true)"
     retval=$?
     case $retval in
       $DIALOG_OK)
-        sanei_clean_installed_modules
-        for module in $(cat $tempfile); do
-            set_installed $(eval echo "$module") norun noinfo # TODO FIX
-        done
+        if [[ -z process_all_containers ]]; then
+            sanei_clean_installed_modules
+            for module in $(cat $tempfile); do
+                    if [[ -z setinstalled ]]; then
+                        set_installed $(eval echo "$module") norun noinfo # TODO FIX
+                    else
+                        set_installed $(eval echo "$module")
+                    fi
+            done
+        else
+            for container in ${containers[@]}
+            do
+                enter_container "$container"
+                    sanei_clean_installed_modules
+                    for module in $(cat $tempfile); do
+                            if [[ -z setinstalled ]]; then
+                                set_installed $(eval echo "$module") norun noinfo # TODO FIX
+                            else
+                                set_installed $(eval echo "$module")
+                            fi
+                    done
+                exit_container
+            done
+        fi
         ;;
       $DIALOG_CANCEL)
         info "Cancelled."

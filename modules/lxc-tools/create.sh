@@ -1,0 +1,1 @@
+sanei_invoke_module_script lxc-template create ${@:1:${#@}}
