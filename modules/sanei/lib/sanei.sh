@@ -699,7 +699,9 @@ sanei_install(){
 }
 sanei_automatic_selfupgrade(){
     if [[ -n $SANEI_AUTOMATIC_SELFPUSH ]]; then
-        sanei_invoke_module_script sanei-selfupdate updateremote
+        if [[ -n $(git status -s) ]]; then
+            sanei_invoke_module_script sanei-selfupdate updateremote
+        fi
     fi
     if [[ -n $SANEI_AUTOMATIC_SELFUPGRADE ]]; then
         sanei_invoke_module_script sanei-selfupdate updatelocal
