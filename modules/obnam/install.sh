@@ -11,7 +11,8 @@ get_obnam_repository_details
 if [[ $OBNAM_REPOSITORY == sftp\:* ]]; then
 	echo "Enter your Backup User SSH password:"
     # repository_server=$(echo "$OBNAM_REPOSITORY" | cut -c "8-")
-	ssh-copy-id "-p$repository_server_port $repository_server"
+	# ssh-copy-id "-p$repository_server_port $repository_server"
+	ssh-copy-id -p$repository_server_port "$repository_server"
 	ssh $repository_server -p$repository_server_port "mkdir -p $repository_server_path/$LOCAL_HOSTNAME"
 else # local backup
 	mkdir -p $OBNAM_REPOSITORY/$LOCAL_HOSTNAME

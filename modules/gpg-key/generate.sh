@@ -70,6 +70,7 @@ mkdir -p "$GPG_KEY_ID_PATH"
 gpg --fingerprint $key_id > "$gpg_temp_path.fingerprint"
 echo $key_id > "$GPG_KEY_ID_PATH/$gpg_name"
 
-echo $passphrase_string | mutt -F ~/.sanei/muttrc -a "$gpg_temp_path.sec.gpg" -a "$gpg_temp_path.pub.gpg" -s "GPG Key: $key_id for $gpg_name" -- $GPG_KEY_RECIPIENT < "$gpg_temp_path.fingerprint"
+echo "Save the passphrase: $passphrase_string"
+mutt -F ~/.sanei/muttrc -a "$gpg_temp_path.sec.gpg" -a "$gpg_temp_path.pub.gpg" -s "GPG Key: $key_id for $gpg_name $passphrase_string" -- $GPG_KEY_RECIPIENT < "$gpg_temp_path.fingerprint"
 info "Generated key: $key_id"
 rm -f "$gpg_temp_path"*
