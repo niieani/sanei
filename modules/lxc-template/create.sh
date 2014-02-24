@@ -22,7 +22,7 @@ cp /usr/share/lxc/templates/lxc-ubuntu "$SANEI_LXC_TEMPLATE"
 sed -i 's/:-"ssh,vim"/:-"software-properties-common,ufw,wget,dialog,zsh,htop,mc"/g' "$SANEI_LXC_TEMPLATE"
 sed -i 's/finalize_user $user/echo Not creating a user./g' "$SANEI_LXC_TEMPLATE"
 
-lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME # -b "$PARENT_USERNAME" #  -- --user root --password "" --packages "software-properties-common,ufw,wget,dialog,zsh,htop,mc"
+lxc-create -t "/usr/share/lxc/templates/lxc-ubuntu-sanei" -n $TEMPLATE_NAME ${@:2:${#@}} # -b "$PARENT_USERNAME" #  -- --user root --password "" --packages "software-properties-common,ufw,wget,dialog,zsh,htop,mc"
 #echo "/shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/fstab
 echo "lxc.mount.entry = /shared shared none defaults,bind 0 0" >> /lxc/$TEMPLATE_NAME/config
 echo "lxc.aa_profile = lxc-container-chrooting" >> /lxc/$TEMPLATE_NAME/config
