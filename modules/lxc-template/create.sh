@@ -31,6 +31,8 @@ echo "lxc.start.auto = 1" >> /lxc/$TEMPLATE_NAME/config
 # on the host
 set_installed lxc-template
 
+sanei_invoke_module_script lxc-tools mount-lvm $TEMPLATE_NAME
+
 # chroot for SANEi to the container
 enter_container $TEMPLATE_NAME
 
