@@ -1,3 +1,4 @@
 include fastcgi_params;
 fastcgi_param	SCRIPT_FILENAME		/srv/$rootdir$fastcgi_script_name;
 fastcgi_param	DOCUMENT_ROOT		/srv/$rootdir;
+fastcgi_param   PHP_VALUE			include_path=.:/$username;
