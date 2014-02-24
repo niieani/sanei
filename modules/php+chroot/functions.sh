@@ -46,7 +46,7 @@ unmount_website(){
 }
 correct_permissions_website(){
 	username=$1
-	chown -v -R "$username:$username" "$SRV_DIR/$username/srv"
+	chown -R "$username:$username" "$SRV_DIR/$username/srv"
 	chown root:root "$SRV_DIR/$username"
 	chmod 0755 "$SRV_DIR/$username"
 	chown root:$username "$SRV_DIR/$username/srv"
