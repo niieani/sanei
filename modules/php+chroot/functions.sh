@@ -44,6 +44,13 @@ unmount_website(){
 	umount $SRV_DIR/$username/usr
 	umount $SRV_DIR/$username/run
 }
+correct_permissions_website(){
+	username=$1
+	chown -R "$username:$username" "$SRV_DIR/$username/srv"
+	chown root:root "$SRV_DIR/$username"
+	chmod 0755 "$SRV_DIR/$username"
+	chown root:$username "$SRV_DIR/$username/srv"
+}
 generate_punycode(){
 	domain=$1
 	python -c "print unicode('$domain', 'utf8').encode('idna')"
