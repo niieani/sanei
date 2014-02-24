@@ -2,4 +2,4 @@ include fastcgi_params;
 fastcgi_param	SCRIPT_FILENAME		/srv/$rootdir$fastcgi_script_name;
 fastcgi_param	DOCUMENT_ROOT		/srv/$rootdir;
 # fix for opcache fetching the same keys - they are generated unique on basis of include_path too
-fastcgi_param   PHP_VALUE			include_path=.:/usr/share/php:/usr/share/pear:/$username;
+fastcgi_param   PHP_VALUE			include_path=.:/usr/share/php:/usr/share/pear:/srv/$username;

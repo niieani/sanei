@@ -89,7 +89,9 @@ adduser www-data "$USERNAME"
 # extra security
 chown root:root "$SRV_DIR/$USERNAME"
 chmod 0755 "$SRV_DIR/$USERNAME"
+mkdir -p "$SRV_DIR/$USERNAME/srv/$USERNAME"
 chown root:$USERNAME "$SRV_DIR/$USERNAME/srv"
+chown $USERNAME:$USERNAME "$SRV_DIR/$USERNAME/srv/$USERNAME"
 
 # mount all the binds now
 mount_website "$USERNAME"

@@ -1,14 +1,14 @@
 server {
-	listen 80;
 	set $username "@@USERNAME@@";
-	set $rootdir "public";
+	set $rootdir $username;
 
 	server_name @@HOSTNAME@@;
 	charset utf-8;
 	include sanei/php.conf;
 
 	location / {
-	        try_files $uri $uri/ /index.php$uri?$args;
+	        try_files $uri $uri/ /index.php?$args;
+	        # alternative /index.php$uri?$args
 	}
 
 	access_log /srv/@@USERNAME@@/srv/log/@@USERNAME@@.access.log;
