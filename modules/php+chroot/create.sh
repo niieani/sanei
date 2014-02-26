@@ -63,7 +63,7 @@ cp -fv /etc/{host.conf,hostname,localtime,networks,nsswitch.conf,protocols,resol
 # copy dereferrencing links
 cp -Lr /etc/{pam.d,php5} "$SRV_DIR/$USERNAME/etc"
 # copy with links
-cp -r /etc/{alternatives} "$SRV_DIR/$USERNAME/etc"
+cp -r /etc/{alternatives,ssl} "$SRV_DIR/$USERNAME/etc"
 
 # copy and fill
 cp $MODULE_DIR/templates/{passwd,group,hosts} $SRV_DIR/$USERNAME/etc
