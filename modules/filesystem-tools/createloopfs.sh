@@ -53,5 +53,5 @@ while read i; do
 	echo "Generating: $destdir/$i.img" 
 	mkdir -p "$destdir"
 	mkdir -p "$mountpointdir/$i"
-	createloopfs "$destdir/$i.img" "$size" "$mountpointdir/$i"
+	createloopfs "$destdir/$i.img" "$size" "$mountpointdir/$i" "$fstab"
 done < <(seq -w 0 $howmany)
