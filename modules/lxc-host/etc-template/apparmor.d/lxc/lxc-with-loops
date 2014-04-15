@@ -15,5 +15,5 @@ profile lxc-container-with-loops flags=(attach_disconnected,mediate_deleted) {
   deny mount fstype=devpts,
 
   # allow loop mounts
-  mount fstype=iso9660 -> /mnt/**,
+  mount fstype=iso9660 -> /**,
 }
