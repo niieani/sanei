@@ -20,24 +20,19 @@
 #
 #    Size of one loopfs
 #
+# .. cmdoption:: mountpointdir
+#
+#    Mountpoint
+#
 # .. cmdoption:: howmany
 #
 #    How many loopfiles to create
 #
 
-local destdir="$1"
-local size="$2"
-local howmany="$3"
-
-while read i; do 
-	echo "Generating: $destdir/$i.img" 
-	mkdir -p "$destdir"
-	createloopfs "$destdir/$i.img" "$size"
-done < <(seq -w 0 $howmany)
-
 createloopfs(){
 	local fulldestpath="$(readlink -m $1)"
 	local size="$2"
+	local mountpoint="$3"
 
 	local mountparams="loop,noatime"
 	local fs="ext4"
@@ -46,3 +41,15 @@ createloopfs(){
 	mount -o "$mountparams" "$fulldestpath" "$mountpoint"
 	echo "$fulldestpath $mountpoint $fs $mountparams 0 2" >> /etc/fstab
 }
+
+local destdir="$1"
+local size="$2"
+local mountpointdir="$3"
+local howmany="$4"
+
+while read i; do 
+	echo "Generating: $destdir/$i.img" 
+	mkdir -p "$destdir"
+	mkdir -p "$mountpointdir/$i"
+	createloopfs "$destdir/$i.img" "$size" "$mountpointdir/$i"
+done < <(seq -w 0 $howmany)
