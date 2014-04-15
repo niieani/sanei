@@ -33,19 +33,21 @@ createloopfs(){
 	local fulldestpath="$(readlink -m $1)"
 	local size="$2"
 	local mountpoint="$3"
+	local fstab="$4"
 
 	local mountparams="loop,noatime"
 	local fs="ext4"
 	truncate --size "$size" "$fulldestpath"
 	mkfs.ext4 -F "$fulldestpath"
-	mount -o "$mountparams" "$fulldestpath" "$mountpoint"
-	echo "$fulldestpath $mountpoint $fs $mountparams 0 2" >> /etc/fstab
+	#mount -o "$mountparams" "$fulldestpath" "$mountpoint"
+	echo "$fulldestpath $mountpoint $fs $mountparams 0 2" >> "$4"
 }
 
 local destdir="$1"
 local size="$2"
 local mountpointdir="$3"
 local howmany="$4"
+local fstab="$5"
 
 while read i; do 
 	echo "Generating: $destdir/$i.img" 
