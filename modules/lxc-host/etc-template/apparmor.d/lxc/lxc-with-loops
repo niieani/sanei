@@ -1,6 +1,11 @@
 # Do not load this file.  Rather, load /etc/apparmor.d/lxc-containers, which
 # will source all profiles under /etc/apparmor.d/lxc
 
+# to enable use:
+# loop
+# lxc.cgroup.devices.allow = b 7:* rwm
+# lxc.cgroup.devices.allow = c 10:237 rwm
+
 profile lxc-container-with-loops flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/lxc/container-base>
 
@@ -12,8 +17,3 @@ profile lxc-container-with-loops flags=(attach_disconnected,mediate_deleted) {
   # allow loop mounts
   mount fstype=iso9660 -> /mnt/**,
 }
-
-# to enable use:
-# loop
-# lxc.cgroup.devices.allow = b 7:* rwm
-# lxc.cgroup.devices.allow = c 10:237 rwm
