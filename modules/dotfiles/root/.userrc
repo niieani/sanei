@@ -66,11 +66,13 @@ alias sr="nocorrect sr"
 alias mc="mc -x --skin=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini"
 alias mcview="mcview -x --skin=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini"
 alias mcedit="mcedit -x --skin=/shared/modules/dotfiles/root/.addons/mc-solarized-skin/solarized.ini"
-alias lxclist="lxc-ls --fancy"
+alias lxclist="lxc-ls -f -F name,state,ipv4,autostart,ram"
 alias lxcenter="lxc-console -n"
 alias lxcstart="lxc-start -d -n"
 alias lxcstop="lxc-stop -n"
 alias lxcclone="lxc-clone"
+lxcrestart() { lxc-stop -n "$*"; lxc-start -n "$*" }
+
 alias wget="wget --no-check-certificate"
 alias ls="ls --color -lah --group-directories-first"
 
