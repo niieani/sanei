@@ -13,6 +13,7 @@ Module
 
 :Dependencies: - apt:dante-server
                - apt:libpam-pwdfile
+               - apt:whois
 
 Variables
 +++++++++
