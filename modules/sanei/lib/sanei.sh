@@ -591,10 +591,10 @@ sanei_invoke_module_script(){
                 fi
 
                 # "" at the end as we must pass a final empty argument not to break certain scripts
-                source "$MODULE_DIR/$2.sh" "${@:3:${#@}}" ""
+                source "$MODULE_DIR/$2.sh" "${@:3:${#@}}" "";
             )
             else
-                source "$SCRIPT_DIR/modules/$1/$2.sh" "${@:3:${#@}}" ""
+                source "$SCRIPT_DIR/modules/$1/$2.sh" "${@:3:${#@}}" "";
                 unset NO_SUBSHELL
             fi
         else

@@ -43,7 +43,7 @@ enter_container $TEMPLATE_NAME
 	## remove default user
 	chroot "$TEMPLATE_ROOT" deluser ubuntu
 	# --remove-home
-	# rm -rf $TEMPLATE_ROOT/home/ubuntu
+	rm -rf $TEMPLATE_ROOT/home/ubuntu
 
 	#chroot "$TEMPLATE_ROOT" apt-get --force-yes --purge -y remove openssh-server
 	#chroot "$TEMPLATE_ROOT" apt-get --force-yes -y install software-properties-common ufw wget dialog zsh htop mc
@@ -54,12 +54,12 @@ enter_container $TEMPLATE_NAME
 	# echo "bash $SCRIPT_DIR/modules/lxc-template/firstlogin.sh" >> $TEMPLATE_ROOT/root/.bash_profile
 
 	# apt first time
-	if [[ ! -d "$SHARED_MODULE_DIR/apt-$DISTRO" ]]; then  # TODO: ? && ! -h $TEMPLATE_ROOT/etc/apt
-		sanei_create_shared_module_dir
-		mv -v "$TEMPLATE_ROOT/etc/apt" "$SHARED_MODULE_DIR/apt-$DISTRO";
-	fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
+#	if [[ ! -d "$SHARED_MODULE_DIR/apt-$DISTRO" ]]; then  # TODO: ? && ! -h $TEMPLATE_ROOT/etc/apt
+#		sanei_create_shared_module_dir
+#		mv -v "$TEMPLATE_ROOT/etc/apt" "$SHARED_MODULE_DIR/apt-$DISTRO";
+#	fi # else rm -vrf $TEMPLATE_ROOT/etc/apt; fi
 	# if [[ ! -e "$TEMPLATE_ROOT/etc/apt" ]]; then
-		link "$SHARED_MODULE_DIR/apt-$DISTRO" "$TEMPLATE_ROOT/etc/apt";
+#		link "$SHARED_MODULE_DIR/apt-$DISTRO" "$TEMPLATE_ROOT/etc/apt";
 	# fi
 
 	# old version
