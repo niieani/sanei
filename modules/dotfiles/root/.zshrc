@@ -47,6 +47,6 @@ source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
 export JBOSS_HOME=/opt/wildfly-8
-export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games;$JBOSS_HOME/bin
+export PATH=$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:$JBOSS_HOME/bin
 source ~/.userrc
 source ~/.addons/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
