@@ -73,7 +73,7 @@ alias lxcstop="lxc-stop -n"
 alias lxcclone="lxc-clone"
 lxcrestart() { lxc-stop -n "$*"; lxc-start -n "$*" }
 
-alias wget="wget --no-check-certificate"
+alias wget="wget --no-check-certificate --content-disposition -c"
 alias ls="ls --color -lah --group-directories-first"
 
 eval `dircolors /shared/modules/dotfiles/root/.addons/dircolors-solarized/dircolors.256dark`
