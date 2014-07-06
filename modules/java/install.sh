@@ -13,4 +13,4 @@
 # Code
 # ++++
 
-apt_install "oracle-java7-installer" "ppa:webupd8team/java"
+apt_install "oracle-java8-installer" "ppa:webupd8team/java"
