@@ -20,11 +20,25 @@ cp -R /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/
 #mcedit /etc/openvpn/easy-rsa/vars
 chown -R root:admin /etc/openvpn/easy-rsa
 chmod g+w /etc/openvpn/easy-rsa
+cd /etc/openvpn/easy-rsa
 source ./vars
 ./clean-all  ## Setup the easy-rsa directory (Deletes all keys)
 ./build-dh  ## takes a while consider backgrounding
 ./pkitool --initca ## creates ca cert and key
 ./pkitool --server server ## creates a server cert and key
-cd keys
+./pkitool client
+cd /etc/openvpn/easy-rsa/keys
 openvpn --genkey --secret ta.key  ## Build a TLS key
 cp server.crt server.key ca.crt dh2048.pem ta.key ../../
+mkdir /etc/openvpn/client
+cp ca.crt client.crt client.key ta.key /etc/openvpn/client/
+
+info "Make sure you have this line in the configuration for this container:"
+echo "lxc.cgroup.devices.allow = c 10:200 rwm"
+
+mkdir /dev/net 
+mknod /dev/net/tun c 10 200 
+chmod 666 /dev/net/tun
+ufw allow 443
+
+info "Client configuration is available in /etc/openvpn/client/*"
