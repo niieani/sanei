@@ -71,7 +71,10 @@ alias lxcenter="lxc-console -n"
 alias lxcstart="lxc-start -d -n"
 alias lxcstop="lxc-stop -n"
 alias lxcclone="lxc-clone"
-lxcrestart() { lxc-stop -n "$*"; lxc-start -n "$*" }
+alias lxccreate="sanmod lxc-template create"
+lxcconfig() { mcedit /lxc/$*/config }
+lxcrestart() { lxc-stop -n "$*"; lxc-start -d -n "$*" }
+alias dfh="df -hP | column -t | tee >( head -n1 > /dev/stderr ) | grep % | sort -k5nr"
 
 alias wget="wget --no-check-certificate --content-disposition -c"
 alias ls="ls --color -lah --group-directories-first"
