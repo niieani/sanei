@@ -17,10 +17,10 @@ parse_arguments "-v|--verbose)VERBOSE;I" "-r|--reinstall)REINSTALL;B" "--skip-ap
 if [[ -z $CONFIG ]]; then
     ( set -o posix ; set ) >/tmp/variables.before
     for file in $SCRIPT_DIR/config/* ; do
-      if [ -f "$file" ] ; then
-        if [[ $VERBOSE -gt 4 ]]; then info "Loading config: $file"; fi
-        source "$file"
-      fi
+        if [ -f "$file" ] ; then
+            if [[ $VERBOSE -gt 4 ]]; then info "Loading config: $file"; fi
+            source "$file"
+        fi
     done
 
     ## load shared overrides
@@ -33,10 +33,10 @@ if [[ -z $CONFIG ]]; then
 
     # load local overrides
     for file in /opt/sanei/.config/* ; do
-      if [ -f "$file" ] ; then
-        if [[ $VERBOSE -gt 4 ]]; then info "Loading local config: $file"; fi
-        source "$file"
-      fi
+        if [ -f "$file" ] ; then
+            if [[ $VERBOSE -gt 4 ]]; then info "Loading local config: $file"; fi
+            source "$file"
+        fi
     done
 
     unset file
@@ -48,11 +48,11 @@ if [[ -z $CONFIG ]]; then
     # make it an assoc array
     declare -A ConfigArr
     while IFS= read -r ConfigLine; do
-    	IFS='=' read -ra ThisConfig <<< "$ConfigLine"
-    	ThisConfigTrim=${ThisConfig[1]#"'"}
-    	ThisConfigTrim=${ThisConfigTrim%"'"}
-    	ThisConfigTrim=$(echo $ThisConfigTrim | sed "s/'\\\'//g") # unescape
-    	ConfigArr["${ThisConfig[0]}"]="$ThisConfigTrim"
+        IFS='=' read -ra ThisConfig <<< "$ConfigLine"
+        ThisConfigTrim=${ThisConfig[1]#"'"}
+        ThisConfigTrim=${ThisConfigTrim%"'"}
+        ThisConfigTrim=$(echo $ThisConfigTrim | sed "s/'\\\'//g") # unescape
+        ConfigArr["${ThisConfig[0]}"]="$ThisConfigTrim"
     done <<< "$CONFIG"
 
     # finally add the variable added at the beginning
