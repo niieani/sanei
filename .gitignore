@@ -8,3 +8,4 @@ rafal
 *.dpkg-dist
 .c9revisions
 .config
+.idea/
