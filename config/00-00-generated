@@ -23,3 +23,7 @@ SANEI_LIB="$MODULES_DIR/sanei/lib"
 RUN_DIR="$SCRIPT_DIR/run"
 COMMON_DIR="$SCRIPT_DIR/common"
 HOME_DIR=$HOME
+
+# backwards compatibility, TODO: remove
+source /etc/lsb-release
+DISTRO="$DISTRIB_CODENAME"
