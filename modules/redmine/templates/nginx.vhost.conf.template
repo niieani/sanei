@@ -1,0 +1,17 @@
+server {
+	set $username "@@USERNAME@@";
+
+	server_name @@HOSTNAME@@;
+	charset utf-8;
+
+    root /srv/@@USERNAME@@/srv/public;
+    passenger_enabled on;
+    client_max_body_size 1024m;
+
+	access_log /srv/@@USERNAME@@/srv/log/@@USERNAME@@.access.log;
+	error_log /srv/@@USERNAME@@/srv/log/@@USERNAME@@.error.log;
+}
+server {
+	server_name www.@@HOSTNAME@@;
+	return 301 $scheme://@@HOSTNAME@@$request_uri;
+}
