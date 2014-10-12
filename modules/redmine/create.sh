@@ -46,7 +46,7 @@ $NGINX_INIT reload
 
 # Now the actual installation
 cd "/srv/$USERNAME"
-svn co http://svn.redmine.org/redmine/branches/2.5-stable srv
+su "$USERNAME" -c "svn co http://svn.redmine.org/redmine/branches/2.5-stable srv"
 
 cd "/srv/$USERNAME/srv"
 
@@ -56,10 +56,10 @@ info "Press RETURN when ready to import the database"
 
 read
 
-bundle exec rake db:migrate
-bundle exec rake redmine:plugins
-bundle exec rake generate_secret_token
+su "$USERNAME" -c "bundle exec rake db:migrate"
+su "$USERNAME" -c "bundle exec rake redmine:plugins"
+su "$USERNAME" -c "bundle exec rake generate_secret_token"
 
-touch "/srv/$USERNAME/srv/tmp/restart.txt"
+su "$USERNAME" -c "touch /srv/$USERNAME/srv/tmp/restart.txt"
 
 info "Redmine site created for $DOMAIN."
