@@ -34,6 +34,7 @@ ln -s "$CONFIG" "$NGINX_SITES_ENABLED/$USERNAME.conf"
 
 # adding permissions for nginx to be able to read files
 adduser www-data "$USERNAME"
+adduser "$USERNAME" rvm
 
 # extra security
 chown root:root "$SRV_DIR/$USERNAME"

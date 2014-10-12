@@ -19,6 +19,6 @@ Variables
 
 .. envvar:: RUBY_VERSION
 
-   :default: 2.0
+   :default: 2.0.0
 
        Defines the Ruby Version to install.
