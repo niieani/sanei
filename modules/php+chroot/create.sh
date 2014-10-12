@@ -1,7 +1,7 @@
 #!/bin/bash
 # @author: Seb Dangerfield
+# http://www.sebdangerfield.me.uk/?p=513
 # @author: Bazyli Brzoska
-# http://www.sebdangerfield.me.uk/?p=513 
 # Created:   11/08/2011
 # Modified:   07/01/2012
 # Modified:   27/11/2012
@@ -40,7 +40,7 @@ save_website "$USERNAME_PREFIX" "$USERNAME" "$DOMAIN"
 # Now we need to copy the virtual host template
 CONFIG="$NGINX_CONFIG/$USERNAME.conf"
 cp "$MODULE_DIR/templates/nginx.vhost.conf.template" "$CONFIG"
-$SED -i "s/@@HOSTNAME@@/$DOMAIN/g" "$CONFIG"
+$SED -i "s/@@HOSTNAME@@/$PUNY_DOMAIN/g" "$CONFIG"
 $SED -i "s/@@USERNAME@@/$USERNAME/g" "$CONFIG"
 
 FPMCONF="$PHP_INI_DIR/$USERNAME.conf"

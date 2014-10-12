@@ -2,6 +2,7 @@ sanei_resolve_dependencies lxc-common dotfiles
 
 # LXC
 #apt_install "lxc" "ppa:ubuntu-lxc/daily"
+apt_install lxc
 
 ln -s /var/lib/lxc /lxc
 

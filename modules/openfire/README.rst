@@ -1,5 +1,5 @@
 Openfire
-=================
+========
 .. module:: openfire
    :synopsis: An XMMP server.
    :platform: raring

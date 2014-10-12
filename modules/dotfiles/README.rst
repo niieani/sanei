@@ -1,5 +1,5 @@
 dotfiles
-=================
+========
 .. module:: dotfiles
    :synopsis: Great collection of dotfiles.
    :platform: independent
