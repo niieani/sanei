@@ -77,6 +77,14 @@ lxcrestart() { lxc-stop -n "$*"; lxc-start -d -n "$*" }
 alias dfh="df -hP | column -t | tee >( head -n1 > /dev/stderr ) | grep % | sort -k5nr"
 
 alias wget="wget --no-check-certificate --content-disposition -c"
+alias cget="curl -L -O"
+alias cget-resume="curl -C - -L -O"
 alias ls="ls --color -lah --group-directories-first"
+
+kittyget() {
+printf "\033]0;__pw:"`pwd`"\007" ;
+for file in $* ; do printf "\033]0;__rv:"${file}"\007" ; done ;
+printf "\033]0;__ti\007" ;
+}
 
 eval `dircolors /shared/modules/dotfiles/root/.addons/dircolors-solarized/dircolors.256dark`
