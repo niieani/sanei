@@ -2,7 +2,6 @@ Relay Mail
 =================
 .. module:: relaymail
    :synopsis: Mail relay system.
-   :platform: raring
 .. moduleauthor:: Bazyli Brzoska <bazyli.brzoska@gmail.com>
 
 Module
@@ -27,4 +26,4 @@ Variables
 
    :default: postmaster
 
-   The user to whom root mail will go to. (TODO: implement this)
+   The user to whom root mail will go to.
