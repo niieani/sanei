@@ -26,7 +26,7 @@ DEFAULT_APPLICATION_POLICY="SKIP"
 # By default, ufw only touches its own chains. Set this to 'yes' to have ufw
 # manage the built-in chains too. Warning: setting this to 'yes' will break
 # non-ufw managed firewall rules
-MANAGE_BUILTINS=no
+MANAGE_BUILTINS=yes
 
 #
 # IPT backend

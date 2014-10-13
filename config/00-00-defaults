@@ -1,5 +1,5 @@
 SCRIPT_DIR=/shared
-BACKUP_DIR=/root/.backup
+BACKUP_DIR=/root/.sanei-backups
 SANEI_DIR=/opt/sanei
 TIMEZONE=Europe/Warsaw
 SSH_PORT=1234

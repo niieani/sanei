@@ -397,7 +397,7 @@ enter_container(){
     REAL_BACKUP_DIR=$BACKUP_DIR
     REAL_HOME_DIR=$HOME_DIR
     TEMPLATE_ROOT=/lxc/$container/rootfs
-    BACKUP_DIR=$TEMPLATE_ROOT/root/.backups
+    BACKUP_DIR=$TEMPLATE_ROOT/root/.sanei-backups
     # we always want $HOME of containers to be /root
     HOME_DIR=/root
     CONTAINER_NAME=$container

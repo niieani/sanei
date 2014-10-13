@@ -13,6 +13,10 @@ Module
 :Dependencies: - ruby
                - nginx-phusion-passenger
                - apt:python
+               - apt:libmariadbclient-dev
+               - apt:imagemagick
+               - apt:libmagickwand-dev
+               - apt:libcurl4-openssl-dev
 
 Variables
 +++++++++
