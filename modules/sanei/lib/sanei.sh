@@ -186,7 +186,7 @@ apt_install(){
         local ppa="$2"
         local norecommends="$3"
         if [[ ! -z $ppa ]]; then
-            add-apt-repository $(add_silent_opt) $ppa
+            add-apt-repository $(add_silent_opt) "$ppa"
             apt-get update
         fi
         if $norecommends; then

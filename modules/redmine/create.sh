@@ -42,7 +42,6 @@ chmod 0755 "$SRV_DIR/$USERNAME"
 mkdir -p "$SRV_DIR/$USERNAME/srv/$USERNAME"
 chown root:$USERNAME "$SRV_DIR/$USERNAME/srv"
 chown $USERNAME:$USERNAME "$SRV_DIR/$USERNAME/srv/$USERNAME"
-$NGINX_INIT reload
 
 # Now the actual installation
 cd "/srv/$USERNAME"
@@ -61,5 +60,7 @@ su "$USERNAME" -c "bundle exec rake redmine:plugins"
 su "$USERNAME" -c "bundle exec rake generate_secret_token"
 
 su "$USERNAME" -c "touch /srv/$USERNAME/srv/tmp/restart.txt"
+
+$NGINX_INIT reload
 
 info "Redmine site created for $DOMAIN."
