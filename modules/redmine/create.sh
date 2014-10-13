@@ -19,6 +19,7 @@ DOMAIN_SAFE="$(echo "${DOMAIN//./_}" | sed 's/\xd1\x8f/ya/;s/\xd1\x81/s/;s/\xd0\
 USERNAME="${USERNAME_PREFIX}_${DOMAIN_SAFE}"
 PUNY_DOMAIN=$(generate_punycode "$DOMAIN")
 
+mkdir -p "$LOCAL_MODULE_DIR/skel"
 adduser "$USERNAME" --conf="$MODULE_DIR/config/adduser.chroot.conf"
 
 save_website "$USERNAME_PREFIX" "$USERNAME" "$DOMAIN"
@@ -39,9 +40,9 @@ adduser "$USERNAME" rvm
 # extra security
 chown root:root "$SRV_DIR/$USERNAME"
 chmod 0755 "$SRV_DIR/$USERNAME"
-mkdir -p "$SRV_DIR/$USERNAME/srv/$USERNAME"
-chown root:$USERNAME "$SRV_DIR/$USERNAME/srv"
-chown $USERNAME:$USERNAME "$SRV_DIR/$USERNAME/srv/$USERNAME"
+#mkdir -p "$SRV_DIR/$USERNAME/srv/$USERNAME"
+#chown root:$USERNAME "$SRV_DIR/$USERNAME/srv"
+#chown $USERNAME:$USERNAME "$SRV_DIR/$USERNAME/srv/$USERNAME"
 
 # Now the actual installation
 cd "/srv/$USERNAME"
