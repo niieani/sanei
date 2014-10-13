@@ -46,7 +46,8 @@ chmod 0755 "$SRV_DIR/$USERNAME"
 
 # Now the actual installation
 cd "/srv/$USERNAME"
-su "$USERNAME" -c "svn co http://svn.redmine.org/redmine/branches/2.5-stable srv"
+#su "$USERNAME" -c "svn co http://svn.redmine.org/redmine/branches/2.5-stable srv"
+sudo -H -u "$USERNAME" svn co http://svn.redmine.org/redmine/branches/2.5-stable srv
 
 cd "/srv/$USERNAME/srv"
 
@@ -56,11 +57,13 @@ info "Press RETURN when ready to import the database"
 
 read
 
-su "$USERNAME" -c "bundle exec rake db:migrate"
-su "$USERNAME" -c "bundle exec rake redmine:plugins"
-su "$USERNAME" -c "bundle exec rake generate_secret_token"
+sudo -H -u "$USERNAME" mkdir public/plugin_assets
+sudo -H -u "$USERNAME" bundle install
+sudo -H -u "$USERNAME" bundle exec rake db:migrate
+sudo -H -u "$USERNAME" bundle exec rake redmine:plugins
+sudo -H -u "$USERNAME" bundle exec rake generate_secret_token
 
-su "$USERNAME" -c "touch /srv/$USERNAME/srv/tmp/restart.txt"
+sudo -H -u "$USERNAME" touch /srv/$USERNAME/srv/tmp/restart.txt
 
 $NGINX_INIT reload
 

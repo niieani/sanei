@@ -1,9 +1,7 @@
-sanei_resolve_dependencies "php+mysql" "nginx-ssl" 
-
-apt_install "mariadb-client phpmyadmin" "ppa:nijel/phpmyadmin"
+apt_install "phpmyadmin" "ppa:nijel/phpmyadmin"
 chown -R www-data.www-data /usr/share/phpmyadmin
 
-set_installed phpmyadmin
+#set_installed phpmyadmin
 
 ufw allow phpmyadmin
 
