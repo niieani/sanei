@@ -27,3 +27,7 @@ Variables
    :default: postmaster
 
    The user to whom root mail will go to.
+
+.. envvar:: RELAYMAIL_TEST_EMAIL
+
+   An email address used for testing.
