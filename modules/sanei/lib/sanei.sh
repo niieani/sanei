@@ -199,7 +199,7 @@ apt_install(){
 }
 is_apt_installed(){
     local package="$1"
-    if $(dpkg -s "$package" 2&>/dev/null); then
+    if (dpkg -s "$package" &>/dev/null); then
         return 0
     else
         return 1
