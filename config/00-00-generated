@@ -12,7 +12,7 @@ if logname 2&> /dev/null; then
 elif [[ "$SUDO_USER" ]]; then
     PARENT_USERNAME="$SUDO_USER"
 else
-	PARENT_USERNAME=root
+	PARENT_USERNAME=${USER:-root}
 fi
 
 MODULES_DIR="$SCRIPT_DIR/modules"
