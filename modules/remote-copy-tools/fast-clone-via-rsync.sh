@@ -32,6 +32,11 @@ local container="$1"
 local desthost="$2"
 local destport="$3"
 
-# preserves symlinks, archive mode (for copying system), verbose, compressed 
+# preserves symlinks, archive mode (for copying system), verbose, compressed
 
-rsync -Havz --ignore-existing --progress --rsh="ssh -p$destport" --rsync-path="sudo rsync" /lxc/$container ${desthost}:/lxc/$container
+# clean /var/cache/apt/archives/
+enter_container "$container"
+    apt-get autoclean
+exit_container
+
+rsync -Havz --ignore-existing --progress --exclude='/rootfs/tmp/*' --exclude='/rootfs/sessions/' --exclude='/rootfs/srv/*/tmp/sessions/*' --rsh="ssh -p$destport" --rsync-path="sudo rsync" "/lxc/$container" "${desthost}:/lxc"
