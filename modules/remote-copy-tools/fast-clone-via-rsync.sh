@@ -29,8 +29,8 @@
 #
 
 local container="$1"
-local desthost="$1"
-local destport="$2"
+local desthost="$2"
+local destport="$3"
 
 # preserves symlinks, archive mode (for copying system), verbose, compressed 
 
