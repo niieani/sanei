@@ -1,0 +1,12 @@
+/srv/*/srv/log/*php.log
+{
+    weekly
+    rotate 12
+    compress
+    delaycompress
+    missingok
+    notifempty
+    postrotate
+            invoke-rc.d php5-fpm reopen-logs > /dev/null
+    endscript
+}
