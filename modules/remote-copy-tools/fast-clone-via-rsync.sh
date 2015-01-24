@@ -39,4 +39,4 @@ enter_container "$container"
     apt-get autoclean
 exit_container
 
-rsync -Havz --ignore-existing --numeric-ids --progress --exclude='/rootfs/tmp/*' --exclude='/sessions' --exclude='/srv/*/tmp/sessions/*' --rsh="ssh -p$destport" --rsync-path="sudo rsync" "/lxc/$container" "${desthost}:/lxc"
+rsync -Havz --ignore-existing --numeric-ids --progress --exclude='/rootfs/tmp/*' --exclude='/rootfs/srv/*/tmp/sessions/*' --rsh="ssh -p$destport" --rsync-path="sudo rsync" "/lxc/$container/" "${desthost}:/lxc/$container/"
