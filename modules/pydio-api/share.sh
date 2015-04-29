@@ -4,6 +4,10 @@ customHandle="$2";
 #optional:
 PYDIO_REPOSITORY="my-files";
 
+# TODO: extra options:
+# password=abc
+# expiration=4 (number of days
+
 downloadUrl=$(curl \
     -u server:whJkmRs7G8aoVPyYuJVnvA \
      -X POST \
